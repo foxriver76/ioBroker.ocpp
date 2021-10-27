@@ -2,17 +2,14 @@
  * Created with @iobroker/create-adapter v2.0.1
  */
 
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import { stateObjects } from './lib/states';
 import { CentralSystem, OCPPCommands } from 'ocpp-eliftech';
-
-// Load your modules here, e.g.:
-// import * as fs from "fs";
 
 class Ocpp extends utils.Adapter {
 	private client: { info: { connectors: any[] } };
+	private readonly clientTimeouts: Record<string, NodeJS.Timeout>;
+	private knownClients: string[];
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -24,6 +21,9 @@ class Ocpp extends utils.Adapter {
 		// this.on('objectChange', this.onObjectChange.bind(this));
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
+
+		this.clientTimeouts = {};
+		this.knownClients = [];
 
 		this.client = {
 			info: {
@@ -38,10 +38,6 @@ class Ocpp extends utils.Adapter {
 	private async onReady(): Promise<void> {
 		this.log.info('Starting OCPP Server');
 
-		for (const i in OCPPCommands['Authorize']) {
-			this.log.warn(i);
-		}
-
 		const server = new CentralSystem();
 
 		const port = await this.getPortAsync(this.config.port);
@@ -52,29 +48,47 @@ class Ocpp extends utils.Adapter {
 
 		server.onRequest = async (client:any, command: OCPPCommands) => {
 			const connection = client.connection;
-			this.log.info(`New command from ${connection.url}`);
+
+			// we received a new command, first check if the client is known to us
+			if (this.knownClients.indexOf(connection.url) === -1) {
+				this.log.info(`New device connected: "${connection.url}"`);
+				// not known yet
+				this.knownClients.push(connection.url);
+				await this.createDeviceObjects(connection.url);
+				// device is now connected
+				await this.setDeviceOnline(connection.url);
+			}
 
 			switch (true) {
 				case (command instanceof OCPPCommands.BootNotification):
-					this.log.info('Received Boot Notification');
+					this.log.info(`Received boot notification from "${connection.url}"`);
 					this.client.info = {
 						connectors: [],
 						...command
 					};
+
+					// we give 90 seconds to send next heartbeat
+					if (this.clientTimeouts[connection.url]) {
+						clearTimeout(this.clientTimeouts[connection.url]);
+					}
+
+					this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
+
+					// we are requesting heartbeat every 60 seconds
 					return {
 						status: 'Accepted',
 						currentTime: new Date().toISOString(),
 						interval: 60
 					};
 				case (command instanceof OCPPCommands.Authorize):
-					this.log.info('Received Authorization Request');
+					this.log.info(`Received Authorization Request from "${connection.url}"`);
 					return {
 						idTagInfo: {
 							status: 'Accepted'
 						}
 					};
 				case command instanceof OCPPCommands.StartTransaction:
-					this.log.info('Received Start transaction');
+					this.log.info(`Received Start transaction from "${connection.url}"`);
 					return {
 						transactionId: 1,
 						idTagInfo: {
@@ -82,7 +96,7 @@ class Ocpp extends utils.Adapter {
 						}
 					};
 				case (command instanceof OCPPCommands.StopTransaction):
-					this.log.info('Received stop transaction');
+					this.log.info(`Received stop transaction from "${connection.url}"`);
 					return {
 						transactionId: 1,
 						idTagInfo: {
@@ -90,14 +104,21 @@ class Ocpp extends utils.Adapter {
 						}
 					};
 				case (command instanceof OCPPCommands.Heartbeat):
-					this.log.info('Received heartbeat');
+					this.log.info(`Received heartbeat from "${connection.url}"`);
+
+					// we give 90 seconds to send next heartbeat
+					if (this.clientTimeouts[connection.url]) {
+						clearTimeout(this.clientTimeouts[connection.url]);
+					}
+
+					this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
+
 					return {
 						currentTime: new Date().toISOString()
 					};
 				case (command instanceof OCPPCommands.StatusNotification):
-					this.log.info('Received Status Notification');
-					// client.info = client.info || {};
-					// client.info.connectors = client.info.connectors || [];
+					this.log.info(`Received Status Notification from "${connection.url}"`);
+					this.log.info(JSON.stringify(command));
 
 					const connectorIndex = this.client.info.connectors.findIndex(item => command.connectorId === item.connectorId);
 					if (connectorIndex === -1) {
@@ -111,8 +132,77 @@ class Ocpp extends utils.Adapter {
 					}
 					return {};
 				default:
-					this.log.warn(`Command not implemented: ${JSON.stringify(command)}`);
+					this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
 			}
+		}
+	}
+
+	/**
+	 * Is called if client timed out, sets connection to offline
+	 * @param device name of the wallbox device
+	 */
+	private async timedOut(device: string): Promise<void> {
+		this.log.warn(`Client "${device}" timed out`);
+		const idx = this.knownClients.indexOf(device);
+		if (idx !== -1) {
+			// client is in list, but now no longer active
+			this.knownClients.splice(idx, 1);
+		}
+
+		await this.setStateAsync(`${device}.connected`, false, true);
+		const connState = await this.getStateAsync('info.connection');
+		if (typeof connState?.val === 'string') {
+			// get devices and convert them to an array
+			const devices = connState.val.split(',');
+			const idx = devices.indexOf(device);
+			if (idx !== -1) {
+				// device is in list, so remove it and set updated state
+				devices.splice(idx, 1);
+				await this.setStateAsync('info.connection', devices.join(','), true);
+			}
+		}
+	}
+
+	/**
+	 * Sets the corresponding online states
+	 * @param device name of the wallbox device
+	 */
+	public async setDeviceOnline(device: string): Promise<void> {
+		await this.setStateAsync(`${device}.connected`, true, true);
+
+		const connState = await this.getStateAsync('info.connection');
+
+		if (typeof connState?.val === 'string') {
+			const devices = connState.val.split(',');
+			if (devices.indexOf(device) === -1) {
+				// device not yet in array
+				devices.push(device);
+				await this.setStateAsync('info.connection', devices.join(','), true);
+			}
+		} else {
+			// just set device
+			await this.setStateAsync('info.connection', device, true);
+		}
+	}
+
+	/**
+	 * Creates the corresponding state objects for a device
+	 * @param device name of the wallbox device
+	 */
+	public async createDeviceObjects(device: string): Promise<void> {
+		await this.extendObjectAsync(device, {
+			type: 'device',
+			common: {
+				name: device
+			},
+			native: {}
+		});
+
+		for (const obj of stateObjects) {
+			const id = obj._id;
+			obj._id = `${device}.${obj._id}`;
+			await this.extendObjectAsync(obj._id, obj);
+			obj._id = id;
 		}
 	}
 
@@ -126,7 +216,7 @@ class Ocpp extends utils.Adapter {
 			// clearTimeout(timeout2);
 			// ...
 			// clearInterval(interval1);
-			await this.setStateAsync('info.connection', false, true);
+			await this.setStateAsync('info.connection', '', true);
 			callback();
 		} catch {
 			callback();
@@ -160,24 +250,6 @@ class Ocpp extends utils.Adapter {
 			this.log.info(`state ${id} deleted`);
 		}
 	}
-
-	// If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-	// /**
-	//  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-	//  * Using this method requires "common.messagebox" property to be set to true in io-package.json
-	//  */
-	// private onMessage(obj: ioBroker.Message): void {
-	// 	if (typeof obj === 'object' && obj.message) {
-	// 		if (obj.command === 'send') {
-	// 			// e.g. send email or pushover or whatever
-	// 			this.log.info('send command');
-
-	// 			// Send response in callback if required
-	// 			if (obj.callback) this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-	// 		}
-	// 	}
-	// }
-
 }
 
 if (require.main !== module) {

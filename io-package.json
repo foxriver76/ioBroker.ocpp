@@ -90,8 +90,8 @@
 			"type": "state",
 			"common": {
 				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
+				"name": "List of connected devices",
+				"type": "string",
 				"read": true,
 				"write": false,
 				"def": false

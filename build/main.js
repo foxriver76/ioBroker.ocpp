@@ -22,13 +22,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
 const utils = __importStar(require("@iobroker/adapter-core"));
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+const states_1 = require("./lib/states");
 const ocpp_eliftech_1 = require("ocpp-eliftech");
-// Load your modules here, e.g.:
-// import * as fs from "fs";
 class Ocpp extends utils.Adapter {
     constructor(options = {}) {
         super({
@@ -40,6 +36,8 @@ class Ocpp extends utils.Adapter {
         // this.on('objectChange', this.onObjectChange.bind(this));
         // this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
+        this.clientTimeouts = {};
+        this.knownClients = [];
         this.client = {
             info: {
                 connectors: []
@@ -51,37 +49,48 @@ class Ocpp extends utils.Adapter {
      */
     async onReady() {
         this.log.info('Starting OCPP Server');
-        for (const i in ocpp_eliftech_1.OCPPCommands['Authorize']) {
-            this.log.warn(i);
-        }
         const server = new ocpp_eliftech_1.CentralSystem();
         const port = await this.getPortAsync(this.config.port);
         server.listen(port);
         this.log.info(`Server listening on port ${port}`);
         server.onRequest = async (client, command) => {
             const connection = client.connection;
-            this.log.info(`New command from ${connection.url}`);
+            // we received a new command, first check if the client is known to us
+            if (this.knownClients.indexOf(connection.url) === -1) {
+                this.log.info(`New device connected: "${connection.url}"`);
+                // not known yet
+                this.knownClients.push(connection.url);
+                await this.createDeviceObjects(connection.url);
+                // device is now connected
+                await this.setDeviceOnline(connection.url);
+            }
             switch (true) {
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification):
-                    this.log.info('Received Boot Notification');
+                    this.log.info(`Received boot notification from "${connection.url}"`);
                     this.client.info = {
                         connectors: [],
                         ...command
                     };
+                    // we give 90 seconds to send next heartbeat
+                    if (this.clientTimeouts[connection.url]) {
+                        clearTimeout(this.clientTimeouts[connection.url]);
+                    }
+                    this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
+                    // we are requesting heartbeat every 60 seconds
                     return {
                         status: 'Accepted',
                         currentTime: new Date().toISOString(),
                         interval: 60
                     };
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.Authorize):
-                    this.log.info('Received Authorization Request');
+                    this.log.info(`Received Authorization Request from "${connection.url}"`);
                     return {
                         idTagInfo: {
                             status: 'Accepted'
                         }
                     };
                 case command instanceof ocpp_eliftech_1.OCPPCommands.StartTransaction:
-                    this.log.info('Received Start transaction');
+                    this.log.info(`Received Start transaction from "${connection.url}"`);
                     return {
                         transactionId: 1,
                         idTagInfo: {
@@ -89,7 +98,7 @@ class Ocpp extends utils.Adapter {
                         }
                     };
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.StopTransaction):
-                    this.log.info('Received stop transaction');
+                    this.log.info(`Received stop transaction from "${connection.url}"`);
                     return {
                         transactionId: 1,
                         idTagInfo: {
@@ -97,14 +106,18 @@ class Ocpp extends utils.Adapter {
                         }
                     };
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.Heartbeat):
-                    this.log.info('Received heartbeat');
+                    this.log.info(`Received heartbeat from "${connection.url}"`);
+                    // we give 90 seconds to send next heartbeat
+                    if (this.clientTimeouts[connection.url]) {
+                        clearTimeout(this.clientTimeouts[connection.url]);
+                    }
+                    this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
                     return {
                         currentTime: new Date().toISOString()
                     };
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification):
-                    this.log.info('Received Status Notification');
-                    // client.info = client.info || {};
-                    // client.info.connectors = client.info.connectors || [];
+                    this.log.info(`Received Status Notification from "${connection.url}"`);
+                    this.log.info(JSON.stringify(command));
                     const connectorIndex = this.client.info.connectors.findIndex(item => command.connectorId === item.connectorId);
                     if (connectorIndex === -1) {
                         this.client.info.connectors.push({
@@ -118,9 +131,72 @@ class Ocpp extends utils.Adapter {
                     }
                     return {};
                 default:
-                    this.log.warn(`Command not implemented: ${JSON.stringify(command)}`);
+                    this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }
         };
+    }
+    /**
+     * Is called if client timed out, sets connection to offline
+     * @param device name of the wallbox device
+     */
+    async timedOut(device) {
+        this.log.warn(`Client "${device}" timed out`);
+        const idx = this.knownClients.indexOf(device);
+        if (idx !== -1) {
+            // client is in list, but now no longer active
+            this.knownClients.splice(idx, 1);
+        }
+        await this.setStateAsync(`${device}.connected`, false, true);
+        const connState = await this.getStateAsync('info.connection');
+        if (typeof (connState === null || connState === void 0 ? void 0 : connState.val) === 'string') {
+            // get devices and convert them to an array
+            const devices = connState.val.split(',');
+            const idx = devices.indexOf(device);
+            if (idx !== -1) {
+                // device is in list, so remove it and set updated state
+                devices.splice(idx, 1);
+                await this.setStateAsync('info.connection', devices.join(','), true);
+            }
+        }
+    }
+    /**
+     * Sets the corresponding online states
+     * @param device name of the wallbox device
+     */
+    async setDeviceOnline(device) {
+        await this.setStateAsync(`${device}.connected`, true, true);
+        const connState = await this.getStateAsync('info.connection');
+        if (typeof (connState === null || connState === void 0 ? void 0 : connState.val) === 'string') {
+            const devices = connState.val.split(',');
+            if (devices.indexOf(device) === -1) {
+                // device not yet in array
+                devices.push(device);
+                await this.setStateAsync('info.connection', devices.join(','), true);
+            }
+        }
+        else {
+            // just set device
+            await this.setStateAsync('info.connection', device, true);
+        }
+    }
+    /**
+     * Creates the corresponding state objects for a device
+     * @param device name of the wallbox device
+     */
+    async createDeviceObjects(device) {
+        await this.extendObjectAsync(device, {
+            type: 'device',
+            common: {
+                name: device
+            },
+            native: {}
+        });
+        for (const obj of states_1.stateObjects) {
+            const id = obj._id;
+            obj._id = `${device}.${obj._id}`;
+            await this.extendObjectAsync(obj._id, obj);
+            obj._id = id;
+        }
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
@@ -132,7 +208,7 @@ class Ocpp extends utils.Adapter {
             // clearTimeout(timeout2);
             // ...
             // clearInterval(interval1);
-            await this.setStateAsync('info.connection', false, true);
+            await this.setStateAsync('info.connection', '', true);
             callback();
         }
         catch (_a) {
