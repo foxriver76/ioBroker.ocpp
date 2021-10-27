@@ -25,7 +25,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.0.2 (2021-10-27)
 * (foxriver76) initial release
 
 ## License
