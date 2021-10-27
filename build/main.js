@@ -32,8 +32,10 @@ class Ocpp extends utils.Adapter {
             name: 'ocpp',
         });
         this.on('ready', this.onReady.bind(this));
-        this.on('stateChange', this.onStateChange.bind(this));
+        this.on('stateChange', Ocpp.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
+        // subscribe own states
+        this.subscribeStates('*');
         this.clientTimeouts = {};
         this.knownClients = [];
         this.client = {
@@ -121,6 +123,7 @@ class Ocpp extends utils.Adapter {
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification):
                     this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
                     // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
+                    await this.setStateChangedAsync(`${connection.url}.connectorId`, command.connectorId, true);
                     // set status state
                     await this.setStateAsync(`${connection.url}.status`, command.status, true);
                     const connectorIndex = this.client.info.connectors.findIndex(item => command.connectorId === item.connectorId);
@@ -223,14 +226,15 @@ class Ocpp extends utils.Adapter {
     /**
      * Is called if a subscribed state changes
      */
-    onStateChange(id, state) {
-        if (state) {
-            // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+    static onStateChange(id, state) {
+        if (!state || state.ack) {
+            // if state deleted or already acknowledged
+            return;
         }
-        else {
-            // The state was deleted
-            this.log.info(`state ${id} deleted`);
+        // handle state change
+        const idArr = id.split('.');
+        if (idArr[3] === 'enabled') {
+            // enable/disable charger
         }
     }
 }

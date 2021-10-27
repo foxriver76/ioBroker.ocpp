@@ -239,13 +239,18 @@ class Ocpp extends utils.Adapter {
 	/**
 	 * Is called if a subscribed state changes
 	 */
-	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
+	private static onStateChange(id: string, state: ioBroker.State | null | undefined): void {
 		if (!state || state.ack) {
 			// if state deleted or already acknowledged
 			return;
 		}
 
 		// handle state change
+		const idArr = id.split('.');
+
+		if (idArr[3] === 'enabled') {
+			// enable/disable charger
+		}
 	}
 }
 
