@@ -34,8 +34,6 @@ class Ocpp extends utils.Adapter {
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
-        // subscribe own states
-        this.subscribeStates('*');
         this.clientTimeouts = {};
         this.knownClients = [];
         this.clients = {};
@@ -49,6 +47,8 @@ class Ocpp extends utils.Adapter {
      * Is called when databases are connected and adapter received configuration.
      */
     async onReady() {
+        // subscribe own states
+        this.subscribeStates('*');
         this.log.info('Starting OCPP Server');
         const server = new ocpp_eliftech_1.CentralSystem();
         const port = await this.getPortAsync(this.config.port);
