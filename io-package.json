@@ -31,14 +31,14 @@
 		},
 		"desc": {
 			"en": "Adapter for OCPP 1.6",
-			"de": "Adapter für OCPP 1,6",
+			"de": "Adapter für OCPP 1.6",
 			"ru": "Адаптер для OCPP 1.6",
 			"pt": "Adaptador para OCPP 1.6",
 			"nl": "Adapter voor OCPP 1.6",
 			"fr": "Adaptateur pour OCPP 1.6",
 			"it": "Adattatore per OCPP 1.6",
 			"es": "Adaptador para OCPP 1.6",
-			"pl": "Adapter do OCPP 1,6",
+			"pl": "Adapter do OCPP 1.6",
 			"zh-cn": "OCPP 1.6 适配器"
 		},
 		"authors": [

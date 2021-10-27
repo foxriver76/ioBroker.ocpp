@@ -12,6 +12,7 @@ import { CentralSystem, OCPPCommands } from 'ocpp-eliftech';
 // import * as fs from "fs";
 
 class Ocpp extends utils.Adapter {
+	private client: { info: { connectors: any[] } };
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -23,6 +24,12 @@ class Ocpp extends utils.Adapter {
 		// this.on('objectChange', this.onObjectChange.bind(this));
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
+
+		this.client = {
+			info: {
+				connectors: []
+			}
+		};
 	}
 
 	/**
@@ -30,24 +37,81 @@ class Ocpp extends utils.Adapter {
 	 */
 	private async onReady(): Promise<void> {
 		this.log.info('Starting OCPP Server');
+
+		for (const i in OCPPCommands['Authorize']) {
+			this.log.warn(i);
+		}
+
 		const server = new CentralSystem();
 
-		server.listen(this.config.port);
+		const port = await this.getPortAsync(this.config.port);
 
-		this.log.info(`Server listening on port ${this.config.port}`);
+		server.listen(port);
+
+		this.log.info(`Server listening on port ${port}`);
 
 		server.onRequest = async (client:any, command: OCPPCommands) => {
 			const connection = client.connection;
-			this.log.info(`New connection from ${connection.url}`);
+			this.log.info(`New command from ${connection.url}`);
 
-			this.log.warn(`Command: ${JSON.stringify(command)}`);
-			// Handle different commands
-			if (command instanceof OCPPCommands.BootNotification) {
-				return {
-					status: 'Accepted',
-					currentTime: new Date().toISOString(),
-					interval: 60
-				};
+			switch (true) {
+				case (command instanceof OCPPCommands.BootNotification):
+					this.log.info('Received Boot Notification');
+					this.client.info = {
+						connectors: [],
+						...command
+					};
+					return {
+						status: 'Accepted',
+						currentTime: new Date().toISOString(),
+						interval: 60
+					};
+				case (command instanceof OCPPCommands.Authorize):
+					this.log.info('Received Authorization Request');
+					return {
+						idTagInfo: {
+							status: 'Accepted'
+						}
+					};
+				case command instanceof OCPPCommands.StartTransaction:
+					this.log.info('Received Start transaction');
+					return {
+						transactionId: 1,
+						idTagInfo: {
+							status: 'Accepted'
+						}
+					};
+				case (command instanceof OCPPCommands.StopTransaction):
+					this.log.info('Received stop transaction');
+					return {
+						transactionId: 1,
+						idTagInfo: {
+							status: 'Accepted'
+						}
+					};
+				case (command instanceof OCPPCommands.Heartbeat):
+					this.log.info('Received heartbeat');
+					return {
+						currentTime: new Date().toISOString()
+					};
+				case (command instanceof OCPPCommands.StatusNotification):
+					this.log.info('Received Status Notification');
+					// client.info = client.info || {};
+					// client.info.connectors = client.info.connectors || [];
+
+					const connectorIndex = this.client.info.connectors.findIndex(item => command.connectorId === item.connectorId);
+					if (connectorIndex === -1) {
+						this.client.info.connectors.push({
+							...command
+						});
+					} else {
+						this.client.info.connectors[connectorIndex] = {
+							...command
+						};
+					}
+					return {};
+				default:
+					this.log.warn(`Command not implemented: ${JSON.stringify(command)}`);
 			}
 		}
 	}
