@@ -1,0 +1,100 @@
+{
+	"common": {
+		"name": "ocpp",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"zh-cn": "首次出版"
+			}
+		},
+		"title": "Open Charge Point Protocol",
+		"titleLang": {
+			"en": "Open Charge Point Protocol",
+			"de": "Ladepunktprotokoll öffnen",
+			"ru": "Протокол открытой точки зарядки",
+			"pt": "Protocolo de ponto de carga aberto",
+			"nl": "Open Laadpunt Protocol",
+			"fr": "Protocole de point de charge ouvert",
+			"it": "Protocollo punto di ricarica aperto",
+			"es": "Protocolo de punto de carga abierto",
+			"pl": "Otwórz protokół punktu ładowania",
+			"zh-cn": "开放充电点协议"
+		},
+		"desc": {
+			"en": "Adapter for OCPP 1.6",
+			"de": "Adapter für OCPP 1,6",
+			"ru": "Адаптер для OCPP 1.6",
+			"pt": "Adaptador para OCPP 1.6",
+			"nl": "Adapter voor OCPP 1.6",
+			"fr": "Adaptateur pour OCPP 1.6",
+			"it": "Adattatore per OCPP 1.6",
+			"es": "Adaptador para OCPP 1.6",
+			"pl": "Adapter do OCPP 1,6",
+			"zh-cn": "OCPP 1.6 适配器"
+		},
+		"authors": [
+			"foxriver76 <moritz.heusinger@gmail.com>"
+		],
+		"keywords": [
+			"wallbox",
+			"ocpp",
+			"energy"
+		],
+		"license": "MIT",
+		"platform": "Javascript/Node.js",
+		"main": "build/main.js",
+		"icon": "ocpp.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/foxriver76/ioBroker.ocpp/main/admin/ocpp.png",
+		"readme": "https://github.com/foxriver76/ioBroker.ocpp/blob/main/README.md",
+		"loglevel": "info",
+		"mode": "daemon",
+		"type": "energy",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "push",
+		"materialize": true,
+		"dependencies": [
+			{
+				"js-controller": ">=3.3.15"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}
