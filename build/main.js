@@ -33,8 +33,6 @@ class Ocpp extends utils.Adapter {
         });
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
-        // this.on('objectChange', this.onObjectChange.bind(this));
-        // this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
         this.clientTimeouts = {};
         this.knownClients = [];
@@ -60,6 +58,7 @@ class Ocpp extends utils.Adapter {
                 this.log.info(`New device connected: "${connection.url}"`);
                 // not known yet
                 this.knownClients.push(connection.url);
+                // on connection, ensure objects for this device are existing
                 await this.createDeviceObjects(connection.url);
                 // device is now connected
                 await this.setDeviceOnline(connection.url);
@@ -71,6 +70,10 @@ class Ocpp extends utils.Adapter {
                         connectors: [],
                         ...command
                     };
+                    // device booted, extend native to object
+                    await this.extendObjectAsync(connection.url, {
+                        native: command
+                    });
                     // we give 90 seconds to send next heartbeat
                     if (this.clientTimeouts[connection.url]) {
                         clearTimeout(this.clientTimeouts[connection.url]);
@@ -116,8 +119,10 @@ class Ocpp extends utils.Adapter {
                         currentTime: new Date().toISOString()
                     };
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification):
-                    this.log.info(`Received Status Notification from "${connection.url}"`);
-                    this.log.info(JSON.stringify(command));
+                    this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
+                    // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
+                    // set status state
+                    await this.setStateAsync(`${connection.url}.status`, command.status, true);
                     const connectorIndex = this.client.info.connectors.findIndex(item => command.connectorId === item.connectorId);
                     if (connectorIndex === -1) {
                         this.client.info.connectors.push({
@@ -190,11 +195,11 @@ class Ocpp extends utils.Adapter {
                 name: device
             },
             native: {}
-        });
+        }, { preserve: { common: ['name'] } });
         for (const obj of states_1.stateObjects) {
             const id = obj._id;
             obj._id = `${device}.${obj._id}`;
-            await this.extendObjectAsync(obj._id, obj);
+            await this.extendObjectAsync(obj._id, obj, { preserve: { common: ['name'] } });
             obj._id = id;
         }
     }
@@ -203,11 +208,11 @@ class Ocpp extends utils.Adapter {
      */
     async onUnload(callback) {
         try {
-            // Here you must clear all timeouts or intervals that may still be active
-            // clearTimeout(timeout1);
-            // clearTimeout(timeout2);
-            // ...
-            // clearInterval(interval1);
+            // clear all timeouts
+            for (const [device, timeout] of Object.entries(this.clientTimeouts)) {
+                await this.setStateAsync(`${device}.connected`, false, true);
+                clearTimeout(timeout);
+            }
             await this.setStateAsync('info.connection', '', true);
             callback();
         }
@@ -215,20 +220,6 @@ class Ocpp extends utils.Adapter {
             callback();
         }
     }
-    // If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-    // You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-    // /**
-    //  * Is called if a subscribed object changes
-    //  */
-    // private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
-    // 	if (obj) {
-    // 		// The object was changed
-    // 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-    // 	} else {
-    // 		// The object was deleted
-    // 		this.log.info(`object ${id} deleted`);
-    // 	}
-    // }
     /**
      * Is called if a subscribed state changes
      */
