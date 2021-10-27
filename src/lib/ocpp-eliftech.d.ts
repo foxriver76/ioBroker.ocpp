@@ -5,7 +5,7 @@ declare module 'ocpp-eliftech' {
 	}
 
 	export class CentralSystem {
-		onRequest: (command: OCPPCommands) => Promise<{ status: string; currentTime: string; interval: number } | void>;
+		onRequest: (client:any, command: OCPPCommands) => Promise<{ status: string; currentTime: string; interval: number } | void>;
 		listen(number: number)
 	}
 }

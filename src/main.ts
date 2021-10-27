@@ -36,7 +36,10 @@ class Ocpp extends utils.Adapter {
 
 		this.log.info(`Server listening on port ${this.config.port}`);
 
-		server.onRequest = async (command: OCPPCommands) => {
+		server.onRequest = async (client:any, command: OCPPCommands) => {
+			const connection = client.connection;
+			this.log.info(`New connection from ${connection.url}`);
+
 			this.log.warn(`Command: ${JSON.stringify(command)}`);
 			// Handle different commands
 			if (command instanceof OCPPCommands.BootNotification) {

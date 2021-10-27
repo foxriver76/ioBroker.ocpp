@@ -49,7 +49,9 @@ class Ocpp extends utils.Adapter {
         const server = new ocpp_eliftech_1.CentralSystem();
         server.listen(this.config.port);
         this.log.info(`Server listening on port ${this.config.port}`);
-        server.onRequest = async (command) => {
+        server.onRequest = async (client, command) => {
+            const connection = client.connection;
+            this.log.info(`New connection from ${connection.url}`);
             this.log.warn(`Command: ${JSON.stringify(command)}`);
             // Handle different commands
             if (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification) {
