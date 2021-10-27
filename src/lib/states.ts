@@ -22,5 +22,41 @@ export const stateObjects: ioBroker.Object[] = [
 			read: true
 		},
 		native: {}
-	}
+	},
+	{
+		_id: 'activeTransactionId',
+		type: 'state',
+		common: {
+			name: 'Active Transaction ID',
+			type: 'string',
+			role: 'text',
+			write: false,
+			read: true
+		},
+		native: {}
+	},
+	{
+		_id: 'connectorId',
+		type: 'state',
+		common: {
+			name: 'Connector ID',
+			type: 'string',
+			role: 'text',
+			write: false,
+			read: true
+		},
+		native: {}
+	},
+	{
+		_id: 'enabled',
+		type: 'state',
+		common: {
+			name: 'Charger enabled',
+			type: 'boolean',
+			role: 'switch.power',
+			write: true,
+			read: true
+		},
+		native: {}
+	},
 ];
