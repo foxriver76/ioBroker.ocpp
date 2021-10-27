@@ -7,7 +7,8 @@ declare module 'ocpp-eliftech' {
 		static Heartbeat: any;
 		static StopTransaction: any;
 		static StatusNotification: any;
-		connectorId: any;
+		connectorId: number;
+		status: string;
 	}
 
 	export class CentralSystem {

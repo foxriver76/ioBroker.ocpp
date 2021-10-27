@@ -10,5 +10,17 @@ export const stateObjects: ioBroker.Object[] = [
 			read: true
 		},
 		native: {}
+	},
+	{
+		_id: 'status',
+		type: 'state',
+		common: {
+			name: 'Current status of wallbox',
+			type: 'string',
+			role: 'indicator.status',
+			write: false,
+			read: true
+		},
+		native: {}
 	}
 ];
