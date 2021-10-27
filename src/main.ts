@@ -20,6 +20,9 @@ class Ocpp extends utils.Adapter {
 		this.on('stateChange', this.onStateChange.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 
+		// subscribe own states
+		this.subscribeStates('*');
+
 		this.clientTimeouts = {};
 		this.knownClients = [];
 
@@ -124,6 +127,7 @@ class Ocpp extends utils.Adapter {
 				case (command instanceof OCPPCommands.StatusNotification):
 					this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
 					// {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
+					await this.setStateChangedAsync(`${connection.url}.connectorId`, command.connectorId, true);
 
 					// set status state
 					await this.setStateAsync(`${connection.url}.status`, command.status, true);
@@ -236,13 +240,12 @@ class Ocpp extends utils.Adapter {
 	 * Is called if a subscribed state changes
 	 */
 	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-		} else {
-			// The state was deleted
-			this.log.info(`state ${id} deleted`);
+		if (!state || state.ack) {
+			// if state deleted or already acknowledged
+			return;
 		}
+
+		// handle state change
 	}
 }
 
