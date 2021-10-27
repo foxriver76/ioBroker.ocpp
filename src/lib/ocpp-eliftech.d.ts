@@ -12,6 +12,7 @@ declare module 'ocpp-eliftech' {
 		static RemoteStartTransaction: any;
 		static RemoteStopTransaction: any;
 		static MeterValues: any;
+		meterValue: any;
 	}
 
 	export class CentralSystem {

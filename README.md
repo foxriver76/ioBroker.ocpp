@@ -25,6 +25,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+* (foxriver76) we added the meterValue state
+
 ### 0.0.4 (2021-10-27)
 * (foxriver76) we can now enable/disable a charger
 

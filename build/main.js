@@ -144,7 +144,10 @@ class Ocpp extends utils.Adapter {
                     return {};
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.MeterValues):
                     this.log.info(`Received MeterValues from "${connection.url}"`);
-                    this.log.info(JSON.stringify(command));
+                    // {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
+                    // "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
+                    // "measurand":"Energy.Active.Import.Register","unit":"Wh"}]}]}
+                    await this.setStateAsync(`${connection.url}.meterValue`, parseFloat(command.meterValue[0].sampledValue[0].value), true);
                     return {};
                 default:
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
@@ -269,7 +272,12 @@ class Ocpp extends utils.Adapter {
                     transactionId: connectorId
                 });
             }
-            await this.clients[idArr[2]].connection.send(command);
+            try {
+                await this.clients[idArr[2]].connection.send(command);
+            }
+            catch (e) {
+                this.log.error(`Cannot execute command "${idArr[4]}" for "${idArr[3]}": ${e.message}`);
+            }
         }
     }
 }

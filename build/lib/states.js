@@ -14,6 +14,8 @@ exports.stateObjects = [
         },
         native: {}
     },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     {
         _id: 'status',
         type: 'state',
@@ -22,7 +24,18 @@ exports.stateObjects = [
             type: 'string',
             role: 'indicator.status',
             write: false,
-            read: true
+            read: true,
+            states: [
+                'Available',
+                'Preparing',
+                'Charging',
+                'SuspendedEVSE',
+                'SuspendedEV',
+                'Finishing',
+                'Reserved',
+                'Unavailable',
+                'Faulted'
+            ]
         },
         native: {}
     },
@@ -50,5 +63,18 @@ exports.stateObjects = [
         },
         native: {}
     },
+    {
+        _id: 'meterValue',
+        type: 'state',
+        common: {
+            name: 'Power meter value',
+            type: 'number',
+            role: 'value.power',
+            write: false,
+            read: true,
+            unit: 'Wh'
+        },
+        native: {}
+    }
 ];
 //# sourceMappingURL=states.js.map

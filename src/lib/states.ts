@@ -11,6 +11,8 @@ export const stateObjects: ioBroker.Object[] = [
 		},
 		native: {}
 	},
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	{
 		_id: 'status',
 		type: 'state',
@@ -19,7 +21,18 @@ export const stateObjects: ioBroker.Object[] = [
 			type: 'string',
 			role: 'indicator.status',
 			write: false,
-			read: true
+			read: true,
+			states: [
+				'Available',
+				'Preparing',
+				'Charging',
+				'SuspendedEVSE',
+				'SuspendedEV',
+				'Finishing',
+				'Reserved',
+				'Unavailable',
+				'Faulted'
+			]
 		},
 		native: {}
 	},
@@ -47,4 +60,17 @@ export const stateObjects: ioBroker.Object[] = [
 		},
 		native: {}
 	},
+	{
+		_id: 'meterValue',
+		type: 'state',
+		common: {
+			name: 'Power meter value',
+			type: 'number',
+			role: 'value.power',
+			write: false,
+			read: true,
+			unit: 'Wh'
+		},
+		native: {}
+	}
 ];
