@@ -118,7 +118,7 @@ class Ocpp extends utils.Adapter {
 						}
 					};
 				case (command instanceof OCPPCommands.Heartbeat):
-					this.log.info(`Received heartbeat from "${connection.url}"`);
+					this.log.debug(`Received heartbeat from "${connection.url}"`);
 
 					// we give 90 seconds to send next heartbeat
 					if (this.clientTimeouts[connection.url]) {
@@ -148,6 +148,10 @@ class Ocpp extends utils.Adapter {
 							...command
 						};
 					}
+					return {};
+				case (command instanceof OCPPCommands.MeterValues):
+					this.log.info(`Received MeterValues from "${connection.url}"`);
+					this.log.info(JSON.stringify(command));
 					return {};
 				default:
 					this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
