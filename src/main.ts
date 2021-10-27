@@ -101,6 +101,7 @@ class Ocpp extends utils.Adapter {
 					};
 				case command instanceof OCPPCommands.StartTransaction:
 					this.log.info(`Received Start transaction from "${connection.url}"`);
+					await this.setStateAsync(`${connection.url}.enabled`, true, true);
 					return {
 						transactionId: 1,
 						idTagInfo: {
@@ -109,6 +110,7 @@ class Ocpp extends utils.Adapter {
 					};
 				case (command instanceof OCPPCommands.StopTransaction):
 					this.log.info(`Received stop transaction from "${connection.url}"`);
+					await this.setStateAsync(`${connection.url}.enabled`, false, true);
 					return {
 						transactionId: 1,
 						idTagInfo: {
@@ -269,7 +271,7 @@ class Ocpp extends utils.Adapter {
 				// enable
 				command = new OCPPCommands.RemoteStartTransaction({
 					connectorId: connectorId,
-					idTag: connectorId
+					idTag: connectorId.toString()
 				});
 			} else {
 				// disable
