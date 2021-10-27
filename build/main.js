@@ -241,6 +241,11 @@ class Ocpp extends utils.Adapter {
         }
         // handle state change
         const idArr = id.split('.');
+        const connState = await this.getStateAsync(`${idArr[2]}.connected`);
+        if (!(connState === null || connState === void 0 ? void 0 : connState.val)) {
+            this.log.warn(`Cannot control "${idArr[2]}", because not connected`);
+            return;
+        }
         if (idArr[3] === 'enabled') {
             // enable/disable charger
             // we need connectorId
