@@ -27,18 +27,6 @@ exports.stateObjects = [
         native: {}
     },
     {
-        _id: 'activeTransactionId',
-        type: 'state',
-        common: {
-            name: 'Active Transaction ID',
-            type: 'string',
-            role: 'text',
-            write: false,
-            read: true
-        },
-        native: {}
-    },
-    {
         _id: 'connectorId',
         type: 'state',
         common: {
