@@ -70,8 +70,7 @@
 		]
 	},
 	"native": {
-		"option1": true,
-		"option2": "42"
+		"port": 9220
 	},
 	"objects": [],
 	"instanceObjects": [

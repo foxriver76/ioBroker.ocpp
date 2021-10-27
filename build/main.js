@@ -45,8 +45,10 @@ class Ocpp extends utils.Adapter {
      * Is called when databases are connected and adapter received configuration.
      */
     async onReady() {
+        this.log.info('Starting OCPP Server');
         const server = new ocpp_eliftech_1.CentralSystem();
-        server.listen(9220);
+        server.listen(this.config.port);
+        this.log.info(`Server listening on port ${this.config.port}`);
         server.onRequest = async (command) => {
             this.log.warn(`Command: ${JSON.stringify(command)}`);
             // Handle different commands

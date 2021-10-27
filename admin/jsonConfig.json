@@ -1,0 +1,24 @@
+{
+  "type": "panel",
+  "i18n": {
+    "port": {
+      "en": "Server port",
+      "de": "Server Port",
+      "ru": "Порт сервера",
+      "pt": "Porta do servidor",
+      "nl": "Server poort",
+      "fr": "Port de serveur",
+      "it": "Porta del server",
+      "es": "Puerto de servicio",
+      "pl": "Port serwera",
+      "zh-cn": "服务器端口"
+    }
+  },
+  "items": {
+    "port": {
+      "type": "number",
+      "label": "port",
+      "min": 0
+    }
+  }
+}
