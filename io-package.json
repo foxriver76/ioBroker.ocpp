@@ -19,7 +19,7 @@
 		"title": "Open Charge Point Protocol",
 		"titleLang": {
 			"en": "Open Charge Point Protocol",
-			"de": "Ladepunktprotokoll öffnen",
+			"de": "Offenes Ladepunktprotokoll",
 			"ru": "Протокол открытой точки зарядки",
 			"pt": "Protocolo de ponto de carga aberto",
 			"nl": "Open Laadpunt Protocol",
@@ -60,6 +60,9 @@
 		"mode": "daemon",
 		"type": "energy",
 		"compact": true,
+		"adminUI": {
+			"config": "json"
+		},
 		"connectionType": "local",
 		"dataSource": "push",
 		"materialize": true,
