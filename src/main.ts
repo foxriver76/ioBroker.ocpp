@@ -10,6 +10,7 @@ class Ocpp extends utils.Adapter {
 	private client: { info: { connectors: any[] } };
 	private readonly clientTimeouts: Record<string, NodeJS.Timeout>;
 	private knownClients: string[];
+	private readonly clients: Record<string, any>;
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -25,6 +26,7 @@ class Ocpp extends utils.Adapter {
 
 		this.clientTimeouts = {};
 		this.knownClients = [];
+		this.clients = {};
 
 		this.client = {
 			info: {
@@ -49,6 +51,8 @@ class Ocpp extends utils.Adapter {
 
 		server.onRequest = async (client:any, command: OCPPCommands) => {
 			const connection = client.connection;
+
+			this.clients[connection.url] = client;
 
 			// we received a new command, first check if the client is known to us
 			if (this.knownClients.indexOf(connection.url) === -1) {
@@ -239,7 +243,7 @@ class Ocpp extends utils.Adapter {
 	/**
 	 * Is called if a subscribed state changes
 	 */
-	private static onStateChange(id: string, state: ioBroker.State | null | undefined): void {
+	private async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
 		if (!state || state.ack) {
 			// if state deleted or already acknowledged
 			return;
@@ -250,6 +254,30 @@ class Ocpp extends utils.Adapter {
 
 		if (idArr[3] === 'enabled') {
 			// enable/disable charger
+			// we need connectorId
+			const connIdState = await this.getStateAsync(`${idArr[2]}.connectorId`);
+
+			if (!connIdState?.val) {
+				this.log.warn(`No connectorId for "${idArr[2]}"`);
+				return;
+			}
+
+			const connectorId = connIdState.val;
+
+			let command;
+			if (state.val) {
+				// enable
+				command = new OCPPCommands.RemoteStartTransaction({
+					connectorId: connectorId,
+					idTag: connectorId
+				});
+			} else {
+				// disable
+				command = new OCPPCommands.RemoteStopTransaction({
+					transactionId: connectorId
+				});
+			}
+			await this.clients[idArr[2]].connection.send(command);
 		}
 	}
 }

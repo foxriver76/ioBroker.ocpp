@@ -32,12 +32,13 @@ class Ocpp extends utils.Adapter {
             name: 'ocpp',
         });
         this.on('ready', this.onReady.bind(this));
-        this.on('stateChange', Ocpp.onStateChange.bind(this));
+        this.on('stateChange', this.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
         // subscribe own states
         this.subscribeStates('*');
         this.clientTimeouts = {};
         this.knownClients = [];
+        this.clients = {};
         this.client = {
             info: {
                 connectors: []
@@ -55,6 +56,7 @@ class Ocpp extends utils.Adapter {
         this.log.info(`Server listening on port ${port}`);
         server.onRequest = async (client, command) => {
             const connection = client.connection;
+            this.clients[connection.url] = client;
             // we received a new command, first check if the client is known to us
             if (this.knownClients.indexOf(connection.url) === -1) {
                 this.log.info(`New device connected: "${connection.url}"`);
@@ -226,7 +228,7 @@ class Ocpp extends utils.Adapter {
     /**
      * Is called if a subscribed state changes
      */
-    static onStateChange(id, state) {
+    async onStateChange(id, state) {
         if (!state || state.ack) {
             // if state deleted or already acknowledged
             return;
@@ -235,6 +237,28 @@ class Ocpp extends utils.Adapter {
         const idArr = id.split('.');
         if (idArr[3] === 'enabled') {
             // enable/disable charger
+            // we need connectorId
+            const connIdState = await this.getStateAsync(`${idArr[2]}.connectorId`);
+            if (!(connIdState === null || connIdState === void 0 ? void 0 : connIdState.val)) {
+                this.log.warn(`No connectorId for "${idArr[2]}"`);
+                return;
+            }
+            const connectorId = connIdState.val;
+            let command;
+            if (state.val) {
+                // enable
+                command = new ocpp_eliftech_1.OCPPCommands.RemoteStartTransaction({
+                    connectorId: connectorId,
+                    idTag: connectorId
+                });
+            }
+            else {
+                // disable
+                command = new ocpp_eliftech_1.OCPPCommands.RemoteStopTransaction({
+                    transactionId: connectorId
+                });
+            }
+            await this.clients[idArr[2]].connection.send(command);
         }
     }
 }

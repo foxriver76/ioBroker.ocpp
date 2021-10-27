@@ -9,6 +9,8 @@ declare module 'ocpp-eliftech' {
 		static StatusNotification: any;
 		connectorId: number;
 		status: string;
+		static RemoteStartTransaction: any;
+		static RemoteStopTransaction: any;
 	}
 
 	export class CentralSystem {
