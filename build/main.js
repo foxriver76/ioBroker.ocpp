@@ -74,6 +74,8 @@ class Ocpp extends utils.Adapter {
                 clearTimeout(this.clientTimeouts[connection.url]);
             }
             this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
+            // for debug purposes log whole command here
+            this.log.debug(JSON.stringify(command));
             switch (true) {
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification):
                     this.log.info(`Received boot notification from "${connection.url}"`);
@@ -100,7 +102,7 @@ class Ocpp extends utils.Adapter {
                     };
                 case command instanceof ocpp_eliftech_1.OCPPCommands.StartTransaction:
                     this.log.info(`Received Start transaction from "${connection.url}"`);
-                    await this.setStateAsync(`${connection.url}.enabled`, true, true);
+                    await this.setStateAsync(`${connection.url}.transactionActive`, true, true);
                     return {
                         transactionId: 1,
                         idTagInfo: {
@@ -109,7 +111,7 @@ class Ocpp extends utils.Adapter {
                     };
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.StopTransaction):
                     this.log.info(`Received stop transaction from "${connection.url}"`);
-                    await this.setStateAsync(`${connection.url}.enabled`, false, true);
+                    await this.setStateAsync(`${connection.url}.transactionActive`, false, true);
                     return {
                         transactionId: 1,
                         idTagInfo: {
@@ -283,15 +285,15 @@ class Ocpp extends utils.Adapter {
             this.log.warn(`Cannot control "${idArr[2]}", because not connected`);
             return;
         }
-        if (idArr[3] === 'enabled') {
-            // enable/disable charger
-            // we need connectorId
-            const connIdState = await this.getStateAsync(`${idArr[2]}.connectorId`);
-            if (!(connIdState === null || connIdState === void 0 ? void 0 : connIdState.val)) {
-                this.log.warn(`No connectorId for "${idArr[2]}"`);
-                return;
-            }
-            const connectorId = connIdState.val;
+        // we need connectorId
+        const connIdState = await this.getStateAsync(`${idArr[2]}.connectorId`);
+        if (!(connIdState === null || connIdState === void 0 ? void 0 : connIdState.val)) {
+            this.log.warn(`No connectorId for "${idArr[2]}"`);
+            return;
+        }
+        const connectorId = connIdState.val;
+        if (idArr[3] === 'transactionActive') {
+            // enable/disable transaction
             let command;
             if (state.val) {
                 // enable
@@ -308,6 +310,17 @@ class Ocpp extends utils.Adapter {
             }
             try {
                 await this.clients[idArr[2]].connection.send(command);
+            }
+            catch (e) {
+                this.log.error(`Cannot execute command "${idArr[4]}" for "${idArr[3]}": ${e.message}`);
+            }
+        }
+        else if (idArr[3] === 'availability') {
+            try {
+                await this.clients[idArr[2]].connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeAvailability({
+                    connectorId: connectorId,
+                    type: state.val ? 'Operative' : 'Inoperative'
+                }));
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${idArr[4]}" for "${idArr[3]}": ${e.message}`);

@@ -13,6 +13,7 @@ declare module 'ocpp-eliftech' {
 		static RemoteStopTransaction: any;
 		static TriggerMessage: any;
 		static MeterValues: any;
+		static ChangeAvailability: any;
 		meterValue: any;
 	}
 

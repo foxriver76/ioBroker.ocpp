@@ -49,10 +49,10 @@ export const stateObjects: ioBroker.Object[] = [
 		native: {}
 	},
 	{
-		_id: 'enabled',
+		_id: 'transactionActive',
 		type: 'state',
 		common: {
-			name: 'Charger enabled',
+			name: 'Transaction active',
 			type: 'boolean',
 			role: 'switch.power',
 			write: true,
@@ -70,6 +70,18 @@ export const stateObjects: ioBroker.Object[] = [
 			write: false,
 			read: true,
 			unit: 'Wh'
+		},
+		native: {}
+	},
+	{
+		_id: 'availability',
+		type: 'state',
+		common: {
+			name: 'Power meter value',
+			type: 'boolean',
+			role: 'switch.power',
+			write: true,
+			read: true
 		},
 		native: {}
 	}

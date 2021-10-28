@@ -104,7 +104,8 @@
         "materialize": true,
         "dependencies": [
             {
-                "js-controller": ">=3.3.15"
+                "js-controller": ">=3.3.15",
+                "admin": ">=5.1.0"
             }
         ]
     },
