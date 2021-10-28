@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "ocpp",
-        "version": "0.0.5",
+        "version": "0.0.6",
         "news": {
+            "0.0.6": {
+                "en": "we fixed name of availability state\nwe fixed unnecessary comma in `info.connection` state",
+                "de": "Wir haben den Namen des Verfügbarkeitsstatus festgelegt\nWir haben unnötiges Komma im Status `info.connection` behoben",
+                "ru": "мы исправили название состояния доступности\nмы исправили ненужную запятую в состоянии `info.connection`",
+                "pt": "corrigimos o nome do estado de disponibilidade\ncorrigimos vírgulas desnecessárias no estado `info.connection`",
+                "nl": "we hebben de naam van de beschikbaarheidsstatus vastgesteld\nwe hebben onnodige komma's gerepareerd in de status 'info.connection'",
+                "fr": "nous avons fixé le nom de l'état de disponibilité\nnous avons corrigé les virgules inutiles dans l'état `info.connection`",
+                "it": "abbiamo fissato il nome dello stato di disponibilità\nabbiamo corretto la virgola non necessaria nello stato `info.connection`",
+                "es": "fijamos el nombre del estado de disponibilidad\nArreglamos una coma innecesaria en el estado `info.connection`",
+                "pl": "naprawiliśmy nazwę stanu dostępności\nnaprawiliśmy niepotrzebny przecinek w stanie `info.connection`",
+                "zh-cn": "我们固定了可用性状态的名称\n我们修复了 `info.connection` 状态中不必要的逗号"
+            },
             "0.0.5": {
                 "en": "we added the meterValue state\nwe added state to control availability",
                 "de": "wir haben den meterValue-Zustand hinzugefügt\nWir haben den Status hinzugefügt, um die Verfügbarkeit zu kontrollieren",
