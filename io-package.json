@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "ocpp",
-        "version": "0.0.4",
+        "version": "0.0.5",
         "news": {
+            "0.0.5": {
+                "en": "we added the meterValue state\nwe added state to control availability",
+                "de": "wir haben den meterValue-Zustand hinzugefügt\nWir haben den Status hinzugefügt, um die Verfügbarkeit zu kontrollieren",
+                "ru": "мы добавили состояние meterValue\nмы добавили состояние для контроля доступности",
+                "pt": "adicionamos o estado meterValue\nadicionamos estado para controlar a disponibilidade",
+                "nl": "we hebben de meterValue-status toegevoegd\nwe hebben status toegevoegd om de beschikbaarheid te controleren",
+                "fr": "nous avons ajouté l'état meterValue\nnous avons ajouté l'état pour contrôler la disponibilité",
+                "it": "abbiamo aggiunto lo stato meterValue\nabbiamo aggiunto lo stato per controllare la disponibilità",
+                "es": "agregamos el estado meterValue\nagregamos estado para controlar la disponibilidad",
+                "pl": "dodaliśmy stan meterValue\ndodaliśmy stan do kontroli dostępności",
+                "zh-cn": "我们添加了 meterValue 状态\n我们添加了状态来控制可用性"
+            },
             "0.0.4": {
                 "en": "we can now enable/disable a charger",
                 "de": "wir können jetzt ein Ladegerät aktivieren/deaktivieren",
