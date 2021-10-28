@@ -68,6 +68,13 @@ class Ocpp extends utils.Adapter {
 				await this.setDeviceOnline(connection.url);
 			}
 
+			// we give 90 seconds to send next heartbeat - every response can count as heartbeat according to OCPP
+			if (this.clientTimeouts[connection.url]) {
+				clearTimeout(this.clientTimeouts[connection.url]);
+			}
+
+			this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
+
 			switch (true) {
 				case (command instanceof OCPPCommands.BootNotification):
 					this.log.info(`Received boot notification from "${connection.url}"`);
@@ -81,18 +88,11 @@ class Ocpp extends utils.Adapter {
 						native: command
 					});
 
-					// we give 90 seconds to send next heartbeat
-					if (this.clientTimeouts[connection.url]) {
-						clearTimeout(this.clientTimeouts[connection.url]);
-					}
-
-					this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
-
 					// we are requesting heartbeat every 60 seconds
 					return {
 						status: 'Accepted',
 						currentTime: new Date().toISOString(),
-						interval: 60
+						interval: 55
 					};
 				case (command instanceof OCPPCommands.Authorize):
 					this.log.info(`Received Authorization Request from "${connection.url}"`);
@@ -121,13 +121,6 @@ class Ocpp extends utils.Adapter {
 					};
 				case (command instanceof OCPPCommands.Heartbeat):
 					this.log.debug(`Received heartbeat from "${connection.url}"`);
-
-					// we give 90 seconds to send next heartbeat
-					if (this.clientTimeouts[connection.url]) {
-						clearTimeout(this.clientTimeouts[connection.url]);
-					}
-
-					this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
 
 					return {
 						currentTime: new Date().toISOString()
