@@ -25,6 +25,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+* (foxriver76) we fixed name of availability state
+* (foxriver76) we fixed unnecessary comma in `info.connection` state
+
 ### 0.0.5 (2021-10-28)
 * (foxriver76) we added the meterValue state
 * (foxriver76) we added state to control availability

@@ -50,6 +50,8 @@ class Ocpp extends utils.Adapter {
         // subscribe own states
         this.subscribeStates('*');
         this.log.info('Starting OCPP Server');
+        // reset connection state
+        await this.setStateAsync('info.connection', '', true);
         const server = new ocpp_eliftech_1.CentralSystem();
         const port = await this.getPortAsync(this.config.port);
         server.listen(port);
@@ -79,10 +81,6 @@ class Ocpp extends utils.Adapter {
             switch (true) {
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification):
                     this.log.info(`Received boot notification from "${connection.url}"`);
-                    this.client.info = {
-                        connectors: [],
-                        ...command
-                    };
                     // device booted, extend native to object
                     await this.extendObjectAsync(connection.url, {
                         native: command
@@ -129,17 +127,6 @@ class Ocpp extends utils.Adapter {
                     await this.setStateChangedAsync(`${connection.url}.connectorId`, command.connectorId, true);
                     // set status state
                     await this.setStateAsync(`${connection.url}.status`, command.status, true);
-                    const connectorIndex = this.client.info.connectors.findIndex(item => command.connectorId === item.connectorId);
-                    if (connectorIndex === -1) {
-                        this.client.info.connectors.push({
-                            ...command
-                        });
-                    }
-                    else {
-                        this.client.info.connectors[connectorIndex] = {
-                            ...command
-                        };
-                    }
                     return {};
                 case (command instanceof ocpp_eliftech_1.OCPPCommands.MeterValues):
                     this.log.info(`Received MeterValues from "${connection.url}"`);
@@ -203,7 +190,7 @@ class Ocpp extends utils.Adapter {
         }
         await this.setStateAsync(`${device}.connected`, false, true);
         const connState = await this.getStateAsync('info.connection');
-        if (typeof (connState === null || connState === void 0 ? void 0 : connState.val) === 'string') {
+        if ((connState === null || connState === void 0 ? void 0 : connState.val) && typeof connState.val === 'string') {
             // get devices and convert them to an array
             const devices = connState.val.split(',');
             const idx = devices.indexOf(device);
@@ -222,7 +209,8 @@ class Ocpp extends utils.Adapter {
         await this.setStateAsync(`${device}.connected`, true, true);
         const connState = await this.getStateAsync('info.connection');
         if (typeof (connState === null || connState === void 0 ? void 0 : connState.val) === 'string') {
-            const devices = connState.val.split(',');
+            // if empty string make empty array
+            const devices = connState.val ? connState.val.split(',') : [];
             if (devices.indexOf(device) === -1) {
                 // device not yet in array
                 devices.push(device);

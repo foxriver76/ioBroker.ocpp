@@ -80,7 +80,7 @@ exports.stateObjects = [
         _id: 'availability',
         type: 'state',
         common: {
-            name: 'Power meter value',
+            name: 'Switch availability',
             type: 'boolean',
             role: 'switch.power',
             write: true,
