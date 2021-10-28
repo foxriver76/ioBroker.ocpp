@@ -44,7 +44,7 @@ exports.stateObjects = [
         type: 'state',
         common: {
             name: 'Connector ID',
-            type: 'string',
+            type: 'number',
             role: 'text',
             write: false,
             read: true

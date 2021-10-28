@@ -62,6 +62,8 @@ class Ocpp extends utils.Adapter {
                 this.log.info(`New device connected: "${connection.url}"`);
                 // not known yet
                 this.knownClients.push(connection.url);
+                // request all important values at start, do not await this
+                this.requestNewClient(connection, command);
                 // on connection, ensure objects for this device are existing
                 await this.createDeviceObjects(connection.url);
                 // device is now connected
@@ -153,6 +155,43 @@ class Ocpp extends utils.Adapter {
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }
         };
+    }
+    /**
+     * Request BootNotification, StatusNotification and MeterValues
+     * @param connection connection object
+     * @param command command object
+     * @private
+     */
+    async requestNewClient(connection, command) {
+        // we want to request boot notification and status and meter values to ahve everything up to date again
+        try {
+            if (!(command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification)) {
+                // it's not a boot notification so request
+                this.log.info(`Requesting BootNotification from "${connection.url}"`);
+                await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
+                    requestedMessage: 'BootNotification'
+                }));
+                await this.wait(1000);
+            }
+            if (!(command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification)) {
+                // it's not a status notification so request
+                this.log.info(`Requesting StatusNotification from "${connection.url}"`);
+                await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
+                    requestedMessage: 'StatusNotification'
+                }));
+                await this.wait(1000);
+            }
+            if (!(command instanceof ocpp_eliftech_1.OCPPCommands.MeterValues)) {
+                this.log.info(`Requesting MeterValues from "${connection.url}"`);
+                // it's not MeterValues, so request
+                await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
+                    requestedMessage: 'MeterValues'
+                }));
+            }
+        }
+        catch (e) {
+            this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
+        }
     }
     /**
      * Is called if client timed out, sets connection to offline
@@ -279,6 +318,16 @@ class Ocpp extends utils.Adapter {
                 this.log.error(`Cannot execute command "${idArr[4]}" for "${idArr[3]}": ${e.message}`);
             }
         }
+    }
+    /**
+     * Waits for given ms
+     * @param ms milliseconds to wait
+     * @private
+     */
+    async wait(ms) {
+        return new Promise(resolve => {
+            setTimeout(() => resolve(), ms);
+        });
     }
 }
 if (require.main !== module) {
