@@ -313,12 +313,40 @@ class Ocpp extends utils.Adapter {
 			let command;
 			if (state.val) {
 				// enable
-				command = new OCPPCommands.RemoteStartTransaction({
+				const cmdObj: Record<string, any> = {
 					connectorId: connectorId,
-					idTag: connectorId.toString()
-				});
+					idTag: connectorId.toString(),
+				}
+
+				const limitState = await this.getStateAsync(`${idArr[3]}.chargeLimit`);
+
+				if (limitState?.val) {
+					cmdObj.chargingProfile = {
+						chargingProfileId: 1,
+						stackLevel: 1,
+						chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
+						chargingProfileKind: 'Recurring',
+						recurrencyKind: 'Daily',
+						chargingSchedule: {
+							'duration': 86400, // 24 hours
+							'startSchedule': '2013-01-01T00:00Z',
+							'chargingRateUnit': 'W', // Ampere or Watt
+							'chargingSchedulePeriod': [
+								{
+									startPeriod: 0, // up from 00:00 h (whole day)
+									limit:  limitState.val // e.g. 12 for 12 A
+								}
+							],
+							// minChargingRate: 12 // if needed we add it
+						}
+					}
+				}
+
+				this.log.debug(`Sending RemoteStartTransaction for ${idArr[2]}: ${JSON.stringify(cmdObj)}`);
+				command = new OCPPCommands.RemoteStartTransaction(cmdObj);
 			} else {
 				// disable
+				this.log.debug(`Sending RemoteStopTransaction for ${idArr[2]}`);
 				command = new OCPPCommands.RemoteStopTransaction({
 					transactionId: connectorId
 				});
@@ -326,16 +354,45 @@ class Ocpp extends utils.Adapter {
 			try {
 				await this.clients[idArr[2]].connection.send(command);
 			} catch (e: any) {
-				this.log.error(`Cannot execute command "${idArr[4]}" for "${idArr[3]}": ${e.message}`);
+				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
 			}
 		} else if (idArr[3] === 'availability') {
 			try {
+				this.log.debug(`Sending ChangeAvailability for ${idArr[2]}: ${state.val ? 'Operative' : 'Inoperative'}`);
 				await this.clients[idArr[2]].connection.send(new OCPPCommands.ChangeAvailability({
 					connectorId: connectorId,
 					type: state.val ? 'Operative' : 'Inoperative'
 				}));
 			} catch (e: any) {
-				this.log.error(`Cannot execute command "${idArr[4]}" for "${idArr[3]}": ${e.message}`);
+				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
+			}
+		} else if(idArr[3] === 'chargeLimit') {
+			try {
+				this.log.debug(`Sending SetChargingProfile for ${idArr[2]}`);
+				await this.clients[idArr[2]].connection.send(new OCPPCommands.SetChargingProfile({
+					connectorId: connectorId,
+					csChargingProfiles: {
+						chargingProfileId: 1,
+						stackLevel: 1,
+						chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
+						chargingProfileKind: 'Recurring',
+						recurrencyKind: 'Daily',
+						chargingSchedule: {
+							'duration': 86400, // 24 hours
+							'startSchedule': '2013-01-01T00:00Z',
+							'chargingRateUnit': 'W', // Ampere or Watt
+							'chargingSchedulePeriod': [
+								{
+									startPeriod: 0, // up from 00:00 h (whole day)
+									limit: state.val // e.g. 12 for 12 A
+								}
+							],
+							// minChargingRate: 12 // if needed we add it
+						}
+					}
+				}));
+			} catch (e: any) {
+				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
 			}
 		}
 	}

@@ -14,6 +14,7 @@ declare module 'ocpp-eliftech' {
 		static TriggerMessage: any;
 		static MeterValues: any;
 		static ChangeAvailability: any;
+		static SetChargingProfile: any;
 		meterValue: any;
 	}
 
