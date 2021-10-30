@@ -324,7 +324,7 @@ class Ocpp extends utils.Adapter {
 					cmdObj.chargingProfile = {
 						chargingProfileId: 1,
 						stackLevel: 1,
-						chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
+						chargingProfilePurpose: 'TxProfile', // only this value is allowed for RemoteStart
 						chargingProfileKind: 'Recurring',
 						recurrencyKind: 'Daily',
 						chargingSchedule: {

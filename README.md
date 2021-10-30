@@ -25,6 +25,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
+### 0.0.7 (2021-10-30)
+* (foxriver76) added possibility to limit the charging process to given Wh if supported by ChargePoint
+
 ### 0.0.6 (2021-10-28)
 * (foxriver76) we fixed name of availability state
 * (foxriver76) we fixed unnecessary comma in `info.connection` state

@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "ocpp",
-        "version": "0.0.6",
+        "version": "0.0.7",
         "news": {
+            "0.0.7": {
+                "en": "added possibility to limit the charging process to given Wh if supported by ChargePoint",
+                "de": "Möglichkeit hinzugefügt, den Ladevorgang auf eine bestimmte Wh zu begrenzen, wenn von ChargePoint unterstützt",
+                "ru": "добавлена возможность ограничить процесс зарядки заданным Wh, если поддерживается ChargePoint",
+                "pt": "possibilidade adicional de limitar o processo de cobrança a dado Wh, se compatível com ChargePoint",
+                "nl": "mogelijkheid toegevoegd om het laadproces te beperken tot bepaalde Wh indien ondersteund door ChargePoint",
+                "fr": "possibilité supplémentaire de limiter le processus de charge à un Wh donné si pris en charge par ChargePoint",
+                "it": "aggiunta possibilità di limitare il processo di ricarica a un dato Wh se supportato da ChargePoint",
+                "es": "posibilidad adicional de limitar el proceso de carga a un Wh dado si es compatible con ChargePoint",
+                "pl": "dodano możliwość ograniczenia procesu ładowania do podanej Wh, jeśli jest obsługiwane przez ChargePoint",
+                "zh-cn": "如果 ChargePoint 支持，则增加了将充电过程限制为给定 Wh 的可能性"
+            },
             "0.0.6": {
                 "en": "we fixed name of availability state\nwe fixed unnecessary comma in `info.connection` state",
                 "de": "Wir haben den Namen des Verfügbarkeitsstatus festgelegt\nWir haben unnötiges Komma im Status `info.connection` behoben",
