@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "ocpp",
-        "version": "0.0.7",
+        "version": "0.0.8",
         "news": {
+            "0.0.8": {
+                "en": "we now replace dots in device names by underscores",
+                "de": "wir ersetzen jetzt Punkte in Gerätenamen durch Unterstriche",
+                "ru": "теперь мы заменяем точки в именах устройств символами подчеркивания",
+                "pt": "agora substituímos os pontos nos nomes dos dispositivos por sublinhados",
+                "nl": "we vervangen nu punten in apparaatnamen door onderstrepingstekens",
+                "fr": "nous remplaçons maintenant les points dans les noms d'appareils par des traits de soulignement",
+                "it": "ora sostituiamo i punti nei nomi dei dispositivi con i trattini bassi",
+                "es": "ahora reemplazamos los puntos en los nombres de los dispositivos por guiones bajos",
+                "pl": "teraz zastępujemy kropki w nazwach urządzeń podkreśleniami",
+                "zh-cn": "我们现在用下划线替换设备名称中的点"
+            },
             "0.0.7": {
                 "en": "added possibility to limit the charging process to given Wh if supported by ChargePoint",
                 "de": "Möglichkeit hinzugefügt, den Ladevorgang auf eine bestimmte Wh zu begrenzen, wenn von ChargePoint unterstützt",

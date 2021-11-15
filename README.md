@@ -25,6 +25,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
+### 0.0.8 (2021-11-15)
+* (foxriver76) we now replace dots in device names by underscores
+
 ### 0.0.7 (2021-10-30)
 * (foxriver76) added possibility to limit the charging process to given Wh if supported by ChargePoint
 

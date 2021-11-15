@@ -81,12 +81,15 @@ class Ocpp extends utils.Adapter {
 			// for debug purposes log whole command here
 			this.log.debug(JSON.stringify(command));
 
+			// we replace all dots
+			const devName = connection.url.replace(/\./g, '_');
+
 			switch (true) {
 				case (command instanceof OCPPCommands.BootNotification):
 					this.log.info(`Received boot notification from "${connection.url}"`);
 
 					// device booted, extend native to object
-					await this.extendObjectAsync(connection.url, {
+					await this.extendObjectAsync(devName, {
 						native: command
 					});
 
@@ -105,7 +108,7 @@ class Ocpp extends utils.Adapter {
 					};
 				case command instanceof OCPPCommands.StartTransaction:
 					this.log.info(`Received Start transaction from "${connection.url}"`);
-					await this.setStateAsync(`${connection.url}.transactionActive`, true, true);
+					await this.setStateAsync(`${devName}.transactionActive`, true, true);
 					return {
 						transactionId: 1,
 						idTagInfo: {
@@ -114,7 +117,7 @@ class Ocpp extends utils.Adapter {
 					};
 				case (command instanceof OCPPCommands.StopTransaction):
 					this.log.info(`Received stop transaction from "${connection.url}"`);
-					await this.setStateAsync(`${connection.url}.transactionActive`, false, true);
+					await this.setStateAsync(`${devName}.transactionActive`, false, true);
 					return {
 						transactionId: 1,
 						idTagInfo: {
@@ -130,10 +133,10 @@ class Ocpp extends utils.Adapter {
 				case (command instanceof OCPPCommands.StatusNotification):
 					this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
 					// {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
-					await this.setStateChangedAsync(`${connection.url}.connectorId`, command.connectorId, true);
+					await this.setStateChangedAsync(`${devName}.connectorId`, command.connectorId, true);
 
 					// set status state
-					await this.setStateAsync(`${connection.url}.status`, command.status, true);
+					await this.setStateAsync(`${devName}.status`, command.status, true);
 
 					return {};
 				case (command instanceof OCPPCommands.MeterValues):
@@ -141,7 +144,7 @@ class Ocpp extends utils.Adapter {
 					// {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
 					// "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
 					// "measurand":"Energy.Active.Import.Register","unit":"Wh"}]}]}
-					await this.setStateAsync(`${connection.url}.meterValue`,
+					await this.setStateAsync(`${devName}.meterValue`,
 						parseFloat(command.meterValue[0].sampledValue[0].value), true);
 					return {};
 				default:
@@ -203,7 +206,7 @@ class Ocpp extends utils.Adapter {
 			this.knownClients.splice(idx, 1);
 		}
 
-		await this.setStateAsync(`${device}.connected`, false, true);
+		await this.setStateAsync(`${device.replace(/\./g, '_')}.connected`, false, true);
 		const connState = await this.getStateAsync('info.connection');
 		if (connState?.val && typeof connState.val === 'string') {
 			// get devices and convert them to an array
@@ -222,7 +225,7 @@ class Ocpp extends utils.Adapter {
 	 * @param device name of the wallbox device
 	 */
 	public async setDeviceOnline(device: string): Promise<void> {
-		await this.setStateAsync(`${device}.connected`, true, true);
+		await this.setStateAsync(`${device.replace(/\./g, '_')}.connected`, true, true);
 
 		const connState = await this.getStateAsync('info.connection');
 
@@ -245,7 +248,7 @@ class Ocpp extends utils.Adapter {
 	 * @param device name of the wallbox device
 	 */
 	public async createDeviceObjects(device: string): Promise<void> {
-		await this.extendObjectAsync(device, {
+		await this.extendObjectAsync(device.replace(/\./g, '_'), {
 			type: 'device',
 			common: {
 				name: device
@@ -255,7 +258,7 @@ class Ocpp extends utils.Adapter {
 
 		for (const obj of stateObjects) {
 			const id = obj._id;
-			obj._id = `${device}.${obj._id}`;
+			obj._id = `${device.replace(/\./g, '_')}.${obj._id}`;
 			await this.extendObjectAsync(obj._id, obj, {preserve: {common: ['name']}});
 			obj._id = id;
 		}
@@ -268,7 +271,7 @@ class Ocpp extends utils.Adapter {
 		try {
 			// clear all timeouts
 			for (const [device, timeout] of Object.entries(this.clientTimeouts)) {
-				await this.setStateAsync(`${device}.connected`, false, true);
+				await this.setStateAsync(`${device.replace(/\./g, '_')}.connected`, false, true);
 				clearTimeout(timeout);
 			}
 
