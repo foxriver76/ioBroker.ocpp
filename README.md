@@ -25,6 +25,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
+### 0.0.10 (2022-01-08)
+* (foxriver76) fixed error on sending commands if device name containts dots
+* (foxriver76) we also log repsonse errors from now on
+
 ### 0.0.9 (2022-01-08)
 * (foxriver76) switch to updated OCPP fork
 * (foxriver76) minor optimizations

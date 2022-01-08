@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "ocpp",
-        "version": "0.0.9",
+        "version": "0.0.10",
         "news": {
+            "0.0.10": {
+                "en": "fixed error on sending commands if device name containts dots\nwe also log repsonse errors from now on",
+                "de": "Fehler beim Senden von Befehlen behoben, wenn der Gerätename Punkte enthält\nwir protokollieren ab sofort auch Antwortfehler",
+                "ru": "исправлена ошибка отправки команд, если имя устройства содержит точки\nс этого момента мы также регистрируем ошибки ответа",
+                "pt": "corrigido o erro no envio de comandos se o nome do dispositivo contiver pontos\ntambém registramos erros de repetição de agora em diante",
+                "nl": "opgeloste fout bij het verzenden van opdrachten als de apparaatnaam punten bevat\nwe loggen vanaf nu ook responsfouten",
+                "fr": "erreur corrigée lors de l'envoi de commandes si le nom de l'appareil contient des points\nnous enregistrons également les erreurs de réponse à partir de maintenant",
+                "it": "corretto errore nell'invio dei comandi se il nome del dispositivo contiene punti\nda ora in poi registriamo anche gli errori di risposta",
+                "es": "error fijo al enviar comandos si el nombre del dispositivo contiene puntos\ntambién registramos errores de respuesta a partir de ahora",
+                "pl": "poprawiony błąd przy wysyłaniu poleceń, jeśli nazwa urządzenia zawiera kropki\nod teraz rejestrujemy również błędy odpowiedzi",
+                "zh-cn": "如果设备名称包含点，则在发送命令时修复了错误\n从现在开始，我们还将记录响应错误"
+            },
             "0.0.9": {
                 "en": "switch to updated OCPP fork\nminor optimizations",
                 "de": "zu aktualisiertem OCPP-Fork wechseln\nkleinere Optimierungen",
