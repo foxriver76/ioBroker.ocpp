@@ -25,7 +25,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
 const states_1 = require("./lib/states");
 const ocpp_eliftech_1 = require("ocpp-eliftech");
-var MeterValues = ocpp_eliftech_1.OCPPCommands.MeterValues;
 class Ocpp extends utils.Adapter {
     constructor(options = {}) {
         super({
@@ -94,8 +93,8 @@ class Ocpp extends utils.Adapter {
             this.log.debug(JSON.stringify(command));
             // we replace all dots
             const devName = connection.url.replace(/\./g, '_');
-            switch (true) {
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification): {
+            switch (command.getCommandName()) {
+                case ('BootNotification'): {
                     this.log.info(`Received boot notification from "${connection.url}"`);
                     // device booted, extend native to object
                     await this.extendObjectAsync(devName, {
@@ -109,7 +108,7 @@ class Ocpp extends utils.Adapter {
                     };
                     return response;
                 }
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.Authorize): {
+                case ('Authorize'): {
                     this.log.info(`Received Authorization Request from "${connection.url}"`);
                     const response = {
                         idTagInfo: {
@@ -118,7 +117,7 @@ class Ocpp extends utils.Adapter {
                     };
                     return response;
                 }
-                case command instanceof ocpp_eliftech_1.OCPPCommands.StartTransaction: {
+                case 'StartTransaction': {
                     this.log.info(`Received Start transaction from "${connection.url}"`);
                     await this.setStateAsync(`${devName}.transactionActive`, true, true);
                     const response = {
@@ -129,7 +128,7 @@ class Ocpp extends utils.Adapter {
                     };
                     return response;
                 }
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.StopTransaction): {
+                case 'StopTransaction': {
                     this.log.info(`Received stop transaction from "${connection.url}"`);
                     await this.setStateAsync(`${devName}.transactionActive`, false, true);
                     const response = {
@@ -139,14 +138,14 @@ class Ocpp extends utils.Adapter {
                     };
                     return response;
                 }
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.Heartbeat): {
+                case 'Heartbeat': {
                     this.log.debug(`Received heartbeat from "${connection.url}"`);
                     const response = {
                         currentTime: new Date().toISOString()
                     };
                     return response;
                 }
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification): {
+                case 'StatusNotification': {
                     this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
                     // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
                     await this.setStateChangedAsync(`${devName}.connectorId`, command.connectorId, true);
@@ -155,7 +154,7 @@ class Ocpp extends utils.Adapter {
                     const response = {};
                     return response;
                 }
-                case (command instanceof MeterValues): {
+                case 'MeterValues': {
                     this.log.info(`Received MeterValues from "${connection.url}"`);
                     // {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
                     // "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
@@ -178,28 +177,28 @@ class Ocpp extends utils.Adapter {
     async requestNewClient(connection, command) {
         // we want to request boot notification and status and meter values to ahve everything up to date again
         try {
-            if (!(command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification)) {
+            if (command.getCommandName() !== 'BootNotification') {
                 // it's not a boot notification so request
                 this.log.info(`Requesting BootNotification from "${connection.url}"`);
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'BootNotification'
-                }), ocpp_eliftech_1.MessageType.CALLRESULT_MESSAGE);
+                }), 3 /*MessageType.CALLRESULT_MESSAGE*/);
                 await this.wait(1000);
             }
-            if (!(command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification)) {
+            if (command.getCommandName() !== 'StatusNotification') {
                 // it's not a status notification so request
                 this.log.info(`Requesting StatusNotification from "${connection.url}"`);
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'StatusNotification'
-                }), ocpp_eliftech_1.MessageType.CALLRESULT_MESSAGE);
+                }), 3 /*MessageType.CALLRESULT_MESSAGE*/);
                 await this.wait(1000);
             }
-            if (!(command instanceof ocpp_eliftech_1.OCPPCommands.MeterValues)) {
+            if (command.getCommandName() !== 'MeterValues') {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
                 // it's not MeterValues, so request
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'MeterValues'
-                }), ocpp_eliftech_1.MessageType.CALLRESULT_MESSAGE);
+                }), 3 /*MessageType.CALLRESULT_MESSAGE*/);
             }
         }
         catch (e) {

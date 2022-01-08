@@ -4,7 +4,7 @@
 
 import * as utils from '@iobroker/adapter-core';
 import {stateObjects} from './lib/states';
-import {BaseCommand, CentralSystem, MessageType, OCPPCommands, OCPPConnection} from 'ocpp-eliftech';
+import {BaseCommand, CentralSystem, OCPPCommands, OCPPConnection} from 'ocpp-eliftech';
 import {
 	AuthorizeResponse,
 	BootNotificationResponse,
@@ -17,7 +17,6 @@ import {
 	StatusNotificationResponse,
 	StopTransactionResponse
 } from 'ocpp-eliftech/schemas';
-import MeterValues = OCPPCommands.MeterValues;
 
 class Ocpp extends utils.Adapter {
 	private client: { info: { connectors: any[] } };
@@ -112,8 +111,8 @@ class Ocpp extends utils.Adapter {
 			// we replace all dots
 			const devName = connection.url.replace(/\./g, '_');
 
-			switch (true) {
-				case (command instanceof OCPPCommands.BootNotification): {
+			switch (command.getCommandName()) {
+				case ('BootNotification'): {
 					this.log.info(`Received boot notification from "${connection.url}"`);
 
 					// device booted, extend native to object
@@ -130,7 +129,7 @@ class Ocpp extends utils.Adapter {
 						};
 					return response
 				}
-				case (command instanceof OCPPCommands.Authorize): {
+				case ('Authorize'): {
 					this.log.info(`Received Authorization Request from "${connection.url}"`);
 					const response: AuthorizeResponse = {
 						idTagInfo: {
@@ -139,7 +138,7 @@ class Ocpp extends utils.Adapter {
 					};
 					return response;
 				}
-				case command instanceof OCPPCommands.StartTransaction: {
+				case 'StartTransaction': {
 					this.log.info(`Received Start transaction from "${connection.url}"`);
 					await this.setStateAsync(`${devName}.transactionActive`, true, true);
 					const response: StartTransactionResponse = {
@@ -150,7 +149,7 @@ class Ocpp extends utils.Adapter {
 					};
 					return response;
 				}
-				case (command instanceof OCPPCommands.StopTransaction): {
+				case 'StopTransaction': {
 					this.log.info(`Received stop transaction from "${connection.url}"`);
 					await this.setStateAsync(`${devName}.transactionActive`, false, true);
 					const response: StopTransactionResponse = {
@@ -160,7 +159,7 @@ class Ocpp extends utils.Adapter {
 					};
 					return response;
 				}
-				case (command instanceof OCPPCommands.Heartbeat): {
+				case 'Heartbeat': {
 					this.log.debug(`Received heartbeat from "${connection.url}"`);
 
 					const response: HeartbeatResponse = {
@@ -168,7 +167,7 @@ class Ocpp extends utils.Adapter {
 					};
 					return response;
 				}
-				case (command instanceof OCPPCommands.StatusNotification): {
+				case 'StatusNotification': {
 					this.log.info(`Received Status Notification from "${connection.url}": ${(command as unknown as StatusNotificationRequest).status}`);
 					// {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
 					await this.setStateChangedAsync(`${devName}.connectorId`, (command as unknown as StatusNotificationRequest).connectorId, true);
@@ -179,7 +178,7 @@ class Ocpp extends utils.Adapter {
 					const response: StatusNotificationResponse = {};
 					return response;
 				}
-				case (command instanceof MeterValues): {
+				case 'MeterValues': {
 					this.log.info(`Received MeterValues from "${connection.url}"`);
 					// {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
 					// "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
@@ -205,32 +204,32 @@ class Ocpp extends utils.Adapter {
 	private async requestNewClient(connection: OCPPConnection, command: BaseCommand): Promise<void> {
 		// we want to request boot notification and status and meter values to ahve everything up to date again
 		try {
-			if (!(command instanceof OCPPCommands.BootNotification)) {
+			if (command.getCommandName() !== 'BootNotification') {
 				// it's not a boot notification so request
 				this.log.info(`Requesting BootNotification from "${connection.url}"`);
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'BootNotification'
-				}), MessageType.CALLRESULT_MESSAGE);
+				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 
 				await this.wait(1000);
 			}
 
-			if (!(command instanceof OCPPCommands.StatusNotification)) {
+			if (command.getCommandName() !== 'StatusNotification') {
 				// it's not a status notification so request
 				this.log.info(`Requesting StatusNotification from "${connection.url}"`);
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'StatusNotification'
-				}), MessageType.CALLRESULT_MESSAGE);
+				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 
 				await this.wait(1000);
 			}
 
-			if (!(command instanceof OCPPCommands.MeterValues)) {
+			if (command.getCommandName() !== 'MeterValues') {
 				this.log.info(`Requesting MeterValues from "${connection.url}"`);
 				// it's not MeterValues, so request
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'MeterValues'
-				}), MessageType.CALLRESULT_MESSAGE);
+				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			}
 		} catch (e: any) {
 			this.log.warn(`Could not request states of "${connection.url}": ${e.message}`)
