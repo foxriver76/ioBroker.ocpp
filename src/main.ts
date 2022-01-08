@@ -77,6 +77,13 @@ class Ocpp extends utils.Adapter {
 		}
 
 		/**
+		 * Called if client sends response error
+		 */
+		server.onResponseError = async (client, command, response, error) => {
+			this.log.error(`Received response error from "${client.connection.url}" with command "${JSON.stringify(command)}" (response: ${JSON.stringify(response)}): ${error.message}`);
+		}
+
+		/**
 		 * Called if we receive a command from a client
 		 */
 		server.onRequest = async (client, command) => {
@@ -112,7 +119,7 @@ class Ocpp extends utils.Adapter {
 			const devName = connection.url.replace(/\./g, '_');
 
 			switch (command.getCommandName()) {
-				case ('BootNotification'): {
+				case 'BootNotification': {
 					this.log.info(`Received boot notification from "${connection.url}"`);
 
 					// device booted, extend native to object
@@ -129,7 +136,7 @@ class Ocpp extends utils.Adapter {
 						};
 					return response
 				}
-				case ('Authorize'): {
+				case 'Authorize': {
 					this.log.info(`Received Authorization Request from "${connection.url}"`);
 					const response: AuthorizeResponse = {
 						idTagInfo: {
