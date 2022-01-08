@@ -25,6 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
 const states_1 = require("./lib/states");
 const ocpp_eliftech_1 = require("ocpp-eliftech");
+var MeterValues = ocpp_eliftech_1.OCPPCommands.MeterValues;
 class Ocpp extends utils.Adapter {
     constructor(options = {}) {
         super({
@@ -52,15 +53,28 @@ class Ocpp extends utils.Adapter {
         this.log.info('Starting OCPP Server');
         // reset connection state
         await this.setStateAsync('info.connection', '', true);
-        const server = new ocpp_eliftech_1.CentralSystem();
+        const validateConnection = (url, credentials, protocol) => {
+            this.log.info(`Connection from ${url} with credentials ${JSON.stringify(credentials)} and protocol: ${protocol}`);
+            return Promise.resolve([true, 0, '']);
+        };
+        const server = new ocpp_eliftech_1.CentralSystem({ validateConnection, wsOptions: {} });
         const port = await this.getPortAsync(this.config.port);
         server.listen(port);
         this.log.info(`Server listening on port ${port}`);
+        /**
+         * Called if client sends an error
+         */
+        server.onError = async (client, command, error) => {
+            this.log.error(`Received error from "${client.connection.url}" with command "${JSON.stringify(command)}": ${error.message}`);
+        };
+        /**
+         * Called if we receive a command from a client
+         */
         server.onRequest = async (client, command) => {
             const connection = client.connection;
             this.clients[connection.url] = client;
             // we received a new command, first check if the client is known to us
-            if (this.knownClients.indexOf(connection.url) === -1) {
+            if (!this.knownClients.includes(connection.url)) {
                 this.log.info(`New device connected: "${connection.url}"`);
                 // not known yet
                 this.knownClients.push(connection.url);
@@ -81,62 +95,75 @@ class Ocpp extends utils.Adapter {
             // we replace all dots
             const devName = connection.url.replace(/\./g, '_');
             switch (true) {
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification):
+                case (command instanceof ocpp_eliftech_1.OCPPCommands.BootNotification): {
                     this.log.info(`Received boot notification from "${connection.url}"`);
                     // device booted, extend native to object
                     await this.extendObjectAsync(devName, {
                         native: command
                     });
                     // we are requesting heartbeat every 60 seconds
-                    return {
+                    const response = {
                         status: 'Accepted',
                         currentTime: new Date().toISOString(),
                         interval: 55
                     };
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.Authorize):
+                    return response;
+                }
+                case (command instanceof ocpp_eliftech_1.OCPPCommands.Authorize): {
                     this.log.info(`Received Authorization Request from "${connection.url}"`);
-                    return {
+                    const response = {
                         idTagInfo: {
                             status: 'Accepted'
                         }
                     };
-                case command instanceof ocpp_eliftech_1.OCPPCommands.StartTransaction:
+                    return response;
+                }
+                case command instanceof ocpp_eliftech_1.OCPPCommands.StartTransaction: {
                     this.log.info(`Received Start transaction from "${connection.url}"`);
                     await this.setStateAsync(`${devName}.transactionActive`, true, true);
-                    return {
+                    const response = {
                         transactionId: 1,
                         idTagInfo: {
                             status: 'Accepted'
                         }
                     };
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.StopTransaction):
+                    return response;
+                }
+                case (command instanceof ocpp_eliftech_1.OCPPCommands.StopTransaction): {
                     this.log.info(`Received stop transaction from "${connection.url}"`);
                     await this.setStateAsync(`${devName}.transactionActive`, false, true);
-                    return {
-                        transactionId: 1,
+                    const response = {
                         idTagInfo: {
                             status: 'Accepted'
                         }
                     };
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.Heartbeat):
+                    return response;
+                }
+                case (command instanceof ocpp_eliftech_1.OCPPCommands.Heartbeat): {
                     this.log.debug(`Received heartbeat from "${connection.url}"`);
-                    return {
+                    const response = {
                         currentTime: new Date().toISOString()
                     };
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification):
+                    return response;
+                }
+                case (command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification): {
                     this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
                     // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
                     await this.setStateChangedAsync(`${devName}.connectorId`, command.connectorId, true);
                     // set status state
                     await this.setStateAsync(`${devName}.status`, command.status, true);
-                    return {};
-                case (command instanceof ocpp_eliftech_1.OCPPCommands.MeterValues):
+                    const response = {};
+                    return response;
+                }
+                case (command instanceof MeterValues): {
                     this.log.info(`Received MeterValues from "${connection.url}"`);
                     // {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
                     // "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
                     // "measurand":"Energy.Active.Import.Register","unit":"Wh"}]}]}
                     await this.setStateAsync(`${devName}.meterValue`, parseFloat(command.meterValue[0].sampledValue[0].value), true);
-                    return {};
+                    const response = {};
+                    return response;
+                }
                 default:
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }
@@ -156,7 +183,7 @@ class Ocpp extends utils.Adapter {
                 this.log.info(`Requesting BootNotification from "${connection.url}"`);
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'BootNotification'
-                }));
+                }), ocpp_eliftech_1.MessageType.CALLRESULT_MESSAGE);
                 await this.wait(1000);
             }
             if (!(command instanceof ocpp_eliftech_1.OCPPCommands.StatusNotification)) {
@@ -164,7 +191,7 @@ class Ocpp extends utils.Adapter {
                 this.log.info(`Requesting StatusNotification from "${connection.url}"`);
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'StatusNotification'
-                }));
+                }), ocpp_eliftech_1.MessageType.CALLRESULT_MESSAGE);
                 await this.wait(1000);
             }
             if (!(command instanceof ocpp_eliftech_1.OCPPCommands.MeterValues)) {
@@ -172,7 +199,7 @@ class Ocpp extends utils.Adapter {
                 // it's not MeterValues, so request
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'MeterValues'
-                }));
+                }), ocpp_eliftech_1.MessageType.CALLRESULT_MESSAGE);
             }
         }
         catch (e) {
@@ -277,8 +304,8 @@ class Ocpp extends utils.Adapter {
         }
         // we need connectorId
         const connIdState = await this.getStateAsync(`${idArr[2]}.connectorId`);
-        if (!(connIdState === null || connIdState === void 0 ? void 0 : connIdState.val)) {
-            this.log.warn(`No connectorId for "${idArr[2]}"`);
+        if (!(connIdState === null || connIdState === void 0 ? void 0 : connIdState.val) || typeof connIdState.val !== 'number') {
+            this.log.warn(`No valid connectorId for "${idArr[2]}"`);
             return;
         }
         const connectorId = connIdState.val;
@@ -292,7 +319,7 @@ class Ocpp extends utils.Adapter {
                     idTag: connectorId.toString(),
                 };
                 const limitState = await this.getStateAsync(`${idArr[3]}.chargeLimit`);
-                if (limitState === null || limitState === void 0 ? void 0 : limitState.val) {
+                if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 1,
@@ -342,7 +369,7 @@ class Ocpp extends utils.Adapter {
                 this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
             }
         }
-        else if (idArr[3] === 'chargeLimit') {
+        else if (idArr[3] === 'chargeLimit' && typeof state.val === 'number') {
             try {
                 this.log.debug(`Sending SetChargingProfile for ${idArr[2]}`);
                 await this.clients[idArr[2]].connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({

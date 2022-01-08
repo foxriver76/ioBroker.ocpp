@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "ocpp",
-        "version": "0.0.8",
+        "version": "0.0.9",
         "news": {
+            "0.0.9": {
+                "en": "switch to updated OCPP fork\nminor optimizations",
+                "de": "zu aktualisiertem OCPP-Fork wechseln\nkleinere Optimierungen",
+                "ru": "перейти на обновленный форк OCPP\nнезначительные оптимизации",
+                "pt": "mudar para bifurcação OCPP atualizado\npequenas otimizações",
+                "nl": "overschakelen naar bijgewerkte OCPP-vork\nkleine optimalisaties",
+                "fr": "passer à la fourche OCPP mise à jour\noptimisations mineures",
+                "it": "passa al fork OCPP aggiornato\nottimizzazioni minori",
+                "es": "cambiar a la bifurcación OCPP actualizada\noptimizaciones menores",
+                "pl": "przełącz na zaktualizowany widelec OCPP\ndrobne optymalizacje",
+                "zh-cn": "切换到更新的 OCPP 叉\n次要优化"
+            },
             "0.0.8": {
                 "en": "we now replace dots in device names by underscores",
                 "de": "wir ersetzen jetzt Punkte in Gerätenamen durch Unterstriche",

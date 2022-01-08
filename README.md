@@ -25,8 +25,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.0.9 (2022-01-08)
 * (foxriver76) switch to updated OCPP fork
+* (foxriver76) minor optimizations
 
 ### 0.0.8 (2021-11-15)
 * (foxriver76) we now replace dots in device names by underscores
