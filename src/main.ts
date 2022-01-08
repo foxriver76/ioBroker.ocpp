@@ -89,7 +89,10 @@ class Ocpp extends utils.Adapter {
 		server.onRequest = async (client, command) => {
 			const connection = client.connection;
 
-			this.clients[connection.url] = client;
+			// we replace all dots
+			const devName = connection.url.replace(/\./g, '_');
+
+			this.clients[devName] = client;
 
 			// we received a new command, first check if the client is known to us
 			if (!this.knownClients.includes(connection.url)) {
@@ -114,9 +117,6 @@ class Ocpp extends utils.Adapter {
 
 			// for debug purposes log whole command here
 			this.log.debug(JSON.stringify(command));
-
-			// we replace all dots
-			const devName = connection.url.replace(/\./g, '_');
 
 			switch (command.getCommandName()) {
 				case 'BootNotification': {
