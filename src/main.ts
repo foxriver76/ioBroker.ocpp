@@ -230,6 +230,14 @@ class Ocpp extends utils.Adapter {
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'MeterValues'
 				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				await this.wait(1000);
+			}
+
+			if (command.getCommandName() !== 'GetConfiguration') {
+				this.log.info(`Requesting GetConfiguration from "${connection.url}"`)
+				// it's not GetConfiguration try to request whole config
+				await connection.send(new OCPPCommands.GetConfiguration({
+				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			}
 		} catch (e: any) {
 			this.log.warn(`Could not request states of "${connection.url}": ${e.message}`)
