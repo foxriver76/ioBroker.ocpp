@@ -24,7 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils = __importStar(require("@iobroker/adapter-core"));
 const states_1 = require("./lib/states");
-const ocpp_eliftech_1 = require("ocpp-eliftech");
+const ocpp_eliftech_1 = require("@ampeco/ocpp-eliftech");
 class Ocpp extends utils.Adapter {
     constructor(options = {}) {
         super({
@@ -37,11 +37,6 @@ class Ocpp extends utils.Adapter {
         this.clientTimeouts = {};
         this.knownClients = [];
         this.clients = {};
-        this.client = {
-            info: {
-                connectors: []
-            }
-        };
     }
     /**
      * Is called when databases are connected and adapter received configuration.
@@ -356,7 +351,7 @@ class Ocpp extends utils.Adapter {
                 });
             }
             try {
-                await this.clients[idArr[2]].connection.send(command);
+                await this.clients[idArr[2]].connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
@@ -368,7 +363,7 @@ class Ocpp extends utils.Adapter {
                 await this.clients[idArr[2]].connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeAvailability({
                     connectorId: connectorId,
                     type: state.val ? 'Operative' : 'Inoperative'
-                }));
+                }), 3 /*MessageType.CALLRESULT_MESSAGE*/);
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
@@ -398,7 +393,7 @@ class Ocpp extends utils.Adapter {
                             // minChargingRate: 12 // if needed we add it
                         }
                     }
-                }));
+                }), 3 /*MessageType.CALLRESULT_MESSAGE*/);
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);

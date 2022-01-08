@@ -4,7 +4,7 @@
 
 import * as utils from '@iobroker/adapter-core';
 import {stateObjects} from './lib/states';
-import {BaseCommand, CentralSystem, OCPPCommands, OCPPConnection} from 'ocpp-eliftech';
+import {BaseCommand, CentralSystem, CentralSystemClient, OCPPCommands, OCPPConnection} from '@ampeco/ocpp-eliftech';
 import {
 	AuthorizeResponse,
 	BootNotificationResponse,
@@ -16,13 +16,12 @@ import {
 	StatusNotificationRequest,
 	StatusNotificationResponse,
 	StopTransactionResponse
-} from 'ocpp-eliftech/schemas';
+} from '@ampeco/ocpp-eliftech/schemas';
 
 class Ocpp extends utils.Adapter {
-	private client: { info: { connectors: any[] } };
 	private readonly clientTimeouts: Record<string, NodeJS.Timeout>;
-	private knownClients: string[];
-	private readonly clients: Record<string, any>;
+	private readonly knownClients: string[];
+	private readonly clients: Record<string, CentralSystemClient>;
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -36,12 +35,6 @@ class Ocpp extends utils.Adapter {
 		this.clientTimeouts = {};
 		this.knownClients = [];
 		this.clients = {};
-
-		this.client = {
-			info: {
-				connectors: []
-			}
-		};
 	}
 
 	/**
@@ -404,7 +397,7 @@ class Ocpp extends utils.Adapter {
 				});
 			}
 			try {
-				await this.clients[idArr[2]].connection.send(command);
+				await this.clients[idArr[2]].connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			} catch (e: any) {
 				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
 			}
@@ -414,7 +407,7 @@ class Ocpp extends utils.Adapter {
 				await this.clients[idArr[2]].connection.send(new OCPPCommands.ChangeAvailability({
 					connectorId: connectorId,
 					type: state.val ? 'Operative' : 'Inoperative'
-				}));
+				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			} catch (e: any) {
 				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
 			}
@@ -442,7 +435,7 @@ class Ocpp extends utils.Adapter {
 							// minChargingRate: 12 // if needed we add it
 						}
 					}
-				}));
+				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			} catch (e: any) {
 				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
 			}

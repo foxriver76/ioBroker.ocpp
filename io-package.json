@@ -1,211 +1,175 @@
 {
-    "common": {
-        "name": "ocpp",
-        "version": "0.0.10",
-        "news": {
-            "0.0.10": {
-                "en": "fixed error on sending commands if device name containts dots\nwe also log repsonse errors from now on",
-                "de": "Fehler beim Senden von Befehlen behoben, wenn der Gerätename Punkte enthält\nwir protokollieren ab sofort auch Antwortfehler",
-                "ru": "исправлена ошибка отправки команд, если имя устройства содержит точки\nс этого момента мы также регистрируем ошибки ответа",
-                "pt": "corrigido o erro no envio de comandos se o nome do dispositivo contiver pontos\ntambém registramos erros de repetição de agora em diante",
-                "nl": "opgeloste fout bij het verzenden van opdrachten als de apparaatnaam punten bevat\nwe loggen vanaf nu ook responsfouten",
-                "fr": "erreur corrigée lors de l'envoi de commandes si le nom de l'appareil contient des points\nnous enregistrons également les erreurs de réponse à partir de maintenant",
-                "it": "corretto errore nell'invio dei comandi se il nome del dispositivo contiene punti\nda ora in poi registriamo anche gli errori di risposta",
-                "es": "error fijo al enviar comandos si el nombre del dispositivo contiene puntos\ntambién registramos errores de respuesta a partir de ahora",
-                "pl": "poprawiony błąd przy wysyłaniu poleceń, jeśli nazwa urządzenia zawiera kropki\nod teraz rejestrujemy również błędy odpowiedzi",
-                "zh-cn": "如果设备名称包含点，则在发送命令时修复了错误\n从现在开始，我们还将记录响应错误"
-            },
-            "0.0.9": {
-                "en": "switch to updated OCPP fork\nminor optimizations",
-                "de": "zu aktualisiertem OCPP-Fork wechseln\nkleinere Optimierungen",
-                "ru": "перейти на обновленный форк OCPP\nнезначительные оптимизации",
-                "pt": "mudar para bifurcação OCPP atualizado\npequenas otimizações",
-                "nl": "overschakelen naar bijgewerkte OCPP-vork\nkleine optimalisaties",
-                "fr": "passer à la fourche OCPP mise à jour\noptimisations mineures",
-                "it": "passa al fork OCPP aggiornato\nottimizzazioni minori",
-                "es": "cambiar a la bifurcación OCPP actualizada\noptimizaciones menores",
-                "pl": "przełącz na zaktualizowany widelec OCPP\ndrobne optymalizacje",
-                "zh-cn": "切换到更新的 OCPP 叉\n次要优化"
-            },
-            "0.0.8": {
-                "en": "we now replace dots in device names by underscores",
-                "de": "wir ersetzen jetzt Punkte in Gerätenamen durch Unterstriche",
-                "ru": "теперь мы заменяем точки в именах устройств символами подчеркивания",
-                "pt": "agora substituímos os pontos nos nomes dos dispositivos por sublinhados",
-                "nl": "we vervangen nu punten in apparaatnamen door onderstrepingstekens",
-                "fr": "nous remplaçons maintenant les points dans les noms d'appareils par des traits de soulignement",
-                "it": "ora sostituiamo i punti nei nomi dei dispositivi con i trattini bassi",
-                "es": "ahora reemplazamos los puntos en los nombres de los dispositivos por guiones bajos",
-                "pl": "teraz zastępujemy kropki w nazwach urządzeń podkreśleniami",
-                "zh-cn": "我们现在用下划线替换设备名称中的点"
-            },
-            "0.0.7": {
-                "en": "added possibility to limit the charging process to given Wh if supported by ChargePoint",
-                "de": "Möglichkeit hinzugefügt, den Ladevorgang auf eine bestimmte Wh zu begrenzen, wenn von ChargePoint unterstützt",
-                "ru": "добавлена возможность ограничить процесс зарядки заданным Wh, если поддерживается ChargePoint",
-                "pt": "possibilidade adicional de limitar o processo de cobrança a dado Wh, se compatível com ChargePoint",
-                "nl": "mogelijkheid toegevoegd om het laadproces te beperken tot bepaalde Wh indien ondersteund door ChargePoint",
-                "fr": "possibilité supplémentaire de limiter le processus de charge à un Wh donné si pris en charge par ChargePoint",
-                "it": "aggiunta possibilità di limitare il processo di ricarica a un dato Wh se supportato da ChargePoint",
-                "es": "posibilidad adicional de limitar el proceso de carga a un Wh dado si es compatible con ChargePoint",
-                "pl": "dodano możliwość ograniczenia procesu ładowania do podanej Wh, jeśli jest obsługiwane przez ChargePoint",
-                "zh-cn": "如果 ChargePoint 支持，则增加了将充电过程限制为给定 Wh 的可能性"
-            },
-            "0.0.6": {
-                "en": "we fixed name of availability state\nwe fixed unnecessary comma in `info.connection` state",
-                "de": "Wir haben den Namen des Verfügbarkeitsstatus festgelegt\nWir haben unnötiges Komma im Status `info.connection` behoben",
-                "ru": "мы исправили название состояния доступности\nмы исправили ненужную запятую в состоянии `info.connection`",
-                "pt": "corrigimos o nome do estado de disponibilidade\ncorrigimos vírgulas desnecessárias no estado `info.connection`",
-                "nl": "we hebben de naam van de beschikbaarheidsstatus vastgesteld\nwe hebben onnodige komma's gerepareerd in de status 'info.connection'",
-                "fr": "nous avons fixé le nom de l'état de disponibilité\nnous avons corrigé les virgules inutiles dans l'état `info.connection`",
-                "it": "abbiamo fissato il nome dello stato di disponibilità\nabbiamo corretto la virgola non necessaria nello stato `info.connection`",
-                "es": "fijamos el nombre del estado de disponibilidad\nArreglamos una coma innecesaria en el estado `info.connection`",
-                "pl": "naprawiliśmy nazwę stanu dostępności\nnaprawiliśmy niepotrzebny przecinek w stanie `info.connection`",
-                "zh-cn": "我们固定了可用性状态的名称\n我们修复了 `info.connection` 状态中不必要的逗号"
-            },
-            "0.0.5": {
-                "en": "we added the meterValue state\nwe added state to control availability",
-                "de": "wir haben den meterValue-Zustand hinzugefügt\nWir haben den Status hinzugefügt, um die Verfügbarkeit zu kontrollieren",
-                "ru": "мы добавили состояние meterValue\nмы добавили состояние для контроля доступности",
-                "pt": "adicionamos o estado meterValue\nadicionamos estado para controlar a disponibilidade",
-                "nl": "we hebben de meterValue-status toegevoegd\nwe hebben status toegevoegd om de beschikbaarheid te controleren",
-                "fr": "nous avons ajouté l'état meterValue\nnous avons ajouté l'état pour contrôler la disponibilité",
-                "it": "abbiamo aggiunto lo stato meterValue\nabbiamo aggiunto lo stato per controllare la disponibilità",
-                "es": "agregamos el estado meterValue\nagregamos estado para controlar la disponibilidad",
-                "pl": "dodaliśmy stan meterValue\ndodaliśmy stan do kontroli dostępności",
-                "zh-cn": "我们添加了 meterValue 状态\n我们添加了状态来控制可用性"
-            },
-            "0.0.4": {
-                "en": "we can now enable/disable a charger",
-                "de": "wir können jetzt ein Ladegerät aktivieren/deaktivieren",
-                "ru": "теперь мы можем включить / отключить зарядное устройство",
-                "pt": "agora podemos ativar / desativar um carregador",
-                "nl": "we kunnen nu een oplader in-/uitschakelen",
-                "fr": "nous pouvons maintenant activer/désactiver un chargeur",
-                "it": "ora possiamo abilitare/disabilitare un caricabatterie",
-                "es": "ahora podemos habilitar / deshabilitar un cargador",
-                "pl": "możemy teraz włączyć/wyłączyć ładowarkę",
-                "zh-cn": "我们现在可以启用/禁用充电器"
-            },
-            "0.0.3": {
-                "en": "* initial release\n\n## License\nMIT License\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
-                "de": "* Erstveröffentlichung\n\n## Lizenz\nMIT-Lizenz\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nDie Erlaubnis wird hiermit jeder Person, die eine Kopie erhält, kostenlos erteilt\ndieser Software und der zugehörigen Dokumentationsdateien (die \"Software\"), um\nan der Software uneingeschränkt, einschließlich und ohne Einschränkung der Rechte\nzu verwenden, kopieren, modifizieren, zusammenführen, veröffentlichen, verteilen, unterlizenzieren und/oder verkaufen\nKopien der Software zu erstellen und Personen, denen die Software zur Verfügung steht,\ndazu unter folgenden Bedingungen bereitgestellt:\n\nDer obige Urheberrechtshinweis und dieser Erlaubnishinweis müssen in allen enthalten sein\nKopien oder wesentliche Teile der Software.\n\nDIE SOFTWARE WIRD \"WIE BESEHEN\", OHNE JEGLICHE GEWÄHRLEISTUNG, AUSDRÜCKLICH ODER\nSTILLSCHWEIGEND, EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF DIE GARANTIEN DER MARKTGÄNGIGKEIT,\nEIGNUNG FÜR EINEN BESTIMMTEN ZWECK UND NICHTVERLETZUNG. IN KEINEM FALL SOLL DAS\nAUTOREN ODER URHEBERRECHTSINHABER HAFTEN FÜR JEGLICHE ANSPRÜCHE, SCHÄDEN ODER ANDERES\nHAFTUNG, OB AUS VERTRAGSHANDELN, UNERLAUBTER ODER ANDERWEITIG, AUS,\nAUSSER ODER IN VERBINDUNG MIT DER SOFTWARE ODER DER NUTZUNG ODER ANDEREN HANDELN IN DER\nSOFTWARE.",
-                "ru": "* Первый выпуск\n\n## Лицензия\nЛицензия MIT\n\nАвторские права (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nРазрешение предоставляется бесплатно любому лицу, получившему копию.\nэтого программного обеспечения и связанных файлов документации («Программное обеспечение») для работы с\nв Программном обеспечении без ограничений, включая, помимо прочего, права\nиспользовать, копировать, изменять, объединять, публиковать, распространять, сублицензировать и / или продавать\nкопий Программного обеспечения и разрешить лицам, которым Программное обеспечение\nпредоставлены для этого при соблюдении следующих условий:\n\nВышеупомянутое уведомление об авторских правах и это уведомление о разрешении должны быть включены во все\nкопии или существенные части Программного обеспечения.\n\nПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ЯВНЫХ ИЛИ\nПОДРАЗУМЕВАЕМЫЕ, ВКЛЮЧАЯ, НО НЕ ОГРАНИЧЕННАЯ, ГАРАНТИИ КОММЕРЧЕСКОЙ ЦЕННОСТИ,\nПРИГОДНОСТЬ ДЛЯ КОНКРЕТНОЙ ЦЕЛИ И ЗАЩИТА ОТ ПРАВ. НИ В КОЕМ СЛУЧАЕ\nАВТОРЫ ИЛИ ДЕРЖАТЕЛИ АВТОРСКИХ ПРАВ НЕСУТ ОТВЕТСТВЕННОСТЬ ЗА ЛЮБЫЕ ПРЕТЕНЗИИ, УБЫТКИ ИЛИ ДРУГИЕ\nОТВЕТСТВЕННОСТЬ, ВОЗНИКАЮЩАЯ ЛИ В РЕЗУЛЬТАТЕ ДОГОВОРА, ИЛИ ИНОСТРАННОМУ ИНОСТРАННОМУ ПОЛОЖЕНИЮ\nБЕЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ ИЛИ В СВЯЗИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ, ИЛИ ИСПОЛЬЗОВАНИЕМ ИЛИ ДРУГИМИ ДЕЛАМИ\nПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ.",
-                "pt": "* lançamento inicial\n\n## Licença\nLicença MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nA permissão é concedida, gratuitamente, a qualquer pessoa que obtenha uma cópia\ndeste software e arquivos de documentação associados (o \"Software\"), para lidar\nno Software sem restrição, incluindo, sem limitação, os direitos\npara usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e / ou vender\ncópias do Software, e para permitir que as pessoas a quem o Software é\nfornecido para fazê-lo, sujeito às seguintes condições:\n\nO aviso de direitos autorais acima e este aviso de permissão devem ser incluídos em todos\ncópias ou partes substanciais do Software.\n\nO SOFTWARE É FORNECIDO \"COMO ESTÁ\", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU\nIMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO,\nADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA E NÃO VIOLAÇÃO. EM NENHUMA HIPÓTESE O\nAUTORES OU TITULARES DE DIREITOS AUTORAIS SÃO RESPONSÁVEIS POR QUALQUER RECLAMAÇÃO, DANOS OU OUTROS\nRESPONSABILIDADE, SEJA EM AÇÃO DE CONTRATO, DELITO OU DE OUTRA FORMA, DECORRENTE DE,\nFORA DE OU EM CONEXÃO COM O SOFTWARE OU O USO OU OUTRAS NEGOCIAÇÕES NO\nPROGRAMAS.",
-                "nl": "* Eerste uitgave\n\n## Vergunning\nMIT-licentie\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nHierbij wordt gratis toestemming verleend aan eenieder die een exemplaar verkrijgt\nvan deze software en bijbehorende documentatiebestanden (de \"Software\"), om\nin de Software zonder beperking, inclusief maar niet beperkt tot de rechten\ngebruiken, kopiëren, wijzigen, samenvoegen, publiceren, distribueren, in sublicentie geven en/of verkopen\nkopieën van de Software, en om personen aan wie de Software is\ndaartoe ingericht, onder de volgende voorwaarden:\n\nDe bovenstaande copyrightkennisgeving en deze toestemmingskennisgeving zullen worden opgenomen in alle\nkopieën of substantiële delen van de Software.\n\nDE SOFTWARE WORDT GELEVERD \"AS IS\", ZONDER ENIGE GARANTIE, EXPLICIET OF\nIMPLICIET, INCLUSIEF MAAR NIET BEPERKT TOT DE GARANTIES VAN VERKOOPBAARHEID,\nGESCHIKTHEID VOOR EEN BEPAALD DOEL EN NIET-INBREUK. IN GEEN GEVAL ZAL DE\nAUTEURS OF AUTEURSRECHTHOUDERS ZIJN AANSPRAKELIJK VOOR ENIGE CLAIM, SCHADE OF ANDERE\nAANSPRAKELIJKHEID, ONGEACHT UIT EEN OVEREENKOMST, ONRECHTMATIGHEID OF ANDERSZINS, VOORTVLOEIEND UIT,\nBUITEN OF IN VERBAND MET DE SOFTWARE OF HET GEBRUIK OF ANDERE HANDELINGEN IN DE\nSOFTWARE.",
-                "fr": "* Première version\n\n## Licence\nLicence MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nPermission est accordée, sans frais, à toute personne obtenant une copie\nde ce logiciel et des fichiers de documentation associés (le \"Logiciel\"), pour traiter\ndans le Logiciel sans restriction, y compris, sans limitation, les droits\nutiliser, copier, modifier, fusionner, publier, distribuer, sous-licencier et/ou vendre\ncopies du Logiciel, et de permettre aux personnes auxquelles le Logiciel est\nfourni à cet effet, sous réserve des conditions suivantes :\n\nL'avis de droit d'auteur ci-dessus et cet avis d'autorisation doivent être inclus dans tous les\ndes copies ou des parties substantielles du Logiciel.\n\nLE LOGICIEL EST FOURNI « EN L'ÉTAT », SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU\nIMPLICITE, Y COMPRIS MAIS NON LIMITÉ AUX GARANTIES DE QUALITÉ MARCHANDE,\nAPTITUDE A UN USAGE PARTICULIER ET NON CONTREFAÇON. EN AUCUN CAS, LE\nLES AUTEURS OU TITULAIRES DE DROITS D'AUTEUR SERONT RESPONSABLES DE TOUTE RÉCLAMATION, DOMMAGES OU AUTRE\nRESPONSABILITÉ, QUE CE SOIT DANS UNE ACTION CONTRACTUELLE, DÉLICTUELLE OU AUTRE, DÉCOULANT DE,\nHORS OU EN RELATION AVEC LE LOGICIEL OU L'UTILISATION OU D'AUTRES OPÉRATIONS DANS LE\nLOGICIEL.",
-                "it": "* Versione iniziale\n\n## Licenza\nLicenza MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nL'autorizzazione è concessa, a titolo gratuito, a chiunque ne ottenga una copia\ndi questo software e dei file di documentazione associati (il \"Software\"), per trattare\nnel Software senza restrizioni, inclusi senza limitazione i diritti\nutilizzare, copiare, modificare, unire, pubblicare, distribuire, concedere in sublicenza e/o vendere\ncopie del Software e per consentire alle persone a cui il Software è\narredato a tal fine, alle seguenti condizioni:\n\nL'avviso di copyright di cui sopra e questo avviso di autorizzazione devono essere inclusi in tutto\ncopie o parti sostanziali del Software.\n\nIL SOFTWARE VIENE FORNITO \"COS COM'È\", SENZA GARANZIE DI ALCUN TIPO, ESPRESSE O\nIMPLICITA, COMPRESE MA NON LIMITATE ALLE GARANZIE DI COMMERCIABILITÀ,\nIDONEITÀ PER UNO SCOPO PARTICOLARE E NON VIOLAZIONE. IN NESSUN CASO IL\nGLI AUTORI O I TITOLARI DEL COPYRIGHT SARANNO RESPONSABILI PER QUALSIASI RECLAMO, DANNI O ALTRO\nRESPONSABILITÀ, SIA IN AZIONE CONTRATTUALE, ILLECITO O ALTRO, DERIVANTE DA,\nFUORI O IN CONNESSIONE CON IL SOFTWARE O L'UTILIZZO O ALTRI TRATTAMENTI IN\nSOFTWARE.",
-                "es": "* Versión inicial\n\n## Licencia\nLicencia MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nPor la presente se otorga permiso, sin cargo, a cualquier persona que obtenga una copia.\nde este software y los archivos de documentación asociados (el \"Software\"), para tratar\nen el Software sin restricción, incluidos, entre otros, los derechos\npara usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y / o vender\ncopias del Software, y para permitir a las personas a las que el Software es\namueblado para ello, sujeto a las siguientes condiciones:\n\nEl aviso de copyright anterior y este aviso de permiso se incluirán en todos\ncopias o partes sustanciales del Software.\n\nEL SOFTWARE SE PROPORCIONA \"TAL CUAL\", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O\nIMPLÍCITAS, INCLUIDAS PERO NO LIMITADAS A LAS GARANTÍAS DE COMERCIABILIDAD,\nAPTITUD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO\nLOS AUTORES O TITULARES DE LOS DERECHOS DE AUTOR SERÁN RESPONSABLES DE CUALQUIER RECLAMO, DAÑOS U OTROS\nRESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO MODO, QUE SURJA DE,\nFUERA O EN RELACIÓN CON EL SOFTWARE O EL USO U OTROS NEGOCIOS EN EL\nSOFTWARE.",
-                "pl": "* Pierwsze wydanie\n\n## Licencja\nLicencja MIT\n\nPrawa autorskie (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nNiniejszym udziela się nieodpłatnego zezwolenia każdej osobie otrzymującej kopię\ntego oprogramowania i związanych z nim plików dokumentacji („Oprogramowanie”), aby handlować\nw Oprogramowaniu bez ograniczeń, w tym bez ograniczeń praw\nużywać, kopiować, modyfikować, łączyć, publikować, rozpowszechniać, udzielać sublicencji i/lub sprzedawać\nkopie Oprogramowania oraz do zezwolenia osobom, dla których Oprogramowanie jest\nw tym celu, z zastrzeżeniem następujących warunków:\n\nPowyższa informacja o prawach autorskich i niniejsza informacja o pozwoleniu będą zawarte we wszystkich\nkopie lub istotne części Oprogramowania.\n\nOPROGRAMOWANIE JEST DOSTARCZANE „TAK JAK JEST”, BEZ JAKICHKOLWIEK GWARANCJI, WYRAŹNYCH LUB\nDOROZUMIANYCH, W TYM MIĘDZY INNYMI GWARANCJE WARTOŚCI HANDLOWEJ,\nPRZYDATNOŚĆ DO OKREŚLONEGO CELU I NIENARUSZALNOŚCI. W ŻADNYM WYPADKU NIE\nAUTORZY LUB POSIADACZE PRAW AUTORSKICH PONOSZĄ ODPOWIEDZIALNOŚĆ ZA WSZELKIE ROSZCZENIA, SZKODY LUB INNE\nODPOWIEDZIALNOŚĆ UMOWNA, CZYNNA LUB W INNY SPOSÓB, WYNIKAJĄCA Z,\nNIE ZWIĄZANE Z OPROGRAMOWANIEM LUB KORZYSTANIEM LUB INNYMI CZYNNOŚCIAMI W\nOPROGRAMOWANIE.",
-                "zh-cn": "* 初始发行\n\n＃＃ 执照\n麻省理工学院执照\n\n版权所有 (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\n特此向任何获得副本的人免费授予许可\n本软件和相关文档文件（“软件”），以处理\n在软件中不受限制，包括但不限于权利\n使用、复制、修改、合并、发布、分发、再许可和/或出售\n软件的副本，并允许软件的接收者\n提供这样做，但须符合以下条件：\n\n以上版权声明和本许可声明应包含在所有\n软件的副本或重要部分。\n\n本软件“按原样”提供，不提供任何形式的明示或保证\n暗示，包括但不限于适销性保证，\n适用于特定目的且不侵权。在任何情况下都不得\n作者或版权所有者应对任何索赔、损害或其他\n责任，无论是在合同诉讼、侵权行为或其他方面，由以下原因引起的，\n与本软件或本软件中的使用或其他交易无关或与之相关\n软件。"
-            },
-            "0.0.2": {
-                "en": "* initial release\n\n## License\nMIT License\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
-                "de": "* Erstveröffentlichung\n\n## Lizenz\nMIT-Lizenz\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nDie Erlaubnis wird hiermit jeder Person, die eine Kopie erhält, kostenlos erteilt\ndieser Software und der zugehörigen Dokumentationsdateien (die \"Software\"), um\nan der Software uneingeschränkt, einschließlich und ohne Einschränkung der Rechte\nzu verwenden, kopieren, modifizieren, zusammenführen, veröffentlichen, verteilen, unterlizenzieren und/oder verkaufen\nKopien der Software zu erstellen und Personen, denen die Software zur Verfügung steht,\ndazu unter folgenden Bedingungen bereitgestellt:\n\nDer obige Urheberrechtshinweis und dieser Erlaubnishinweis müssen in allen enthalten sein\nKopien oder wesentliche Teile der Software.\n\nDIE SOFTWARE WIRD \"WIE BESEHEN\", OHNE JEGLICHE GEWÄHRLEISTUNG, AUSDRÜCKLICH ODER\nSTILLSCHWEIGEND, EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF DIE GARANTIEN DER MARKTGÄNGIGKEIT,\nEIGNUNG FÜR EINEN BESTIMMTEN ZWECK UND NICHTVERLETZUNG. IN KEINEM FALL SOLL DAS\nAUTOREN ODER URHEBERRECHTSINHABER HAFTEN FÜR JEGLICHE ANSPRÜCHE, SCHÄDEN ODER ANDERES\nHAFTUNG, OB AUS VERTRAGSHANDELN, UNERLAUBTER ODER ANDERWEITIG, AUS,\nAUSSER ODER IN VERBINDUNG MIT DER SOFTWARE ODER DER NUTZUNG ODER ANDEREN HANDELN IN DER\nSOFTWARE.",
-                "ru": "* Первый выпуск\n\n## Лицензия\nЛицензия MIT\n\nАвторские права (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nРазрешение предоставляется бесплатно любому лицу, получившему копию.\nэтого программного обеспечения и связанных файлов документации («Программное обеспечение») для работы с\nв Программном обеспечении без ограничений, включая, помимо прочего, права\nиспользовать, копировать, изменять, объединять, публиковать, распространять, сублицензировать и / или продавать\nкопий Программного обеспечения и разрешить лицам, которым Программное обеспечение\nпредоставлены для этого при соблюдении следующих условий:\n\nВышеупомянутое уведомление об авторских правах и это уведомление о разрешении должны быть включены во все\nкопии или существенные части Программного обеспечения.\n\nПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ЯВНЫХ ИЛИ\nПОДРАЗУМЕВАЕМЫЕ, ВКЛЮЧАЯ, НО НЕ ОГРАНИЧЕННАЯ, ГАРАНТИИ КОММЕРЧЕСКОЙ ЦЕННОСТИ,\nПРИГОДНОСТЬ ДЛЯ КОНКРЕТНОЙ ЦЕЛИ И ЗАЩИТА ОТ ПРАВ. НИ В КОЕМ СЛУЧАЕ\nАВТОРЫ ИЛИ ДЕРЖАТЕЛИ АВТОРСКИХ ПРАВ НЕСУТ ОТВЕТСТВЕННОСТЬ ЗА ЛЮБЫЕ ПРЕТЕНЗИИ, УБЫТКИ ИЛИ ДРУГИЕ\nОТВЕТСТВЕННОСТЬ, ВОЗНИКАЮЩАЯ ЛИ В РЕЗУЛЬТАТЕ ДОГОВОРА, ИЛИ ИНОСТРАННОМУ ИНОСТРАННОМУ ПОЛОЖЕНИЮ\nБЕЗ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ ИЛИ В СВЯЗИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ, ИЛИ ИСПОЛЬЗОВАНИЕМ ИЛИ ДРУГИМИ ДЕЛАМИ\nПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ.",
-                "pt": "* lançamento inicial\n\n## Licença\nLicença MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nA permissão é concedida, gratuitamente, a qualquer pessoa que obtenha uma cópia\ndeste software e arquivos de documentação associados (o \"Software\"), para lidar\nno Software sem restrição, incluindo, sem limitação, os direitos\npara usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e / ou vender\ncópias do Software, e para permitir que as pessoas a quem o Software é\nfornecido para fazê-lo, sujeito às seguintes condições:\n\nO aviso de direitos autorais acima e este aviso de permissão devem ser incluídos em todos\ncópias ou partes substanciais do Software.\n\nO SOFTWARE É FORNECIDO \"COMO ESTÁ\", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU\nIMPLÍCITA, INCLUINDO, MAS NÃO SE LIMITANDO ÀS GARANTIAS DE COMERCIALIZAÇÃO,\nADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA E NÃO VIOLAÇÃO. EM NENHUMA HIPÓTESE O\nAUTORES OU TITULARES DE DIREITOS AUTORAIS SÃO RESPONSÁVEIS POR QUALQUER RECLAMAÇÃO, DANOS OU OUTROS\nRESPONSABILIDADE, SEJA EM AÇÃO DE CONTRATO, DELITO OU DE OUTRA FORMA, DECORRENTE DE,\nFORA DE OU EM CONEXÃO COM O SOFTWARE OU O USO OU OUTRAS NEGOCIAÇÕES NO\nPROGRAMAS.",
-                "nl": "* Eerste uitgave\n\n## Vergunning\nMIT-licentie\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nHierbij wordt gratis toestemming verleend aan eenieder die een exemplaar verkrijgt\nvan deze software en bijbehorende documentatiebestanden (de \"Software\"), om\nin de Software zonder beperking, inclusief maar niet beperkt tot de rechten\ngebruiken, kopiëren, wijzigen, samenvoegen, publiceren, distribueren, in sublicentie geven en/of verkopen\nkopieën van de Software, en om personen aan wie de Software is\ndaartoe ingericht, onder de volgende voorwaarden:\n\nDe bovenstaande copyrightkennisgeving en deze toestemmingskennisgeving zullen worden opgenomen in alle\nkopieën of substantiële delen van de Software.\n\nDE SOFTWARE WORDT GELEVERD \"AS IS\", ZONDER ENIGE GARANTIE, EXPLICIET OF\nIMPLICIET, INCLUSIEF MAAR NIET BEPERKT TOT DE GARANTIES VAN VERKOOPBAARHEID,\nGESCHIKTHEID VOOR EEN BEPAALD DOEL EN NIET-INBREUK. IN GEEN GEVAL ZAL DE\nAUTEURS OF AUTEURSRECHTHOUDERS ZIJN AANSPRAKELIJK VOOR ENIGE CLAIM, SCHADE OF ANDERE\nAANSPRAKELIJKHEID, ONGEACHT UIT EEN OVEREENKOMST, ONRECHTMATIGHEID OF ANDERSZINS, VOORTVLOEIEND UIT,\nBUITEN OF IN VERBAND MET DE SOFTWARE OF HET GEBRUIK OF ANDERE HANDELINGEN IN DE\nSOFTWARE.",
-                "fr": "* Première version\n\n## Licence\nLicence MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nPermission est accordée, sans frais, à toute personne obtenant une copie\nde ce logiciel et des fichiers de documentation associés (le \"Logiciel\"), pour traiter\ndans le Logiciel sans restriction, y compris, sans limitation, les droits\nutiliser, copier, modifier, fusionner, publier, distribuer, sous-licencier et/ou vendre\ncopies du Logiciel, et de permettre aux personnes auxquelles le Logiciel est\nfourni à cet effet, sous réserve des conditions suivantes :\n\nL'avis de droit d'auteur ci-dessus et cet avis d'autorisation doivent être inclus dans tous les\ndes copies ou des parties substantielles du Logiciel.\n\nLE LOGICIEL EST FOURNI « EN L'ÉTAT », SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU\nIMPLICITE, Y COMPRIS MAIS NON LIMITÉ AUX GARANTIES DE QUALITÉ MARCHANDE,\nAPTITUDE A UN USAGE PARTICULIER ET NON CONTREFAÇON. EN AUCUN CAS, LE\nLES AUTEURS OU TITULAIRES DE DROITS D'AUTEUR SERONT RESPONSABLES DE TOUTE RÉCLAMATION, DOMMAGES OU AUTRE\nRESPONSABILITÉ, QUE CE SOIT DANS UNE ACTION CONTRACTUELLE, DÉLICTUELLE OU AUTRE, DÉCOULANT DE,\nHORS OU EN RELATION AVEC LE LOGICIEL OU L'UTILISATION OU D'AUTRES OPÉRATIONS DANS LE\nLOGICIEL.",
-                "it": "* Versione iniziale\n\n## Licenza\nLicenza MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nL'autorizzazione è concessa, a titolo gratuito, a chiunque ne ottenga una copia\ndi questo software e dei file di documentazione associati (il \"Software\"), per trattare\nnel Software senza restrizioni, inclusi senza limitazione i diritti\nutilizzare, copiare, modificare, unire, pubblicare, distribuire, concedere in sublicenza e/o vendere\ncopie del Software e per consentire alle persone a cui il Software è\narredato a tal fine, alle seguenti condizioni:\n\nL'avviso di copyright di cui sopra e questo avviso di autorizzazione devono essere inclusi in tutto\ncopie o parti sostanziali del Software.\n\nIL SOFTWARE VIENE FORNITO \"COS COM'È\", SENZA GARANZIE DI ALCUN TIPO, ESPRESSE O\nIMPLICITA, COMPRESE MA NON LIMITATE ALLE GARANZIE DI COMMERCIABILITÀ,\nIDONEITÀ PER UNO SCOPO PARTICOLARE E NON VIOLAZIONE. IN NESSUN CASO IL\nGLI AUTORI O I TITOLARI DEL COPYRIGHT SARANNO RESPONSABILI PER QUALSIASI RECLAMO, DANNI O ALTRO\nRESPONSABILITÀ, SIA IN AZIONE CONTRATTUALE, ILLECITO O ALTRO, DERIVANTE DA,\nFUORI O IN CONNESSIONE CON IL SOFTWARE O L'UTILIZZO O ALTRI TRATTAMENTI IN\nSOFTWARE.",
-                "es": "* Versión inicial\n\n## Licencia\nLicencia MIT\n\nCopyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nPor la presente se otorga permiso, sin cargo, a cualquier persona que obtenga una copia.\nde este software y los archivos de documentación asociados (el \"Software\"), para tratar\nen el Software sin restricción, incluidos, entre otros, los derechos\npara usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y / o vender\ncopias del Software, y para permitir a las personas a las que el Software es\namueblado para ello, sujeto a las siguientes condiciones:\n\nEl aviso de copyright anterior y este aviso de permiso se incluirán en todos\ncopias o partes sustanciales del Software.\n\nEL SOFTWARE SE PROPORCIONA \"TAL CUAL\", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O\nIMPLÍCITAS, INCLUIDAS PERO NO LIMITADAS A LAS GARANTÍAS DE COMERCIABILIDAD,\nAPTITUD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO\nLOS AUTORES O TITULARES DE LOS DERECHOS DE AUTOR SERÁN RESPONSABLES DE CUALQUIER RECLAMO, DAÑOS U OTROS\nRESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO MODO, QUE SURJA DE,\nFUERA O EN RELACIÓN CON EL SOFTWARE O EL USO U OTROS NEGOCIOS EN EL\nSOFTWARE.",
-                "pl": "* Pierwsze wydanie\n\n## Licencja\nLicencja MIT\n\nPrawa autorskie (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\nNiniejszym udziela się nieodpłatnego zezwolenia każdej osobie otrzymującej kopię\ntego oprogramowania i związanych z nim plików dokumentacji („Oprogramowanie”), aby handlować\nw Oprogramowaniu bez ograniczeń, w tym bez ograniczeń praw\nużywać, kopiować, modyfikować, łączyć, publikować, rozpowszechniać, udzielać sublicencji i/lub sprzedawać\nkopie Oprogramowania oraz do zezwolenia osobom, dla których Oprogramowanie jest\nw tym celu, z zastrzeżeniem następujących warunków:\n\nPowyższa informacja o prawach autorskich i niniejsza informacja o pozwoleniu będą zawarte we wszystkich\nkopie lub istotne części Oprogramowania.\n\nOPROGRAMOWANIE JEST DOSTARCZANE „TAK JAK JEST”, BEZ JAKICHKOLWIEK GWARANCJI, WYRAŹNYCH LUB\nDOROZUMIANYCH, W TYM MIĘDZY INNYMI GWARANCJE WARTOŚCI HANDLOWEJ,\nPRZYDATNOŚĆ DO OKREŚLONEGO CELU I NIENARUSZALNOŚCI. W ŻADNYM WYPADKU NIE\nAUTORZY LUB POSIADACZE PRAW AUTORSKICH PONOSZĄ ODPOWIEDZIALNOŚĆ ZA WSZELKIE ROSZCZENIA, SZKODY LUB INNE\nODPOWIEDZIALNOŚĆ UMOWNA, CZYNNA LUB W INNY SPOSÓB, WYNIKAJĄCA Z,\nNIE ZWIĄZANE Z OPROGRAMOWANIEM LUB KORZYSTANIEM LUB INNYMI CZYNNOŚCIAMI W\nOPROGRAMOWANIE.",
-                "zh-cn": "* 初始发行\n\n＃＃ 执照\n麻省理工学院执照\n\n版权所有 (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>\n\n特此向任何获得副本的人免费授予许可\n本软件和相关文档文件（“软件”），以处理\n在软件中不受限制，包括但不限于权利\n使用、复制、修改、合并、发布、分发、再许可和/或出售\n软件的副本，并允许软件的接收者\n提供这样做，但须符合以下条件：\n\n以上版权声明和本许可声明应包含在所有\n软件的副本或重要部分。\n\n本软件“按原样”提供，不提供任何形式的明示或保证\n暗示，包括但不限于适销性保证，\n适用于特定目的且不侵权。在任何情况下都不得\n作者或版权所有者应对任何索赔、损害或其他\n责任，无论是在合同诉讼、侵权行为或其他方面，由以下原因引起的，\n与本软件或本软件中的使用或其他交易无关或与之相关\n软件。"
-            },
-            "0.0.1": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "zh-cn": "首次出版"
-            }
-        },
-        "title": "Open Charge Point Protocol",
-        "titleLang": {
-            "en": "Open Charge Point Protocol",
-            "de": "Offenes Ladepunktprotokoll",
-            "ru": "Протокол открытой точки зарядки",
-            "pt": "Protocolo de ponto de carga aberto",
-            "nl": "Open Laadpunt Protocol",
-            "fr": "Protocole de point de charge ouvert",
-            "it": "Protocollo punto di ricarica aperto",
-            "es": "Protocolo de punto de carga abierto",
-            "pl": "Otwórz protokół punktu ładowania",
-            "zh-cn": "开放充电点协议"
-        },
-        "desc": {
-            "en": "Adapter for OCPP 1.6",
-            "de": "Adapter für OCPP 1.6",
-            "ru": "Адаптер для OCPP 1.6",
-            "pt": "Adaptador para OCPP 1.6",
-            "nl": "Adapter voor OCPP 1.6",
-            "fr": "Adaptateur pour OCPP 1.6",
-            "it": "Adattatore per OCPP 1.6",
-            "es": "Adaptador para OCPP 1.6",
-            "pl": "Adapter do OCPP 1.6",
-            "zh-cn": "OCPP 1.6 适配器"
-        },
-        "authors": [
-            "foxriver76 <moritz.heusinger@gmail.com>"
-        ],
-        "keywords": [
-            "wallbox",
-            "ocpp",
-            "energy"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "main": "build/main.js",
-        "icon": "ocpp.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/foxriver76/ioBroker.ocpp/main/admin/ocpp.png",
-        "readme": "https://github.com/foxriver76/ioBroker.ocpp/blob/main/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "energy",
-        "compact": true,
-        "adminUI": {
-            "config": "json"
-        },
-        "connectionType": "local",
-        "dataSource": "push",
-        "materialize": true,
-        "dependencies": [
-            {
-                "js-controller": ">=3.3.15",
-                "admin": ">=5.1.0"
-            }
-        ]
+  "common": {
+    "name": "ocpp",
+    "version": "0.1.0",
+    "news": {
+      "0.1.0": {
+        "en": "small optimizations\nupdated dependencies",
+        "de": "kleine Optimierungen\naktualisierte Abhängigkeiten",
+        "ru": "небольшие оптимизации\nобновленные зависимости",
+        "pt": "pequenas otimizações\ndependências atualizadas",
+        "nl": "kleine optimalisaties\nbijgewerkte afhankelijkheden",
+        "fr": "petites optimisations\ndépendances mises à jour",
+        "it": "piccole ottimizzazioni\ndipendenze aggiornate",
+        "es": "pequeñas optimizaciones\ndependencias actualizadas",
+        "pl": "małe optymalizacje\nzaktualizowane zależności",
+        "zh-cn": "小优化\n更新的依赖"
+      },
+      "0.0.10": {
+        "en": "fixed error on sending commands if device name containts dots\nwe also log repsonse errors from now on",
+        "de": "Fehler beim Senden von Befehlen behoben, wenn der Gerätename Punkte enthält\nwir protokollieren ab sofort auch Antwortfehler",
+        "ru": "исправлена ошибка отправки команд, если имя устройства содержит точки\nс этого момента мы также регистрируем ошибки ответа",
+        "pt": "corrigido o erro no envio de comandos se o nome do dispositivo contiver pontos\ntambém registramos erros de repetição de agora em diante",
+        "nl": "opgeloste fout bij het verzenden van opdrachten als de apparaatnaam punten bevat\nwe loggen vanaf nu ook responsfouten",
+        "fr": "erreur corrigée lors de l'envoi de commandes si le nom de l'appareil contient des points\nnous enregistrons également les erreurs de réponse à partir de maintenant",
+        "it": "corretto errore nell'invio dei comandi se il nome del dispositivo contiene punti\nda ora in poi registriamo anche gli errori di risposta",
+        "es": "error fijo al enviar comandos si el nombre del dispositivo contiene puntos\ntambién registramos errores de respuesta a partir de ahora",
+        "pl": "poprawiony błąd przy wysyłaniu poleceń, jeśli nazwa urządzenia zawiera kropki\nod teraz rejestrujemy również błędy odpowiedzi",
+        "zh-cn": "如果设备名称包含点，则在发送命令时修复了错误\n从现在开始，我们还将记录响应错误"
+      },
+      "0.0.9": {
+        "en": "switch to updated OCPP fork\nminor optimizations",
+        "de": "zu aktualisiertem OCPP-Fork wechseln\nkleinere Optimierungen",
+        "ru": "перейти на обновленный форк OCPP\nнезначительные оптимизации",
+        "pt": "mudar para bifurcação OCPP atualizado\npequenas otimizações",
+        "nl": "overschakelen naar bijgewerkte OCPP-vork\nkleine optimalisaties",
+        "fr": "passer à la fourche OCPP mise à jour\noptimisations mineures",
+        "it": "passa al fork OCPP aggiornato\nottimizzazioni minori",
+        "es": "cambiar a la bifurcación OCPP actualizada\noptimizaciones menores",
+        "pl": "przełącz na zaktualizowany widelec OCPP\ndrobne optymalizacje",
+        "zh-cn": "切换到更新的 OCPP 叉\n次要优化"
+      },
+      "0.0.8": {
+        "en": "we now replace dots in device names by underscores",
+        "de": "wir ersetzen jetzt Punkte in Gerätenamen durch Unterstriche",
+        "ru": "теперь мы заменяем точки в именах устройств символами подчеркивания",
+        "pt": "agora substituímos os pontos nos nomes dos dispositivos por sublinhados",
+        "nl": "we vervangen nu punten in apparaatnamen door onderstrepingstekens",
+        "fr": "nous remplaçons maintenant les points dans les noms d'appareils par des traits de soulignement",
+        "it": "ora sostituiamo i punti nei nomi dei dispositivi con i trattini bassi",
+        "es": "ahora reemplazamos los puntos en los nombres de los dispositivos por guiones bajos",
+        "pl": "teraz zastępujemy kropki w nazwach urządzeń podkreśleniami",
+        "zh-cn": "我们现在用下划线替换设备名称中的点"
+      },
+      "0.0.7": {
+        "en": "added possibility to limit the charging process to given Wh if supported by ChargePoint",
+        "de": "Möglichkeit hinzugefügt, den Ladevorgang auf eine bestimmte Wh zu begrenzen, wenn von ChargePoint unterstützt",
+        "ru": "добавлена возможность ограничить процесс зарядки заданным Wh, если поддерживается ChargePoint",
+        "pt": "possibilidade adicional de limitar o processo de cobrança a dado Wh, se compatível com ChargePoint",
+        "nl": "mogelijkheid toegevoegd om het laadproces te beperken tot bepaalde Wh indien ondersteund door ChargePoint",
+        "fr": "possibilité supplémentaire de limiter le processus de charge à un Wh donné si pris en charge par ChargePoint",
+        "it": "aggiunta possibilità di limitare il processo di ricarica a un dato Wh se supportato da ChargePoint",
+        "es": "posibilidad adicional de limitar el proceso de carga a un Wh dado si es compatible con ChargePoint",
+        "pl": "dodano możliwość ograniczenia procesu ładowania do podanej Wh, jeśli jest obsługiwane przez ChargePoint",
+        "zh-cn": "如果 ChargePoint 支持，则增加了将充电过程限制为给定 Wh 的可能性"
+      },
+      "0.0.6": {
+        "en": "we fixed name of availability state\nwe fixed unnecessary comma in `info.connection` state",
+        "de": "Wir haben den Namen des Verfügbarkeitsstatus festgelegt\nWir haben unnötiges Komma im Status `info.connection` behoben",
+        "ru": "мы исправили название состояния доступности\nмы исправили ненужную запятую в состоянии `info.connection`",
+        "pt": "corrigimos o nome do estado de disponibilidade\ncorrigimos vírgulas desnecessárias no estado `info.connection`",
+        "nl": "we hebben de naam van de beschikbaarheidsstatus vastgesteld\nwe hebben onnodige komma's gerepareerd in de status 'info.connection'",
+        "fr": "nous avons fixé le nom de l'état de disponibilité\nnous avons corrigé les virgules inutiles dans l'état `info.connection`",
+        "it": "abbiamo fissato il nome dello stato di disponibilità\nabbiamo corretto la virgola non necessaria nello stato `info.connection`",
+        "es": "fijamos el nombre del estado de disponibilidad\nArreglamos una coma innecesaria en el estado `info.connection`",
+        "pl": "naprawiliśmy nazwę stanu dostępności\nnaprawiliśmy niepotrzebny przecinek w stanie `info.connection`",
+        "zh-cn": "我们固定了可用性状态的名称\n我们修复了 `info.connection` 状态中不必要的逗号"
+      },
+      "0.0.5": {
+        "en": "we added the meterValue state\nwe added state to control availability",
+        "de": "wir haben den meterValue-Zustand hinzugefügt\nWir haben den Status hinzugefügt, um die Verfügbarkeit zu kontrollieren",
+        "ru": "мы добавили состояние meterValue\nмы добавили состояние для контроля доступности",
+        "pt": "adicionamos o estado meterValue\nadicionamos estado para controlar a disponibilidade",
+        "nl": "we hebben de meterValue-status toegevoegd\nwe hebben status toegevoegd om de beschikbaarheid te controleren",
+        "fr": "nous avons ajouté l'état meterValue\nnous avons ajouté l'état pour contrôler la disponibilité",
+        "it": "abbiamo aggiunto lo stato meterValue\nabbiamo aggiunto lo stato per controllare la disponibilità",
+        "es": "agregamos el estado meterValue\nagregamos estado para controlar la disponibilidad",
+        "pl": "dodaliśmy stan meterValue\ndodaliśmy stan do kontroli dostępności",
+        "zh-cn": "我们添加了 meterValue 状态\n我们添加了状态来控制可用性"
+      }
     },
-    "native": {
-        "port": 9220
+    "title": "Open Charge Point Protocol",
+    "titleLang": {
+      "en": "Open Charge Point Protocol",
+      "de": "Offenes Ladepunktprotokoll",
+      "ru": "Протокол открытой точки зарядки",
+      "pt": "Protocolo de ponto de carga aberto",
+      "nl": "Open Laadpunt Protocol",
+      "fr": "Protocole de point de charge ouvert",
+      "it": "Protocollo punto di ricarica aperto",
+      "es": "Protocolo de punto de carga abierto",
+      "pl": "Otwórz protokół punktu ładowania",
+      "zh-cn": "开放充电点协议"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "List of connected devices",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
+    "desc": {
+      "en": "Adapter for OCPP 1.6",
+      "de": "Adapter für OCPP 1.6",
+      "ru": "Адаптер для OCPP 1.6",
+      "pt": "Adaptador para OCPP 1.6",
+      "nl": "Adapter voor OCPP 1.6",
+      "fr": "Adaptateur pour OCPP 1.6",
+      "it": "Adattatore per OCPP 1.6",
+      "es": "Adaptador para OCPP 1.6",
+      "pl": "Adapter do OCPP 1.6",
+      "zh-cn": "OCPP 1.6 适配器"
+    },
+    "authors": [
+      "foxriver76 <moritz.heusinger@gmail.com>"
+    ],
+    "keywords": [
+      "wallbox",
+      "ocpp",
+      "energy"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "build/main.js",
+    "icon": "ocpp.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/foxriver76/ioBroker.ocpp/main/admin/ocpp.png",
+    "readme": "https://github.com/foxriver76/ioBroker.ocpp/blob/main/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "energy",
+    "compact": true,
+    "adminUI": {
+      "config": "json"
+    },
+    "connectionType": "local",
+    "dataSource": "push",
+    "materialize": true,
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.15",
+        "admin": ">=5.1.0"
+      }
     ]
+  },
+  "native": {
+    "port": 9220
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "List of connected devices",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }
