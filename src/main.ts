@@ -50,7 +50,7 @@ class Ocpp extends utils.Adapter {
 		await this.setStateAsync('info.connection', '', true);
 
 		const validateConnection = (url: string, credentials: { name: string; pass: string } | undefined, protocol: 'http' | 'https'): Promise<[boolean, number, string]> => {
-			this.log.info(`Connection from ${url} with credentials ${JSON.stringify(credentials)} and protocol: ${protocol}`);
+			this.log.info(`Connection from "${url}" with credentials "${JSON.stringify(credentials)}" and protocol: "${protocol}"`);
 			return Promise.resolve([true, 0, '']);
 		}
 
@@ -234,7 +234,7 @@ class Ocpp extends utils.Adapter {
 			}
 
 			if (command.getCommandName() !== 'GetConfiguration') {
-				this.log.info(`Requesting GetConfiguration from "${connection.url}"`)
+				this.log.info(`Sending GetConfiguration to "${connection.url}"`)
 				// it's not GetConfiguration try to request whole config
 				await connection.send(new OCPPCommands.GetConfiguration({
 				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
@@ -343,24 +343,26 @@ class Ocpp extends utils.Adapter {
 
 		// handle state change
 		const idArr = id.split('.');
+		const deviceName = idArr[2];
+		const functionality = idArr[3];
 
-		const connState = await this.getStateAsync(`${idArr[2]}.connected`);
+		const connState = await this.getStateAsync(`${deviceName}.connected`);
 		if (!connState?.val) {
-			this.log.warn(`Cannot control "${idArr[2]}", because not connected`);
+			this.log.warn(`Cannot control "${deviceName}", because not connected`);
 			return;
 		}
 
 		// we need connectorId
-		const connIdState = await this.getStateAsync(`${idArr[2]}.connectorId`);
+		const connIdState = await this.getStateAsync(`${deviceName}.connectorId`);
 
 		if (!connIdState?.val || typeof connIdState.val !== 'number') {
-			this.log.warn(`No valid connectorId for "${idArr[2]}"`);
+			this.log.warn(`No valid connectorId for "${deviceName}"`);
 			return;
 		}
 
 		const connectorId = connIdState.val;
 
-		if (idArr[3] === 'transactionActive') {
+		if (functionality === 'transactionActive') {
 			// enable/disable transaction
 
 			let command;
@@ -371,7 +373,7 @@ class Ocpp extends utils.Adapter {
 					idTag: connectorId.toString(),
 				}
 
-				const limitState = await this.getStateAsync(`${idArr[3]}.chargeLimit`);
+				const limitState = await this.getStateAsync(`${deviceName}.chargeLimit`);
 
 				if (limitState?.val && typeof limitState.val === 'number') {
 					cmdObj.chargingProfile = {
@@ -395,34 +397,34 @@ class Ocpp extends utils.Adapter {
 					}
 				}
 
-				this.log.debug(`Sending RemoteStartTransaction for ${idArr[2]}: ${JSON.stringify(cmdObj)}`);
+				this.log.debug(`Sending RemoteStartTransaction for ${deviceName}: ${JSON.stringify(cmdObj)}`);
 				command = new OCPPCommands.RemoteStartTransaction(cmdObj);
 			} else {
 				// disable
-				this.log.debug(`Sending RemoteStopTransaction for ${idArr[2]}`);
+				this.log.debug(`Sending RemoteStopTransaction for ${deviceName}`);
 				command = new OCPPCommands.RemoteStopTransaction({
 					transactionId: connectorId
 				});
 			}
 			try {
-				await this.clients[idArr[2]].connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				await this.clients[deviceName].connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			} catch (e: any) {
-				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
+				this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
 			}
-		} else if (idArr[3] === 'availability') {
+		} else if (functionality === 'availability') {
 			try {
-				this.log.debug(`Sending ChangeAvailability for ${idArr[2]}: ${state.val ? 'Operative' : 'Inoperative'}`);
-				await this.clients[idArr[2]].connection.send(new OCPPCommands.ChangeAvailability({
+				this.log.debug(`Sending ChangeAvailability for ${deviceName}: ${state.val ? 'Operative' : 'Inoperative'}`);
+				await this.clients[deviceName].connection.send(new OCPPCommands.ChangeAvailability({
 					connectorId: connectorId,
 					type: state.val ? 'Operative' : 'Inoperative'
 				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			} catch (e: any) {
-				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
+				this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
 			}
-		} else if (idArr[3] === 'chargeLimit' && typeof state.val === 'number') {
+		} else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
 			try {
-				this.log.debug(`Sending SetChargingProfile for ${idArr[2]}`);
-				await this.clients[idArr[2]].connection.send(new OCPPCommands.SetChargingProfile({
+				this.log.debug(`Sending SetChargingProfile for ${deviceName}`);
+				await this.clients[deviceName].connection.send(new OCPPCommands.SetChargingProfile({
 					connectorId: connectorId,
 					csChargingProfiles: {
 						chargingProfileId: 1,
@@ -445,7 +447,7 @@ class Ocpp extends utils.Adapter {
 					}
 				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
 			} catch (e: any) {
-				this.log.error(`Cannot execute command "${idArr[3]}" for "${idArr[2]}": ${e.message}`);
+				this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
 			}
 		}
 	}

@@ -27,6 +27,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 
 ### **WORK IN PROGRESS**
 * (foxriver76) we are requesting config of new clients too
+* (foxriver76) we fixed a bug with limitState not respected on `startTransaction`
 
 ### 0.1.0 (2022-01-08)
 * (foxriver76) small optimizations
