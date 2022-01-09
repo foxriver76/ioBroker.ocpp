@@ -238,6 +238,7 @@ class Ocpp extends utils.Adapter {
 				this.log.info(`Sending GetConfiguration to "${connection.url}"`)
 				// it's not GetConfiguration try to request whole config
 				await connection.send(new OCPPCommands.GetConfiguration({
+					key: ['ConnectionTimeOut']
 				}), CALL_MESSAGE);
 			}
 		} catch (e: any) {
@@ -400,7 +401,7 @@ class Ocpp extends utils.Adapter {
 						chargingSchedule: {
 							'duration': 86400, // 24 hours
 							'startSchedule': '2013-01-01T00:00Z',
-							'chargingRateUnit': 'W', // Ampere or Watt
+							'chargingRateUnit': 'A', // Ampere or Watt
 							'chargingSchedulePeriod': [
 								{
 									startPeriod: 0, // up from 00:00 h (whole day)
@@ -450,7 +451,7 @@ class Ocpp extends utils.Adapter {
 						chargingSchedule: {
 							'duration': 86400, // 24 hours
 							'startSchedule': '2013-01-01T00:00Z',
-							'chargingRateUnit': 'W', // Ampere or Watt
+							'chargingRateUnit': 'A', // Ampere or Watt
 							'chargingSchedulePeriod': [
 								{
 									startPeriod: 0, // up from 00:00 h (whole day)

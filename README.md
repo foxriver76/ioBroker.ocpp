@@ -24,10 +24,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.2.0 (2022-01-09)
 * (foxriver76) close server on unload for compact mode
 * (foxriver76) fixed the message type
+* (foxriver76) limit state is now in Ampere and should work now
 
 ### 0.1.1 (2022-01-09)
 * (foxriver76) we are requesting config of new clients too

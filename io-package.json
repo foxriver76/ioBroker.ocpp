@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "news": {
+      "0.2.0": {
+        "en": "close server on unload for compact mode\nfixed the message type\nlimit state is now in Ampere and should work now",
+        "de": "Schließen Sie den Server beim Entladen für den Kompaktmodus\nNachrichtentyp behoben\nGrenzzustand ist jetzt in Ampere und sollte jetzt funktionieren",
+        "ru": "закрыть сервер при выгрузке для компактного режима\nисправлен тип сообщения\nпредельное состояние теперь в амперах и должно работать сейчас",
+        "pt": "feche o servidor ao descarregar para o modo compacto\nconsertou o tipo de mensagem\no estado limite está agora em Ampere e deve funcionar agora",
+        "nl": "server sluiten bij verwijderen voor compacte modus\nhet berichttype gerepareerd\ngrenstoestand is nu in Ampere en zou nu moeten werken",
+        "fr": "fermer le serveur au déchargement pour le mode compact\ncorrection du type de message\nl'état limite est maintenant en Ampère et devrait fonctionner maintenant",
+        "it": "chiudi il server allo scaricamento per la modalità compatta\ncorretto il tipo di messaggio\nlo stato limite è ora in Ampere e dovrebbe funzionare ora",
+        "es": "cerrar el servidor al descargar para el modo compacto\nfijo el tipo de mensaje\nel estado límite ahora está en amperios y debería funcionar ahora",
+        "pl": "zamknij serwer przy rozładowaniu w trybie kompaktowym\nnaprawiono typ wiadomości\nstan graniczny jest teraz w Amperach i powinien teraz działać",
+        "zh-cn": "卸载时关闭服务器以实现紧凑模式\n固定消息类型\n极限状态现在是安培，现在应该可以工作了"
+      },
       "0.1.1": {
         "en": "we are requesting config of new clients too\nwe fixed a bug with limitState not respected on `startTransaction`\nmake sure we use no outdated connection",
         "de": "Wir fordern auch die Konfiguration neuer Clients an\nWir haben einen Fehler behoben, bei dem limitState bei `startTransaction` nicht beachtet wurde\nStellen Sie sicher, dass wir keine veraltete Verbindung verwenden",
@@ -74,18 +86,6 @@
         "es": "posibilidad adicional de limitar el proceso de carga a un Wh dado si es compatible con ChargePoint",
         "pl": "dodano możliwość ograniczenia procesu ładowania do podanej Wh, jeśli jest obsługiwane przez ChargePoint",
         "zh-cn": "如果 ChargePoint 支持，则增加了将充电过程限制为给定 Wh 的可能性"
-      },
-      "0.0.6": {
-        "en": "we fixed name of availability state\nwe fixed unnecessary comma in `info.connection` state",
-        "de": "Wir haben den Namen des Verfügbarkeitsstatus festgelegt\nWir haben unnötiges Komma im Status `info.connection` behoben",
-        "ru": "мы исправили название состояния доступности\nмы исправили ненужную запятую в состоянии `info.connection`",
-        "pt": "corrigimos o nome do estado de disponibilidade\ncorrigimos vírgulas desnecessárias no estado `info.connection`",
-        "nl": "we hebben de naam van de beschikbaarheidsstatus vastgesteld\nwe hebben onnodige komma's gerepareerd in de status 'info.connection'",
-        "fr": "nous avons fixé le nom de l'état de disponibilité\nnous avons corrigé les virgules inutiles dans l'état `info.connection`",
-        "it": "abbiamo fissato il nome dello stato di disponibilità\nabbiamo corretto la virgola non necessaria nello stato `info.connection`",
-        "es": "fijamos el nombre del estado de disponibilidad\nArreglamos una coma innecesaria en el estado `info.connection`",
-        "pl": "naprawiliśmy nazwę stanu dostępności\nnaprawiliśmy niepotrzebny przecinek w stanie `info.connection`",
-        "zh-cn": "我们固定了可用性状态的名称\n我们修复了 `info.connection` 状态中不必要的逗号"
       }
     },
     "title": "Open Charge Point Protocol",

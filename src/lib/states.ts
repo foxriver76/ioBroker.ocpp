@@ -89,12 +89,13 @@ export const stateObjects: ioBroker.Object[] = [
 		_id: 'chargeLimit',
 		type: 'state',
 		common: {
-			name: 'Limit Watts of Charger',
+			name: 'Limit Ampere of Charger',
 			type: 'number',
 			role: 'value.power',
 			write: true,
 			read: true,
-			unit: 'W'
+			unit: 'A',
+			min: 0
 		},
 		native: {}
 	},

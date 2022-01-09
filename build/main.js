@@ -205,7 +205,9 @@ class Ocpp extends utils.Adapter {
             if (command.getCommandName() !== 'GetConfiguration') {
                 this.log.info(`Sending GetConfiguration to "${connection.url}"`);
                 // it's not GetConfiguration try to request whole config
-                await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({}), CALL_MESSAGE);
+                await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({
+                    key: ['ConnectionTimeOut']
+                }), CALL_MESSAGE);
             }
         }
         catch (e) {
@@ -348,7 +350,7 @@ class Ocpp extends utils.Adapter {
                         chargingSchedule: {
                             'duration': 86400,
                             'startSchedule': '2013-01-01T00:00Z',
-                            'chargingRateUnit': 'W',
+                            'chargingRateUnit': 'A',
                             'chargingSchedulePeriod': [
                                 {
                                     startPeriod: 0,
@@ -402,7 +404,7 @@ class Ocpp extends utils.Adapter {
                         chargingSchedule: {
                             'duration': 86400,
                             'startSchedule': '2013-01-01T00:00Z',
-                            'chargingRateUnit': 'W',
+                            'chargingRateUnit': 'A',
                             'chargingSchedulePeriod': [
                                 {
                                     startPeriod: 0,
