@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "news": {
+      "0.1.1": {
+        "en": "we are requesting config of new clients too\nwe fixed a bug with limitState not respected on `startTransaction`\nmake sure we use no outdated connection",
+        "de": "Wir fordern auch die Konfiguration neuer Clients an\nWir haben einen Fehler behoben, bei dem limitState bei `startTransaction` nicht beachtet wurde\nStellen Sie sicher, dass wir keine veraltete Verbindung verwenden",
+        "ru": "мы также запрашиваем конфигурацию новых клиентов\nмы исправили ошибку с не соблюдением limitState на `startTransaction`\nубедитесь, что мы не используем устаревшее соединение",
+        "pt": "estamos solicitando configuração de novos clientes também\ncorrigimos um bug com limitState não respeitado em `startTransaction`\ncertifique-se de que não usamos nenhuma conexão desatualizada",
+        "nl": "we vragen ook om configuratie van nieuwe klanten\nwe hebben een bug opgelost waarbij limitState niet werd gerespecteerd op `startTransaction`\nzorg ervoor dat we geen verouderde verbinding gebruiken",
+        "fr": "nous demandons également la configuration de nouveaux clients\nnous avons corrigé un bug avec limitState non respecté sur `startTransaction`\nassurez-vous que nous n'utilisons aucune connexion obsolète",
+        "it": "stiamo richiedendo la configurazione anche di nuovi clienti\nabbiamo corretto un bug con limitState non rispettato su `startTransaction`\nassicurati di non utilizzare una connessione obsoleta",
+        "es": "también estamos solicitando la configuración de nuevos clientes\narreglamos un error con limitState no respetado en `startTransaction`\nasegúrese de que no usemos una conexión desactualizada",
+        "pl": "prosimy o konfigurację nowych klientów\nnaprawiliśmy błąd z limitState nierespektowanym w `startTransaction`\nupewnij się, że nie korzystamy z przestarzałego połączenia",
+        "zh-cn": "我们也在请求新客户的配置\n我们修复了“startTransaction”上不遵守 limitState 的错误\n确保我们没有使用过时的连接"
+      },
       "0.1.0": {
         "en": "small optimizations\nupdated dependencies",
         "de": "kleine Optimierungen\naktualisierte Abhängigkeiten",
@@ -74,18 +86,6 @@
         "es": "fijamos el nombre del estado de disponibilidad\nArreglamos una coma innecesaria en el estado `info.connection`",
         "pl": "naprawiliśmy nazwę stanu dostępności\nnaprawiliśmy niepotrzebny przecinek w stanie `info.connection`",
         "zh-cn": "我们固定了可用性状态的名称\n我们修复了 `info.connection` 状态中不必要的逗号"
-      },
-      "0.0.5": {
-        "en": "we added the meterValue state\nwe added state to control availability",
-        "de": "wir haben den meterValue-Zustand hinzugefügt\nWir haben den Status hinzugefügt, um die Verfügbarkeit zu kontrollieren",
-        "ru": "мы добавили состояние meterValue\nмы добавили состояние для контроля доступности",
-        "pt": "adicionamos o estado meterValue\nadicionamos estado para controlar a disponibilidade",
-        "nl": "we hebben de meterValue-status toegevoegd\nwe hebben status toegevoegd om de beschikbaarheid te controleren",
-        "fr": "nous avons ajouté l'état meterValue\nnous avons ajouté l'état pour contrôler la disponibilité",
-        "it": "abbiamo aggiunto lo stato meterValue\nabbiamo aggiunto lo stato per controllare la disponibilità",
-        "es": "agregamos el estado meterValue\nagregamos estado para controlar la disponibilidad",
-        "pl": "dodaliśmy stan meterValue\ndodaliśmy stan do kontroli dostępności",
-        "zh-cn": "我们添加了 meterValue 状态\n我们添加了状态来控制可用性"
       }
     },
     "title": "Open Charge Point Protocol",

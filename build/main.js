@@ -36,7 +36,6 @@ class Ocpp extends utils.Adapter {
         this.on('unload', this.onUnload.bind(this));
         this.clientTimeouts = {};
         this.knownClients = [];
-        this.clients = {};
     }
     /**
      * Is called when databases are connected and adapter received configuration.
@@ -51,30 +50,29 @@ class Ocpp extends utils.Adapter {
             this.log.info(`Connection from "${url}" with credentials "${JSON.stringify(credentials)}" and protocol: "${protocol}"`);
             return Promise.resolve([true, 0, '']);
         };
-        const server = new ocpp_eliftech_1.CentralSystem({ validateConnection, wsOptions: {} });
+        this.server = new ocpp_eliftech_1.CentralSystem({ validateConnection, wsOptions: {} });
         const port = await this.getPortAsync(this.config.port);
-        server.listen(port);
+        this.server.listen(port);
         this.log.info(`Server listening on port ${port}`);
         /**
          * Called if client sends an error
          */
-        server.onError = async (client, command, error) => {
+        this.server.onError = async (client, command, error) => {
             this.log.error(`Received error from "${client.connection.url}" with command "${JSON.stringify(command)}": ${error.message}`);
         };
         /**
          * Called if client sends response error
          */
-        server.onResponseError = async (client, command, response, error) => {
+        this.server.onResponseError = async (client, command, response, error) => {
             this.log.error(`Received response error from "${client.connection.url}" with command "${JSON.stringify(command)}" (response: ${JSON.stringify(response)}): ${error.message}`);
         };
         /**
          * Called if we receive a command from a client
          */
-        server.onRequest = async (client, command) => {
+        this.server.onRequest = async (client, command) => {
             const connection = client.connection;
             // we replace all dots
             const devName = connection.url.replace(/\./g, '_');
-            this.clients[devName] = client;
             // we received a new command, first check if the client is known to us
             if (!this.knownClients.includes(connection.url)) {
                 this.log.info(`New device connected: "${connection.url}"`);
@@ -281,6 +279,7 @@ class Ocpp extends utils.Adapter {
      */
     async onUnload(callback) {
         try {
+            delete this.server;
             // clear all timeouts
             for (const [device, timeout] of Object.entries(this.clientTimeouts)) {
                 await this.setStateAsync(`${device.replace(/\./g, '_')}.connected`, false, true);
@@ -305,8 +304,15 @@ class Ocpp extends utils.Adapter {
         const idArr = id.split('.');
         const deviceName = idArr[2];
         const functionality = idArr[3];
+        if (!this.server) {
+            this.log.warn(`Cannot control "${deviceName}", because server is not running`);
+            return;
+        }
         const connState = await this.getStateAsync(`${deviceName}.connected`);
-        if (!(connState === null || connState === void 0 ? void 0 : connState.val)) {
+        const client = this.server.clients.find(client => {
+            return client.connection.url.replace(/\./g, '_') === deviceName;
+        });
+        if (!(connState === null || connState === void 0 ? void 0 : connState.val) || !client) {
             this.log.warn(`Cannot control "${deviceName}", because not connected`);
             return;
         }
@@ -359,7 +365,7 @@ class Ocpp extends utils.Adapter {
                 });
             }
             try {
-                await this.clients[deviceName].connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
+                await client.connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
@@ -368,7 +374,7 @@ class Ocpp extends utils.Adapter {
         else if (functionality === 'availability') {
             try {
                 this.log.debug(`Sending ChangeAvailability for ${deviceName}: ${state.val ? 'Operative' : 'Inoperative'}`);
-                await this.clients[deviceName].connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeAvailability({
+                await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeAvailability({
                     connectorId: connectorId,
                     type: state.val ? 'Operative' : 'Inoperative'
                 }), 3 /*MessageType.CALLRESULT_MESSAGE*/);
@@ -380,7 +386,7 @@ class Ocpp extends utils.Adapter {
         else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
             try {
                 this.log.debug(`Sending SetChargingProfile for ${deviceName}`);
-                await this.clients[deviceName].connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
+                await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
                     connectorId: connectorId,
                     csChargingProfiles: {
                         chargingProfileId: 1,
