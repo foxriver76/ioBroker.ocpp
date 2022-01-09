@@ -18,6 +18,9 @@ import {
 	StopTransactionResponse
 } from '@ampeco/ocpp-eliftech/schemas';
 
+// cannot import the constants correctly, so define the necessary ones until fixed
+const CALL_MESSAGE = 2; // REQ
+
 class Ocpp extends utils.Adapter {
 	private readonly clientTimeouts: Record<string, NodeJS.Timeout>;
 	private readonly knownClients: string[];
@@ -207,7 +210,7 @@ class Ocpp extends utils.Adapter {
 				this.log.info(`Requesting BootNotification from "${connection.url}"`);
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'BootNotification'
-				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				}), CALL_MESSAGE);
 
 				await this.wait(1000);
 			}
@@ -217,7 +220,7 @@ class Ocpp extends utils.Adapter {
 				this.log.info(`Requesting StatusNotification from "${connection.url}"`);
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'StatusNotification'
-				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				}), CALL_MESSAGE);
 
 				await this.wait(1000);
 			}
@@ -227,7 +230,7 @@ class Ocpp extends utils.Adapter {
 				// it's not MeterValues, so request
 				await connection.send(new OCPPCommands.TriggerMessage({
 					requestedMessage: 'MeterValues'
-				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				}), CALL_MESSAGE);
 				await this.wait(1000);
 			}
 
@@ -235,7 +238,7 @@ class Ocpp extends utils.Adapter {
 				this.log.info(`Sending GetConfiguration to "${connection.url}"`)
 				// it's not GetConfiguration try to request whole config
 				await connection.send(new OCPPCommands.GetConfiguration({
-				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				}), CALL_MESSAGE);
 			}
 		} catch (e: any) {
 			this.log.warn(`Could not request states of "${connection.url}": ${e.message}`)
@@ -419,7 +422,7 @@ class Ocpp extends utils.Adapter {
 				});
 			}
 			try {
-				await client.connection.send(command, 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				await client.connection.send(command, CALL_MESSAGE);
 			} catch (e: any) {
 				this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
 			}
@@ -429,7 +432,7 @@ class Ocpp extends utils.Adapter {
 				await client.connection.send(new OCPPCommands.ChangeAvailability({
 					connectorId: connectorId,
 					type: state.val ? 'Operative' : 'Inoperative'
-				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				}), CALL_MESSAGE);
 			} catch (e: any) {
 				this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
 			}
@@ -457,7 +460,7 @@ class Ocpp extends utils.Adapter {
 							// minChargingRate: 12 // if needed we add it
 						}
 					}
-				}), 3 /*MessageType.CALLRESULT_MESSAGE*/);
+				}), CALL_MESSAGE);
 			} catch (e: any) {
 				this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
 			}

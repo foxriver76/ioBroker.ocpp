@@ -27,6 +27,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 
 ### **WORK IN PROGRESS**
 * (foxriver76) close server on unload for compact mode
+* (foxriver76) fixed the message type
 
 ### 0.1.1 (2022-01-09)
 * (foxriver76) we are requesting config of new clients too
