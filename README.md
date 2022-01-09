@@ -24,6 +24,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) close server on unload for compact mode
+
 ### 0.1.1 (2022-01-09)
 * (foxriver76) we are requesting config of new clients too
 * (foxriver76) we fixed a bug with limitState not respected on `startTransaction`

@@ -317,6 +317,9 @@ class Ocpp extends utils.Adapter {
 	 */
 	private async onUnload(callback: () => void): Promise<void> {
 		try {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore 3rd party typings are not perfect ;-)
+			this.server.server.close();
 			delete this.server;
 
 			// clear all timeouts
