@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "news": {
+      "0.3.0": {
+        "en": "if wallbox offers multiple meter values they will now alle be represented\nadmin is no longer needed on the same host (multihost)",
+        "de": "Wenn die Wallbox mehrere Zählerwerte anbietet, werden diese jetzt alle dargestellt\nAdmin wird nicht mehr auf demselben Host benötigt (Multihost)",
+        "ru": "если wallbox предлагает несколько значений счетчика, теперь все они будут представлены\nадмин больше не нужен на том же хосте (многохост)",
+        "pt": "se o wallbox oferecer vários valores de medidor, eles agora serão todos representados\nadmin não é mais necessário no mesmo host (multihost)",
+        "nl": "als wallbox meerdere meterwaarden biedt, worden ze nu allemaal weergegeven\nadmin is niet langer nodig op dezelfde host (multihost)",
+        "fr": "si la wallbox propose plusieurs valeurs de compteur, elles seront désormais toutes représentées\nadmin n'est plus nécessaire sur le même hôte (multihost)",
+        "it": "se la wallbox offre più valori di misura ora saranno tutti rappresentati\nl'amministratore non è più necessario sullo stesso host (multihost)",
+        "es": "si wallbox ofrece varios valores de medidor, ahora estarán todos representados\nel administrador ya no es necesario en el mismo host (multihost)",
+        "pl": "jeśli Wallbox oferuje wiele wartości liczników, będą teraz wszystkie reprezentowane\nadministrator nie jest już potrzebny na tym samym hoście (multihost)",
+        "zh-cn": "如果 wallbox 提供多个仪表值，它们现在将全部表示\n同一主机上不再需要管理员（多主机）"
+      },
       "0.2.0": {
         "en": "close server on unload for compact mode\nfixed the message type\nlimit state is now in Ampere and should work now",
         "de": "Schließen Sie den Server beim Entladen für den Kompaktmodus\nNachrichtentyp behoben\nGrenzzustand ist jetzt in Ampere und sollte jetzt funktionieren",
@@ -74,18 +86,6 @@
         "es": "ahora reemplazamos los puntos en los nombres de los dispositivos por guiones bajos",
         "pl": "teraz zastępujemy kropki w nazwach urządzeń podkreśleniami",
         "zh-cn": "我们现在用下划线替换设备名称中的点"
-      },
-      "0.0.7": {
-        "en": "added possibility to limit the charging process to given Wh if supported by ChargePoint",
-        "de": "Möglichkeit hinzugefügt, den Ladevorgang auf eine bestimmte Wh zu begrenzen, wenn von ChargePoint unterstützt",
-        "ru": "добавлена возможность ограничить процесс зарядки заданным Wh, если поддерживается ChargePoint",
-        "pt": "possibilidade adicional de limitar o processo de cobrança a dado Wh, se compatível com ChargePoint",
-        "nl": "mogelijkheid toegevoegd om het laadproces te beperken tot bepaalde Wh indien ondersteund door ChargePoint",
-        "fr": "possibilité supplémentaire de limiter le processus de charge à un Wh donné si pris en charge par ChargePoint",
-        "it": "aggiunta possibilità di limitare il processo di ricarica a un dato Wh se supportato da ChargePoint",
-        "es": "posibilidad adicional de limitar el proceso de carga a un Wh dado si es compatible con ChargePoint",
-        "pl": "dodano możliwość ograniczenia procesu ładowania do podanej Wh, jeśli jest obsługiwane przez ChargePoint",
-        "zh-cn": "如果 ChargePoint 支持，则增加了将充电过程限制为给定 Wh 的可能性"
       }
     },
     "title": "Open Charge Point Protocol",
@@ -140,7 +140,11 @@
     "materialize": true,
     "dependencies": [
       {
-        "js-controller": ">=3.3.15",
+        "js-controller": ">=3.3.15"
+      }
+    ],
+    "globalDependencies": [
+      {
         "admin": ">=5.1.0"
       }
     ]

@@ -64,15 +64,10 @@ exports.stateObjects = [
         native: {}
     },
     {
-        _id: 'meterValue',
-        type: 'state',
+        _id: 'meterValues',
+        type: 'channel',
         common: {
-            name: 'Power meter value',
-            type: 'number',
-            role: 'value.power',
-            write: false,
-            read: true,
-            unit: 'Wh'
+            name: 'Meter values',
         },
         native: {}
     },

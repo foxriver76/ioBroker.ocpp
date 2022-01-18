@@ -160,7 +160,7 @@ class Ocpp extends utils.Adapter {
                     // {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
                     // "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
                     // "measurand":"Energy.Active.Import.Register","unit":"Wh"}]}]}
-                    await this.setStateAsync(`${devName}.meterValue`, parseFloat(command.meterValue[0].sampledValue[0].value), true);
+                    await this._setMeterValues(devName, command);
                     const response = {};
                     return response;
                 }
@@ -184,7 +184,7 @@ class Ocpp extends utils.Adapter {
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'BootNotification'
                 }), CALL_MESSAGE);
-                await this.wait(1000);
+                await this._wait(1000);
             }
             if (command.getCommandName() !== 'StatusNotification') {
                 // it's not a status notification so request
@@ -192,7 +192,7 @@ class Ocpp extends utils.Adapter {
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'StatusNotification'
                 }), CALL_MESSAGE);
-                await this.wait(1000);
+                await this._wait(1000);
             }
             if (command.getCommandName() !== 'MeterValues') {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
@@ -200,7 +200,7 @@ class Ocpp extends utils.Adapter {
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'MeterValues'
                 }), CALL_MESSAGE);
-                await this.wait(1000);
+                await this._wait(1000);
             }
             if (command.getCommandName() !== 'GetConfiguration') {
                 this.log.info(`Sending GetConfiguration to "${connection.url}"`);
@@ -421,12 +421,43 @@ class Ocpp extends utils.Adapter {
             }
         }
     }
+    async _setMeterValues(devName, meterValues) {
+        for (const value of meterValues.meterValue[0].sampledValue) {
+            let id = `${devName}.meterValues.`;
+            let name = '';
+            if (value.measurand) {
+                id += value.measurand.replace(/\./g, '_');
+                name = value.measurand;
+            }
+            if (value.phase) {
+                id += value.measurand ? `_${value.phase}` : value.phase;
+                name += value.measurand ? ` ${value.phase}` : value.phase;
+            }
+            if (!value.phase && !value.measurand) {
+                id += 'unknown';
+                name = 'Unknown';
+            }
+            await this.setObjectNotExistsAsync(id, {
+                type: 'state',
+                common: {
+                    name: name,
+                    role: 'value',
+                    type: 'number',
+                    read: true,
+                    write: false,
+                    unit: value.unit
+                },
+                native: value
+            });
+            await this.setStateAsync(id, parseFloat(value.value), true);
+        }
+    }
     /**
      * Waits for given ms
      * @param ms milliseconds to wait
      * @private
      */
-    async wait(ms) {
+    async _wait(ms) {
         return new Promise(resolve => {
             setTimeout(() => resolve(), ms);
         });
