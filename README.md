@@ -5,7 +5,6 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
 ![Number of Installations](https://iobroker.live/badges/ocpp-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/ocpp-stable.svg)
-[![Dependency Status](https://img.shields.io/david/foxriver76/iobroker.ocpp.svg)](https://david-dm.org/foxriver76/iobroker.ocpp)
 
 [![NPM](https://nodei.co/npm/iobroker.ocpp.png?downloads=true)](https://nodei.co/npm/iobroker.ocpp/)
 
@@ -77,7 +76,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 ## License
 MIT License
 
-Copyright (c) 2021 Moritz Heusinger <moritz.heusinger@gmail.com>
+Copyright (c) 2022 Moritz Heusinger <moritz.heusinger@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
