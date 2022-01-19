@@ -14,8 +14,7 @@ exports.stateObjects = [
         },
         native: {}
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error states as array is not in typings yet
     {
         _id: 'status',
         type: 'state',
@@ -67,7 +66,7 @@ exports.stateObjects = [
         _id: 'meterValues',
         type: 'channel',
         common: {
-            name: 'Meter values',
+            name: 'Meter values'
         },
         native: {}
     },
@@ -96,6 +95,6 @@ exports.stateObjects = [
             min: 0
         },
         native: {}
-    },
+    }
 ];
 //# sourceMappingURL=states.js.map

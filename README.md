@@ -24,6 +24,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) set charging profiles on stack level 0, because some chargers do not support higher levels
+
 ### 0.3.0 (2022-01-18)
 * (foxriver76) if wallbox offers multiple meter values they will now alle be represented
 * (foxriver76) admin is no longer needed on the same host (multihost)

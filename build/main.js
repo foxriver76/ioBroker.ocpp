@@ -31,7 +31,7 @@ class Ocpp extends utils.Adapter {
     constructor(options = {}) {
         super({
             ...options,
-            name: 'ocpp',
+            name: 'ocpp'
         });
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
@@ -205,9 +205,7 @@ class Ocpp extends utils.Adapter {
             if (command.getCommandName() !== 'GetConfiguration') {
                 this.log.info(`Sending GetConfiguration to "${connection.url}"`);
                 // it's not GetConfiguration try to request whole config
-                await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({
-                    key: ['ConnectionTimeOut']
-                }), CALL_MESSAGE);
+                await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({}), CALL_MESSAGE);
             }
         }
         catch (e) {
@@ -283,8 +281,7 @@ class Ocpp extends utils.Adapter {
      */
     async onUnload(callback) {
         try {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore 3rd party typings are not perfect ;-)
+            // @ts-expect-error 3rd party typings are not perfect (yet?) ;-)
             this.server.server.close();
             delete this.server;
             // clear all timeouts
@@ -337,26 +334,26 @@ class Ocpp extends utils.Adapter {
                 // enable
                 const cmdObj = {
                     connectorId: connectorId,
-                    idTag: connectorId.toString(),
+                    idTag: connectorId.toString()
                 };
                 const limitState = await this.getStateAsync(`${deviceName}.chargeLimit`);
                 if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
-                        stackLevel: 1,
+                        stackLevel: 0,
                         chargingProfilePurpose: 'TxProfile',
                         chargingProfileKind: 'Recurring',
                         recurrencyKind: 'Daily',
                         chargingSchedule: {
-                            'duration': 86400,
-                            'startSchedule': '2013-01-01T00:00Z',
-                            'chargingRateUnit': 'A',
-                            'chargingSchedulePeriod': [
+                            duration: 86400,
+                            startSchedule: '2013-01-01T00:00Z',
+                            chargingRateUnit: 'A',
+                            chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0,
                                     limit: limitState.val // e.g. 12 for 12 A
                                 }
-                            ],
+                            ]
                             // minChargingRate: 12 // if needed we add it
                         }
                     };
@@ -397,20 +394,20 @@ class Ocpp extends utils.Adapter {
                     connectorId: connectorId,
                     csChargingProfiles: {
                         chargingProfileId: 1,
-                        stackLevel: 1,
+                        stackLevel: 0,
                         chargingProfilePurpose: 'TxDefaultProfile',
                         chargingProfileKind: 'Recurring',
                         recurrencyKind: 'Daily',
                         chargingSchedule: {
-                            'duration': 86400,
-                            'startSchedule': '2013-01-01T00:00Z',
-                            'chargingRateUnit': 'A',
-                            'chargingSchedulePeriod': [
+                            duration: 86400,
+                            startSchedule: '2013-01-01T00:00Z',
+                            chargingRateUnit: 'A',
+                            chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0,
                                     limit: state.val // e.g. 12 for 12 A
                                 }
-                            ],
+                            ]
                             // minChargingRate: 12 // if needed we add it
                         }
                     }
@@ -421,6 +418,13 @@ class Ocpp extends utils.Adapter {
             }
         }
     }
+    /**
+     * Sets the meter values and creates objects if non existing
+     *
+     * @param devName name of the device
+     * @param meterValues meter values object
+     * @private
+     */
     async _setMeterValues(devName, meterValues) {
         for (const value of meterValues.meterValue[0].sampledValue) {
             let id = `${devName}.meterValues.`;

@@ -11,8 +11,7 @@ export const stateObjects: ioBroker.Object[] = [
         },
         native: {}
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error states as array is not in typings yet
     {
         _id: 'status',
         type: 'state',

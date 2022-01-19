@@ -67,9 +67,7 @@ class Ocpp extends utils.Adapter {
 
         const port = await this.getPortAsync(this.config.port);
 
-        try {
-            this.server.listen(port);
-        } catch (e) {}
+        this.server.listen(port);
 
         this.log.info(`Server listening on port ${port}`);
 
@@ -272,12 +270,7 @@ class Ocpp extends utils.Adapter {
             if (command.getCommandName() !== 'GetConfiguration') {
                 this.log.info(`Sending GetConfiguration to "${connection.url}"`);
                 // it's not GetConfiguration try to request whole config
-                await connection.send(
-                    new OCPPCommands.GetConfiguration({
-                        key: ['ConnectionTimeOut']
-                    }),
-                    CALL_MESSAGE
-                );
+                await connection.send(new OCPPCommands.GetConfiguration({}), CALL_MESSAGE);
             }
         } catch (e: any) {
             this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
@@ -363,8 +356,7 @@ class Ocpp extends utils.Adapter {
      */
     private async onUnload(callback: () => void): Promise<void> {
         try {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore 3rd party typings are not perfect ;-)
+            // @ts-expect-error 3rd party typings are not perfect (yet?) ;-)
             this.server.server.close();
             delete this.server;
 
@@ -436,7 +428,7 @@ class Ocpp extends utils.Adapter {
                 if (limitState?.val && typeof limitState.val === 'number') {
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
-                        stackLevel: 1,
+                        stackLevel: 0, // some chargers only support 0
                         chargingProfilePurpose: 'TxProfile', // only this value is allowed for RemoteStart
                         chargingProfileKind: 'Recurring',
                         recurrencyKind: 'Daily',
@@ -492,7 +484,7 @@ class Ocpp extends utils.Adapter {
                         connectorId: connectorId,
                         csChargingProfiles: {
                             chargingProfileId: 1,
-                            stackLevel: 1,
+                            stackLevel: 0, // some chargers only support 0
                             chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
                             chargingProfileKind: 'Recurring',
                             recurrencyKind: 'Daily',
