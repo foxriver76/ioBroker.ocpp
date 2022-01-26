@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "news": {
+      "0.3.1": {
+        "en": "set charging profiles on stack level 0, because some chargers do not support higher levels",
+        "de": "Ladeprofile auf Stacklevel 0 setzen, da einige Ladegeräte höhere Levels nicht unterstützen",
+        "ru": "установите профили зарядки на уровне стека 0, потому что некоторые зарядные устройства не поддерживают более высокие уровни",
+        "pt": "defina perfis de carregamento no nível de pilha 0, porque alguns carregadores não suportam níveis mais altos",
+        "nl": "stel laadprofielen in op stapelniveau 0, omdat sommige opladers geen hogere niveaus ondersteunen",
+        "fr": "définir des profils de charge au niveau de pile 0, car certains chargeurs ne prennent pas en charge des niveaux plus élevés",
+        "it": "impostare i profili di carica sul livello di stack 0, poiché alcuni caricatori non supportano livelli superiori",
+        "es": "configure los perfiles de carga en el nivel de pila 0, porque algunos cargadores no admiten niveles más altos",
+        "pl": "ustaw profile ładowania na poziomie 0 stosu, ponieważ niektóre ładowarki nie obsługują wyższych poziomów",
+        "zh-cn": "在堆栈级别 0 上设置充电配置文件，因为某些充电器不支持更高级别"
+      },
       "0.3.0": {
         "en": "if wallbox offers multiple meter values they will now alle be represented\nadmin is no longer needed on the same host (multihost)",
         "de": "Wenn die Wallbox mehrere Zählerwerte anbietet, werden diese jetzt alle dargestellt\nAdmin wird nicht mehr auf demselben Host benötigt (Multihost)",
@@ -74,18 +86,6 @@
         "es": "cambiar a la bifurcación OCPP actualizada\noptimizaciones menores",
         "pl": "przełącz na zaktualizowany widelec OCPP\ndrobne optymalizacje",
         "zh-cn": "切换到更新的 OCPP 叉\n次要优化"
-      },
-      "0.0.8": {
-        "en": "we now replace dots in device names by underscores",
-        "de": "wir ersetzen jetzt Punkte in Gerätenamen durch Unterstriche",
-        "ru": "теперь мы заменяем точки в именах устройств символами подчеркивания",
-        "pt": "agora substituímos os pontos nos nomes dos dispositivos por sublinhados",
-        "nl": "we vervangen nu punten in apparaatnamen door onderstrepingstekens",
-        "fr": "nous remplaçons maintenant les points dans les noms d'appareils par des traits de soulignement",
-        "it": "ora sostituiamo i punti nei nomi dei dispositivi con i trattini bassi",
-        "es": "ahora reemplazamos los puntos en los nombres de los dispositivos por guiones bajos",
-        "pl": "teraz zastępujemy kropki w nazwach urządzeń podkreśleniami",
-        "zh-cn": "我们现在用下划线替换设备名称中的点"
       }
     },
     "title": "Open Charge Point Protocol",
