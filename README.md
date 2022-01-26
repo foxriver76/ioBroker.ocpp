@@ -23,6 +23,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.3.2 (2022-01-26)
+* (foxriver76) set 'TxDefaultProfile' instead of 'TxProfile' if charging starts, else it may block overriding the limit during transaction
+
 ### 0.3.1 (2022-01-26)
 * (foxriver76) set charging profiles on stack level 0, because some chargers do not support higher levels
 

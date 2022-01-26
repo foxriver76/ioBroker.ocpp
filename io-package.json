@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "news": {
+      "0.3.2": {
+        "en": "set 'TxDefaultProfile' instead of 'TxProfile' if charging starts, else it may block overriding the limit during transaction",
+        "de": "Setzen Sie 'TxDefaultProfile' anstelle von 'TxProfile', wenn der Ladevorgang beginnt, andernfalls kann es das Überschreiben des Limits während der Transaktion blockieren",
+        "ru": "установите «TxDefaultProfile» вместо «TxProfile», если начинается зарядка, иначе это может заблокировать переопределение лимита во время транзакции",
+        "pt": "defina 'TxDefaultProfile' em vez de 'TxProfile' se o carregamento começar, caso contrário, ele pode bloquear a substituição do limite durante a transação",
+        "nl": "stel 'TxDefaultProfile' in in plaats van 'TxProfile' als het opladen begint, anders kan het overschrijven van de limiet tijdens de transactie blokkeren",
+        "fr": "définissez 'TxDefaultProfile' au lieu de 'TxProfile' si la charge commence, sinon cela peut bloquer le dépassement de la limite pendant la transaction",
+        "it": "impostare 'TxDefaultProfile' invece di 'TxProfile' se inizia l'addebito, altrimenti potrebbe bloccare l'override del limite durante la transazione",
+        "es": "establezca 'TxDefaultProfile' en lugar de 'TxProfile' si comienza la carga; de lo contrario, puede bloquear la anulación del límite durante la transacción",
+        "pl": "ustaw 'TxDefaultProfile' zamiast 'TxProfile' jeśli rozpocznie się ładowanie, w przeciwnym razie może zablokować przekroczenie limitu podczas transakcji",
+        "zh-cn": "如果收费开始，请设置“TxDefaultProfile”而不是“TxProfile”，否则它可能会阻止在交易期间覆盖限制"
+      },
       "0.3.1": {
         "en": "set charging profiles on stack level 0, because some chargers do not support higher levels",
         "de": "Ladeprofile auf Stacklevel 0 setzen, da einige Ladegeräte höhere Levels nicht unterstützen",
@@ -74,18 +86,6 @@
         "es": "error fijo al enviar comandos si el nombre del dispositivo contiene puntos\ntambién registramos errores de respuesta a partir de ahora",
         "pl": "poprawiony błąd przy wysyłaniu poleceń, jeśli nazwa urządzenia zawiera kropki\nod teraz rejestrujemy również błędy odpowiedzi",
         "zh-cn": "如果设备名称包含点，则在发送命令时修复了错误\n从现在开始，我们还将记录响应错误"
-      },
-      "0.0.9": {
-        "en": "switch to updated OCPP fork\nminor optimizations",
-        "de": "zu aktualisiertem OCPP-Fork wechseln\nkleinere Optimierungen",
-        "ru": "перейти на обновленный форк OCPP\nнезначительные оптимизации",
-        "pt": "mudar para bifurcação OCPP atualizado\npequenas otimizações",
-        "nl": "overschakelen naar bijgewerkte OCPP-vork\nkleine optimalisaties",
-        "fr": "passer à la fourche OCPP mise à jour\noptimisations mineures",
-        "it": "passa al fork OCPP aggiornato\nottimizzazioni minori",
-        "es": "cambiar a la bifurcación OCPP actualizada\noptimizaciones menores",
-        "pl": "przełącz na zaktualizowany widelec OCPP\ndrobne optymalizacje",
-        "zh-cn": "切换到更新的 OCPP 叉\n次要优化"
       }
     },
     "title": "Open Charge Point Protocol",

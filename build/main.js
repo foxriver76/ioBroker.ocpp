@@ -341,7 +341,7 @@ class Ocpp extends utils.Adapter {
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 0,
-                        chargingProfilePurpose: 'TxProfile',
+                        chargingProfilePurpose: 'TxDefaultProfile',
                         chargingProfileKind: 'Recurring',
                         recurrencyKind: 'Daily',
                         chargingSchedule: {
