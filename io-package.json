@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "news": {
+      "0.3.3": {
+        "en": "fixed default value of `info.connection`",
+        "de": "fester Standardwert von `info.connection`",
+        "ru": "фиксированное значение по умолчанию для `info.connection`",
+        "pt": "valor padrão fixo de `info.connection`",
+        "nl": "vaste standaardwaarde van `info.connection`",
+        "fr": "valeur fixe par défaut de `info.connection`",
+        "it": "fisso il valore predefinito di `info.connection`",
+        "es": "valor predeterminado fijo de `info.connection`",
+        "pl": "ustalona domyślna wartość `info.connection`",
+        "zh-cn": "修复了`info.connection`的默认值"
+      },
       "0.3.2": {
         "en": "set 'TxDefaultProfile' instead of 'TxProfile' if charging starts, else it may block overriding the limit during transaction",
         "de": "Setzen Sie 'TxDefaultProfile' anstelle von 'TxProfile', wenn der Ladevorgang beginnt, andernfalls kann es das Überschreiben des Limits während der Transaktion blockieren",
@@ -74,18 +86,6 @@
         "es": "pequeñas optimizaciones\ndependencias actualizadas",
         "pl": "małe optymalizacje\nzaktualizowane zależności",
         "zh-cn": "小优化\n更新的依赖"
-      },
-      "0.0.10": {
-        "en": "fixed error on sending commands if device name containts dots\nwe also log repsonse errors from now on",
-        "de": "Fehler beim Senden von Befehlen behoben, wenn der Gerätename Punkte enthält\nwir protokollieren ab sofort auch Antwortfehler",
-        "ru": "исправлена ошибка отправки команд, если имя устройства содержит точки\nс этого момента мы также регистрируем ошибки ответа",
-        "pt": "corrigido o erro no envio de comandos se o nome do dispositivo contiver pontos\ntambém registramos erros de repetição de agora em diante",
-        "nl": "opgeloste fout bij het verzenden van opdrachten als de apparaatnaam punten bevat\nwe loggen vanaf nu ook responsfouten",
-        "fr": "erreur corrigée lors de l'envoi de commandes si le nom de l'appareil contient des points\nnous enregistrons également les erreurs de réponse à partir de maintenant",
-        "it": "corretto errore nell'invio dei comandi se il nome del dispositivo contiene punti\nda ora in poi registriamo anche gli errori di risposta",
-        "es": "error fijo al enviar comandos si el nombre del dispositivo contiene puntos\ntambién registramos errores de respuesta a partir de ahora",
-        "pl": "poprawiony błąd przy wysyłaniu poleceń, jeśli nazwa urządzenia zawiera kropki\nod teraz rejestrujemy również błędy odpowiedzi",
-        "zh-cn": "如果设备名称包含点，则在发送命令时修复了错误\n从现在开始，我们还将记录响应错误"
       }
     },
     "title": "Open Charge Point Protocol",
@@ -171,7 +171,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": false
+        "def": ""
       },
       "native": {}
     }
