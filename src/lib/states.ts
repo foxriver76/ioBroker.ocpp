@@ -11,7 +11,6 @@ export const stateObjects: ioBroker.Object[] = [
         },
         native: {}
     },
-    // @ts-expect-error states as array is not in typings yet
     {
         _id: 'status',
         type: 'state',

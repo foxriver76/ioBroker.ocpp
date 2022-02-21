@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@ampeco/ocpp-eliftech": "https://github.com/ampeco/cpd-ocpp/tarball/master",
-    "@iobroker/adapter-core": "^2.5.1",
+    "@iobroker/adapter-core": "^2.6.0",
     "babel-runtime": "^6.26.0"
   },
   "devDependencies": {
