@@ -50,7 +50,6 @@ class Ocpp extends utils.Adapter {
 
         // reset connection state
         await this.setStateAsync('info.connection', '', true);
-        OCPPCommands.Authorize;
 
         const validateConnection = (
             url: string,

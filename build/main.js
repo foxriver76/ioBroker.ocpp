@@ -52,7 +52,6 @@ class Ocpp extends utils.Adapter {
         this.log.info('Starting OCPP Server');
         // reset connection state
         await this.setStateAsync('info.connection', '', true);
-        ocpp_eliftech_1.OCPPCommands.Authorize;
         const validateConnection = (url, credentials, protocol, ocppProtocolVersion) => {
             this.log.debug(`Connection from "${url}" with credentials "${JSON.stringify(credentials)}", protocol: "${protocol}"${ocppProtocolVersion ? `, OCPP: ${ocppProtocolVersion}` : ''}`);
             if (this.config.authentication) {
