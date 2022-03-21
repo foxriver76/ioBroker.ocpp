@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.3.3",
+    "version": "0.4.0",
     "news": {
+      "0.4.0": {
+        "en": "implemented authentication",
+        "de": "implementierte Authentifizierung",
+        "ru": "реализована аутентификация",
+        "pt": "autenticação implementada",
+        "nl": "geïmplementeerde authenticatie",
+        "fr": "authentification implémentée",
+        "it": "autenticazione implementata",
+        "es": "autenticación implementada",
+        "pl": "zaimplementowane uwierzytelnianie",
+        "zh-cn": "实施认证"
+      },
       "0.3.3": {
         "en": "fixed default value of `info.connection`",
         "de": "fester Standardwert von `info.connection`",
@@ -74,18 +86,6 @@
         "es": "también estamos solicitando la configuración de nuevos clientes\narreglamos un error con limitState no respetado en `startTransaction`\nasegúrese de que no usemos una conexión desactualizada",
         "pl": "prosimy o konfigurację nowych klientów\nnaprawiliśmy błąd z limitState nierespektowanym w `startTransaction`\nupewnij się, że nie korzystamy z przestarzałego połączenia",
         "zh-cn": "我们也在请求新客户的配置\n我们修复了“startTransaction”上不遵守 limitState 的错误\n确保我们没有使用过时的连接"
-      },
-      "0.1.0": {
-        "en": "small optimizations\nupdated dependencies",
-        "de": "kleine Optimierungen\naktualisierte Abhängigkeiten",
-        "ru": "небольшие оптимизации\nобновленные зависимости",
-        "pt": "pequenas otimizações\ndependências atualizadas",
-        "nl": "kleine optimalisaties\nbijgewerkte afhankelijkheden",
-        "fr": "petites optimisations\ndépendances mises à jour",
-        "it": "piccole ottimizzazioni\ndipendenze aggiornate",
-        "es": "pequeñas optimizaciones\ndependencias actualizadas",
-        "pl": "małe optymalizacje\nzaktualizowane zależności",
-        "zh-cn": "小优化\n更新的依赖"
       }
     },
     "title": "Open Charge Point Protocol",
