@@ -14,7 +14,6 @@ exports.stateObjects = [
         },
         native: {}
     },
-    // @ts-expect-error states as array is not in typings yet
     {
         _id: 'status',
         type: 'state',

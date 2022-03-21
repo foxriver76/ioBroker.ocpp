@@ -50,16 +50,35 @@ class Ocpp extends utils.Adapter {
 
         // reset connection state
         await this.setStateAsync('info.connection', '', true);
+        OCPPCommands.Authorize;
 
         const validateConnection = (
             url: string,
             credentials: { name: string; pass: string } | undefined,
-            protocol: 'http' | 'https'
+            protocol: 'http' | 'https',
+            ocppProtocolVersion?: string
         ): Promise<[boolean, number, string]> => {
-            this.log.info(
-                `Connection from "${url}" with credentials "${JSON.stringify(credentials)}" and protocol: "${protocol}"`
+            this.log.debug(
+                `Connection from "${url}" with credentials "${JSON.stringify(credentials)}", protocol: "${protocol}"${
+                    ocppProtocolVersion ? `, OCPP: ${ocppProtocolVersion}` : ''
+                }`
             );
 
+            if (this.config.authentication) {
+                if (
+                    (this.config.username && this.config.username !== credentials?.name) ||
+                    (this.config.password && this.config.password !== credentials?.pass)
+                ) {
+                    this.log.warn(`Client "${url}" provided incorrect credentials, connection denied`);
+                    return Promise.resolve([false, 0, '']);
+                }
+            }
+
+            this.log.info(
+                `New valid connection from "${url}" (${protocol}${
+                    ocppProtocolVersion ? `/${ocppProtocolVersion}` : ''
+                })`
+            );
             return Promise.resolve([true, 0, '']);
         };
 

@@ -150,8 +150,19 @@
     ]
   },
   "native": {
-    "port": 9220
+    "port": 9220,
+    "authentication": false,
+    "username": "",
+    "password": ""
   },
+  "protectedNative": [
+    "username",
+    "password"
+  ],
+  "encryptedNative": [
+    "username",
+    "password"
+  ],
   "objects": [],
   "instanceObjects": [
     {

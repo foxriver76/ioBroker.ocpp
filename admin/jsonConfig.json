@@ -12,6 +12,42 @@
       "es": "Puerto de servicio",
       "pl": "Port serwera",
       "zh-cn": "服务器端口"
+    },
+    "authentication": {
+      "en": "Authentication",
+      "de": "Authentifizierung",
+      "ru": "Аутентификация",
+      "pt": "Autenticação",
+      "nl": "authenticatie",
+      "fr": "Authentification",
+      "it": "Autenticazione",
+      "es": "Autenticación",
+      "pl": "Uwierzytelnianie",
+      "zh-cn": "验证"
+    },
+    "username": {
+      "en": "Username",
+      "de": "Nutzername",
+      "ru": "Имя пользователя",
+      "pt": "Nome do usuário",
+      "nl": "gebruikersnaam",
+      "fr": "Nom d'utilisateur",
+      "it": "Nome utente",
+      "es": "Nombre de usuario",
+      "pl": "Nazwa użytkownika",
+      "zh-cn": "用户名"
+    },
+    "password": {
+      "en": "Password",
+      "de": "Passwort",
+      "ru": "Пароль",
+      "pt": "Senha",
+      "nl": "Wachtwoord",
+      "fr": "Mot de passe",
+      "it": "Parola d'ordine",
+      "es": "Clave",
+      "pl": "Hasło",
+      "zh-cn": "密码"
     }
   },
   "items": {
@@ -19,6 +55,21 @@
       "type": "number",
       "label": "port",
       "min": 0
+    },
+    "authentication": {
+      "newLine": true,
+      "type": "checkbox",
+      "label": "authentication"
+    },
+    "username": {
+      "newLine": true,
+      "type": "text",
+      "label": "username"
+    },
+    "password": {
+      "type": "password",
+      "label": "password",
+      "repeat": false
     }
   }
 }

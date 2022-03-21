@@ -4,7 +4,11 @@
  */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -48,8 +52,17 @@ class Ocpp extends utils.Adapter {
         this.log.info('Starting OCPP Server');
         // reset connection state
         await this.setStateAsync('info.connection', '', true);
-        const validateConnection = (url, credentials, protocol) => {
-            this.log.info(`Connection from "${url}" with credentials "${JSON.stringify(credentials)}" and protocol: "${protocol}"`);
+        ocpp_eliftech_1.OCPPCommands.Authorize;
+        const validateConnection = (url, credentials, protocol, ocppProtocolVersion) => {
+            this.log.debug(`Connection from "${url}" with credentials "${JSON.stringify(credentials)}", protocol: "${protocol}"${ocppProtocolVersion ? `, OCPP: ${ocppProtocolVersion}` : ''}`);
+            if (this.config.authentication) {
+                if ((this.config.username && this.config.username !== (credentials === null || credentials === void 0 ? void 0 : credentials.name)) ||
+                    (this.config.password && this.config.password !== (credentials === null || credentials === void 0 ? void 0 : credentials.pass))) {
+                    this.log.warn(`Client "${url}" provided incorrect credentials, connection denied`);
+                    return Promise.resolve([false, 0, '']);
+                }
+            }
+            this.log.info(`New valid connection from "${url}" (${protocol}${ocppProtocolVersion ? `/${ocppProtocolVersion}` : ''})`);
             return Promise.resolve([true, 0, '']);
         };
         this.server = new ocpp_eliftech_1.CentralSystem({ validateConnection, wsOptions: {} });
