@@ -160,9 +160,9 @@ class Ocpp extends utils.Adapter {
                 }
                 case 'StatusNotification': {
                     this.log.info(`Received Status Notification from "${connection.url}": ${command.status}`);
-                    // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing","timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
+                    // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing",
+                    // "timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
                     await this.setStateChangedAsync(`${devName}.connectorId`, command.connectorId, true);
-                    // set status state
                     await this.setStateAsync(`${devName}.status`, command.status, true);
                     const response = {};
                     return response;
@@ -185,7 +185,6 @@ class Ocpp extends utils.Adapter {
      * Request BootNotification, StatusNotification and MeterValues
      * @param connection connection object
      * @param command command object
-     * @private
      */
     async requestNewClient(connection, command) {
         // we want to request boot notification and status and meter values to ahve everything up to date again
@@ -345,8 +344,8 @@ class Ocpp extends utils.Adapter {
             if (state.val) {
                 // enable
                 const cmdObj = {
-                    connectorId: connectorId,
-                    idTag: connectorId.toString()
+                    connectorId,
+                    idTag: await this._getIdTag(deviceName, connectorId)
                 };
                 const limitState = await this.getStateAsync(`${deviceName}.chargeLimit`);
                 if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
@@ -391,7 +390,7 @@ class Ocpp extends utils.Adapter {
             try {
                 this.log.debug(`Sending ChangeAvailability for ${deviceName}: ${state.val ? 'Operative' : 'Inoperative'}`);
                 await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeAvailability({
-                    connectorId: connectorId,
+                    connectorId,
                     type: state.val ? 'Operative' : 'Inoperative'
                 }), CALL_MESSAGE);
             }
@@ -403,7 +402,7 @@ class Ocpp extends utils.Adapter {
             try {
                 this.log.debug(`Sending SetChargingProfile for ${deviceName}`);
                 await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
-                    connectorId: connectorId,
+                    connectorId,
                     csChargingProfiles: {
                         chargingProfileId: 1,
                         stackLevel: 0,
@@ -435,7 +434,6 @@ class Ocpp extends utils.Adapter {
      *
      * @param devName name of the device
      * @param meterValues meter values object
-     * @private
      */
     async _setMeterValues(devName, meterValues) {
         for (const value of meterValues.meterValue[0].sampledValue) {
@@ -453,7 +451,7 @@ class Ocpp extends utils.Adapter {
                 id += 'unknown';
                 name = 'Unknown';
             }
-            await this.setObjectNotExistsAsync(id, {
+            await this.extendObjectAsync(id, {
                 type: 'state',
                 common: {
                     name: name,
@@ -471,12 +469,28 @@ class Ocpp extends utils.Adapter {
     /**
      * Waits for given ms
      * @param ms milliseconds to wait
-     * @private
      */
     async _wait(ms) {
         return new Promise(resolve => {
             setTimeout(() => resolve(), ms);
         });
+    }
+    /**
+     * Determines the idTag for the connector
+     * @param deviceName the name of the device
+     * @param connectorId the connector id which will be used as fallback idTag
+     */
+    async _getIdTag(deviceName, connectorId) {
+        try {
+            const state = await this.getStateAsync(`${deviceName}.idTag`);
+            if (state === null || state === void 0 ? void 0 : state.val) {
+                return typeof state.val !== 'string' ? state.val.toString() : state.val;
+            }
+        }
+        catch (e) {
+            this.log.warn(`Could not determine id tag: ${e.message}`);
+        }
+        return connectorId.toString();
     }
 }
 if (require.main !== module) {

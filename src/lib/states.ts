@@ -91,5 +91,17 @@ export const stateObjects: ioBroker.Object[] = [
             min: 0
         },
         native: {}
+    },
+    {
+        _id: 'idTag',
+        type: 'state',
+        common: {
+            name: 'Tag ID to validate transaction',
+            type: 'string',
+            role: 'text',
+            write: true,
+            read: false
+        },
+        native: {}
     }
 ];
