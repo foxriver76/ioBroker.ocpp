@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "news": {
+      "0.5.1": {
+        "en": "we have optimized some log messages",
+        "de": "wir haben einige protokollnachrichten optimiert",
+        "ru": "мы оптимизировали некоторые лог-сообщения",
+        "pt": "nós temos otimizado algumas mensagens de log",
+        "nl": "we hebben wat logberichten opgemerkt",
+        "fr": "nous avons optimisé certains messages",
+        "it": "abbiamo ottimizzato alcuni messaggi di log",
+        "es": "hemos optimizado algunos mensajes de registro",
+        "pl": "zoptymalizowano niektóre wiadomości logistyczne",
+        "zh-cn": "我们优化了一些逻辑信息"
+      },
       "0.5.0": {
         "en": "added possibility to define the `idTag` of the transaction (closes #13)",
         "de": "zusätzliche Möglichkeit, den idTag der Transaktion zu definieren (schließt #13)",
@@ -74,18 +86,6 @@
         "es": "si wallbox ofrece varios valores de medidor, ahora estarán todos representados\nel administrador ya no es necesario en el mismo host (multihost)",
         "pl": "jeśli Wallbox oferuje wiele wartości liczników, będą teraz wszystkie reprezentowane\nadministrator nie jest już potrzebny na tym samym hoście (multihost)",
         "zh-cn": "如果 wallbox 提供多个仪表值，它们现在将全部表示\n同一主机上不再需要管理员（多主机）"
-      },
-      "0.2.0": {
-        "en": "close server on unload for compact mode\nfixed the message type\nlimit state is now in Ampere and should work now",
-        "de": "Schließen Sie den Server beim Entladen für den Kompaktmodus\nNachrichtentyp behoben\nGrenzzustand ist jetzt in Ampere und sollte jetzt funktionieren",
-        "ru": "закрыть сервер при выгрузке для компактного режима\nисправлен тип сообщения\nпредельное состояние теперь в амперах и должно работать сейчас",
-        "pt": "feche o servidor ao descarregar para o modo compacto\nconsertou o tipo de mensagem\no estado limite está agora em Ampere e deve funcionar agora",
-        "nl": "server sluiten bij verwijderen voor compacte modus\nhet berichttype gerepareerd\ngrenstoestand is nu in Ampere en zou nu moeten werken",
-        "fr": "fermer le serveur au déchargement pour le mode compact\ncorrection du type de message\nl'état limite est maintenant en Ampère et devrait fonctionner maintenant",
-        "it": "chiudi il server allo scaricamento per la modalità compatta\ncorretto il tipo di messaggio\nlo stato limite è ora in Ampere e dovrebbe funzionare ora",
-        "es": "cerrar el servidor al descargar para el modo compacto\nfijo el tipo de mensaje\nel estado límite ahora está en amperios y debería funcionar ahora",
-        "pl": "zamknij serwer przy rozładowaniu w trybie kompaktowym\nnaprawiono typ wiadomości\nstan graniczny jest teraz w Amperach i powinien teraz działać",
-        "zh-cn": "卸载时关闭服务器以实现紧凑模式\n固定消息类型\n极限状态现在是安培，现在应该可以工作了"
       }
     },
     "title": "Open Charge Point Protocol",

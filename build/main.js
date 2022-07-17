@@ -488,7 +488,7 @@ class Ocpp extends utils.Adapter {
             }
         }
         catch (e) {
-            this.log.warn(`Could not determine id tag: ${e.message}`);
+            this.log.warn(`Could not determine idTag of "${deviceName}": ${e.message}`);
         }
         return connectorId.toString();
     }

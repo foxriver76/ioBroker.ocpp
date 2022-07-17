@@ -592,7 +592,7 @@ class Ocpp extends utils.Adapter {
                 return typeof state.val !== 'string' ? state.val.toString() : state.val;
             }
         } catch (e: any) {
-            this.log.warn(`Could not determine id tag: ${e.message}`);
+            this.log.warn(`Could not determine idTag of "${deviceName}": ${e.message}`);
         }
 
         return connectorId.toString();
