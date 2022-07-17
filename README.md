@@ -23,8 +23,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.5.0 (2022-07-17)
 * (foxriver76) added possibility to define the `idTag` of the transaction (closes #13)
 
 ### 0.4.0 (2022-03-21)

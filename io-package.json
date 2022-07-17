@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "news": {
+      "0.5.0": {
+        "en": "added possibility to define the `idTag` of the transaction (closes #13)",
+        "de": "zusätzliche Möglichkeit, den idTag der Transaktion zu definieren (schließt #13)",
+        "ru": "добавлена возможность определения idTag сделки (закрывает #13)",
+        "pt": "possibilidade adicionada de definir o idTag da transação (fecha #13)",
+        "nl": "de mogelijkheid toegevoegd om de idTag van de transactie te definiëren",
+        "fr": "possibilité supplémentaire de définir le idTag de la transaction (ferme #13)",
+        "it": "possibilità aggiunta di definire idTag della transazione (chiude #13)",
+        "es": "añadido posibilidad de definir el idTag de la transacción (cerca #13)",
+        "pl": "dodano możliwość zdefiniowania idTag transakcji (zamknięć #13)",
+        "zh-cn": "进一步有可能界定交易的提示(编号:#13)"
+      },
       "0.4.0": {
         "en": "implemented authentication",
         "de": "implementierte Authentifizierung",
@@ -74,18 +86,6 @@
         "es": "cerrar el servidor al descargar para el modo compacto\nfijo el tipo de mensaje\nel estado límite ahora está en amperios y debería funcionar ahora",
         "pl": "zamknij serwer przy rozładowaniu w trybie kompaktowym\nnaprawiono typ wiadomości\nstan graniczny jest teraz w Amperach i powinien teraz działać",
         "zh-cn": "卸载时关闭服务器以实现紧凑模式\n固定消息类型\n极限状态现在是安培，现在应该可以工作了"
-      },
-      "0.1.1": {
-        "en": "we are requesting config of new clients too\nwe fixed a bug with limitState not respected on `startTransaction`\nmake sure we use no outdated connection",
-        "de": "Wir fordern auch die Konfiguration neuer Clients an\nWir haben einen Fehler behoben, bei dem limitState bei `startTransaction` nicht beachtet wurde\nStellen Sie sicher, dass wir keine veraltete Verbindung verwenden",
-        "ru": "мы также запрашиваем конфигурацию новых клиентов\nмы исправили ошибку с не соблюдением limitState на `startTransaction`\nубедитесь, что мы не используем устаревшее соединение",
-        "pt": "estamos solicitando configuração de novos clientes também\ncorrigimos um bug com limitState não respeitado em `startTransaction`\ncertifique-se de que não usamos nenhuma conexão desatualizada",
-        "nl": "we vragen ook om configuratie van nieuwe klanten\nwe hebben een bug opgelost waarbij limitState niet werd gerespecteerd op `startTransaction`\nzorg ervoor dat we geen verouderde verbinding gebruiken",
-        "fr": "nous demandons également la configuration de nouveaux clients\nnous avons corrigé un bug avec limitState non respecté sur `startTransaction`\nassurez-vous que nous n'utilisons aucune connexion obsolète",
-        "it": "stiamo richiedendo la configurazione anche di nuovi clienti\nabbiamo corretto un bug con limitState non rispettato su `startTransaction`\nassicurati di non utilizzare una connessione obsoleta",
-        "es": "también estamos solicitando la configuración de nuevos clientes\narreglamos un error con limitState no respetado en `startTransaction`\nasegúrese de que no usemos una conexión desactualizada",
-        "pl": "prosimy o konfigurację nowych klientów\nnaprawiliśmy błąd z limitState nierespektowanym w `startTransaction`\nupewnij się, że nie korzystamy z przestarzałego połączenia",
-        "zh-cn": "我们也在请求新客户的配置\n我们修复了“startTransaction”上不遵守 limitState 的错误\n确保我们没有使用过时的连接"
       }
     },
     "title": "Open Charge Point Protocol",
