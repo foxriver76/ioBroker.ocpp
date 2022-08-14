@@ -37,6 +37,7 @@ class Ocpp extends utils.Adapter {
             ...options,
             name: 'ocpp'
         });
+        this.knownDataTransfer = new Set();
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
@@ -176,6 +177,16 @@ class Ocpp extends utils.Adapter {
                     const response = {};
                     return response;
                 }
+                case 'DataTransfer':
+                    this.log.info(`Received DataTransfer from "${connection.url}" with id "${command.messageId}": ${command.data}`);
+                    try {
+                        await this.synchronizeDataTransfer(devName, command.messageId, command.data);
+                    }
+                    catch (e) {
+                        this.log.warn(`Could not synchronize transfer data: ${e.message}`);
+                    }
+                    const response = { status: 'Accepted' };
+                    return response;
                 default:
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }
@@ -306,6 +317,41 @@ class Ocpp extends utils.Adapter {
         catch (_a) {
             callback();
         }
+    }
+    /**
+     * Sets given data to the ioBroker storage and ensures objects are existing
+     *
+     * @param device id of the device
+     * @param messageId id of the data transfer
+     * @param data actual data
+     */
+    async synchronizeDataTransfer(device, messageId, data) {
+        messageId = messageId || 'unknown';
+        data = data || '';
+        if (!this.knownDataTransfer.size) {
+            await this.extendObjectAsync(`${device.replace(/\./g, '_')}.dataTransfer`, {
+                type: 'channel',
+                common: {
+                    name: `Data Transfers of ${device}`
+                },
+                native: {}
+            });
+        }
+        if (!this.knownDataTransfer.has(messageId)) {
+            await this.extendObjectAsync(`${device.replace(/\./g, '_')}.dataTransfer.${messageId}`, {
+                type: 'state',
+                common: {
+                    name: `Data Transfers for message "${messageId}"`,
+                    type: 'string',
+                    role: 'text',
+                    read: true,
+                    write: false
+                },
+                native: {}
+            });
+            this.knownDataTransfer.add(messageId);
+        }
+        await this.setStateAsync(`${device.replace(/\./g, '_')}.dataTransfer.${messageId}`, data, true);
     }
     /**
      * Is called if a subscribed state changes

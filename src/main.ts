@@ -15,7 +15,9 @@ import {
     StartTransactionResponse,
     StatusNotificationRequest,
     StatusNotificationResponse,
-    StopTransactionResponse
+    StopTransactionResponse,
+    DataTransferRequest,
+    DataTransferResponse
 } from '@ampeco/ocpp-eliftech/schemas';
 
 // cannot import the constants correctly, so define the necessary ones until fixed
@@ -25,6 +27,7 @@ class Ocpp extends utils.Adapter {
     private readonly clientTimeouts: Record<string, NodeJS.Timeout>;
     private readonly knownClients: string[];
     private server: CentralSystem | undefined;
+    private readonly knownDataTransfer = new Set<string>();
 
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
@@ -232,6 +235,24 @@ class Ocpp extends utils.Adapter {
                     const response: MeterValuesResponse = {};
                     return response;
                 }
+                case 'DataTransfer':
+                    this.log.info(
+                        `Received DataTransfer from "${connection.url}" with id "${
+                            (command as unknown as DataTransferRequest).messageId
+                        }": ${(command as unknown as DataTransferRequest).data}`
+                    );
+                    try {
+                        await this.synchronizeDataTransfer(
+                            devName,
+                            (command as unknown as DataTransferRequest).messageId,
+                            (command as unknown as DataTransferRequest).data
+                        );
+                    } catch (e: any) {
+                        this.log.warn(`Could not synchronize transfer data: ${e.message}`);
+                    }
+
+                    const response: DataTransferResponse = { status: 'Accepted' };
+                    return response;
                 default:
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }
@@ -388,6 +409,50 @@ class Ocpp extends utils.Adapter {
         } catch {
             callback();
         }
+    }
+
+    /**
+     * Sets given data to the ioBroker storage and ensures objects are existing
+     *
+     * @param device id of the device
+     * @param messageId id of the data transfer
+     * @param data actual data
+     */
+    private async synchronizeDataTransfer(
+        device: string,
+        messageId: string | undefined,
+        data: string | undefined
+    ): Promise<void> {
+        messageId = messageId || 'unknown';
+        data = data || '';
+
+        if (!this.knownDataTransfer.size) {
+            await this.extendObjectAsync(`${device.replace(/\./g, '_')}.dataTransfer`, {
+                type: 'channel',
+                common: {
+                    name: `Data Transfers of ${device}`
+                },
+                native: {}
+            });
+        }
+
+        if (!this.knownDataTransfer.has(messageId)) {
+            await this.extendObjectAsync(`${device.replace(/\./g, '_')}.dataTransfer.${messageId}`, {
+                type: 'state',
+                common: {
+                    name: `Data Transfers for message "${messageId}"`,
+                    type: 'string',
+                    role: 'text',
+                    read: true,
+                    write: false
+                },
+                native: {}
+            });
+
+            this.knownDataTransfer.add(messageId);
+        }
+
+        await this.setStateAsync(`${device.replace(/\./g, '_')}.dataTransfer.${messageId}`, data, true);
     }
 
     /**

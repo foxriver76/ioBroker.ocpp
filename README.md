@@ -23,6 +23,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.6.0 (2022-08-14)
+* (foxriver76) we now handle `DataTransfer` messages
+
 ### 0.5.1 (2022-07-17)
 * (foxriver76) we have optimized some log messages
 
