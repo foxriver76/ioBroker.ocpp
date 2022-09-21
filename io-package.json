@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "news": {
+      "0.7.0": {
+        "en": "we have introduced a state to sepcify if chargeLimit is in watts or ampere",
+        "de": "wir haben einen Zustand eingeführt, um zu trennen, wenn Limit ist in Watt oder Ampere",
+        "ru": "мы ввели состояние для sepcify если заряд Лимит в ватт или ампере",
+        "pt": "nós temos introduzido um estado para sepcify se cobrar Limite é em watts ou ampere",
+        "nl": "we hebben een staat geïntroduceerd om te sepcificeren als aanklacht Limit is in watten of amper",
+        "fr": "nous avons introduit un état de sepcifier si la charge Limite est en watts ou ampere",
+        "it": "abbiamo introdotto uno stato per setificare se la carica Il limite è in watt o ampere",
+        "es": "hemos introducido un estado para sepcificar si cobra El límite está en vatios o amperios",
+        "pl": "wprowadzamy państwo do sektyfikowania, jeśli akcje zostaną obciążone. Limit znajduje się w watach lub ampere",
+        "zh-cn": "我们已引入了一个国家,如果收费的话,就能实现统一。 限制是瓦砾或空。"
+      },
       "0.6.0": {
         "en": "we now handle `DataTransfer` messages",
         "de": "wir behandeln jetzt DataTransfer Nachrichten",
@@ -74,18 +86,6 @@
         "es": "establezca 'TxDefaultProfile' en lugar de 'TxProfile' si comienza la carga; de lo contrario, puede bloquear la anulación del límite durante la transacción",
         "pl": "ustaw 'TxDefaultProfile' zamiast 'TxProfile' jeśli rozpocznie się ładowanie, w przeciwnym razie może zablokować przekroczenie limitu podczas transakcji",
         "zh-cn": "如果收费开始，请设置“TxDefaultProfile”而不是“TxProfile”，否则它可能会阻止在交易期间覆盖限制"
-      },
-      "0.3.1": {
-        "en": "set charging profiles on stack level 0, because some chargers do not support higher levels",
-        "de": "Ladeprofile auf Stacklevel 0 setzen, da einige Ladegeräte höhere Levels nicht unterstützen",
-        "ru": "установите профили зарядки на уровне стека 0, потому что некоторые зарядные устройства не поддерживают более высокие уровни",
-        "pt": "defina perfis de carregamento no nível de pilha 0, porque alguns carregadores não suportam níveis mais altos",
-        "nl": "stel laadprofielen in op stapelniveau 0, omdat sommige opladers geen hogere niveaus ondersteunen",
-        "fr": "définir des profils de charge au niveau de pile 0, car certains chargeurs ne prennent pas en charge des niveaux plus élevés",
-        "it": "impostare i profili di carica sul livello di stack 0, poiché alcuni caricatori non supportano livelli superiori",
-        "es": "configure los perfiles de carga en el nivel de pila 0, porque algunos cargadores no admiten niveles más altos",
-        "pl": "ustaw profile ładowania na poziomie 0 stosu, ponieważ niektóre ładowarki nie obsługują wyższych poziomów",
-        "zh-cn": "在堆栈级别 0 上设置充电配置文件，因为某些充电器不支持更高级别"
       }
     },
     "title": "Open Charge Point Protocol",

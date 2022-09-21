@@ -23,6 +23,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.7.0 (2022-09-21)
+* (foxriver76) we have introduced a state to sepcify if chargeLimit is in watts or ampere
+
 ### 0.6.0 (2022-08-14)
 * (foxriver76) we now handle `DataTransfer` messages
 

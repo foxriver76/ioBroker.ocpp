@@ -20,6 +20,9 @@ import {
     DataTransferResponse
 } from '@ampeco/ocpp-eliftech/schemas';
 
+/** limit can be in ampere or watts */
+type LimitType = 'A' | 'W';
+
 // cannot import the constants correctly, so define the necessary ones until fixed
 const CALL_MESSAGE = 2; // REQ
 
@@ -508,6 +511,8 @@ class Ocpp extends utils.Adapter {
                 const limitState = await this.getStateAsync(`${deviceName}.chargeLimit`);
 
                 if (limitState?.val && typeof limitState.val === 'number') {
+                    const limitType = (await this.getStateAsync(`${deviceName}.chargeLimitType`))!.val as LimitType;
+
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 0, // some chargers only support 0
@@ -517,7 +522,7 @@ class Ocpp extends utils.Adapter {
                         chargingSchedule: {
                             duration: 86400, // 24 hours
                             startSchedule: '2013-01-01T00:00Z',
-                            chargingRateUnit: 'A', // Ampere or Watt
+                            chargingRateUnit: limitType, // Ampere or Watt
                             chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0, // up from 00:00 h (whole day)
@@ -560,6 +565,7 @@ class Ocpp extends utils.Adapter {
             }
         } else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
             try {
+                const limitType = (await this.getStateAsync(`${deviceName}.chargeLimitType`))!.val as LimitType;
                 this.log.debug(`Sending SetChargingProfile for ${deviceName}`);
                 await client.connection.send(
                     new OCPPCommands.SetChargingProfile({
@@ -573,7 +579,7 @@ class Ocpp extends utils.Adapter {
                             chargingSchedule: {
                                 duration: 86400, // 24 hours
                                 startSchedule: '2013-01-01T00:00Z',
-                                chargingRateUnit: 'A', // Ampere or Watt
+                                chargingRateUnit: limitType, // Ampere or Watt
                                 chargingSchedulePeriod: [
                                     {
                                         startPeriod: 0, // up from 00:00 h (whole day)
@@ -589,6 +595,8 @@ class Ocpp extends utils.Adapter {
             } catch (e: any) {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
             }
+        } else if (functionality === 'chargeLimitType' && typeof state.val === 'string') {
+            await this.extendObjectAsync(`${deviceName}.chargeLimit`, { common: { unit: state.val } });
         }
     }
 

@@ -395,6 +395,7 @@ class Ocpp extends utils.Adapter {
                 };
                 const limitState = await this.getStateAsync(`${deviceName}.chargeLimit`);
                 if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
+                    const limitType = (await this.getStateAsync(`${deviceName}.chargeLimitType`)).val;
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 0,
@@ -404,7 +405,7 @@ class Ocpp extends utils.Adapter {
                         chargingSchedule: {
                             duration: 86400,
                             startSchedule: '2013-01-01T00:00Z',
-                            chargingRateUnit: 'A',
+                            chargingRateUnit: limitType,
                             chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0,
@@ -446,6 +447,7 @@ class Ocpp extends utils.Adapter {
         }
         else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
             try {
+                const limitType = (await this.getStateAsync(`${deviceName}.chargeLimitType`)).val;
                 this.log.debug(`Sending SetChargingProfile for ${deviceName}`);
                 await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
                     connectorId,
@@ -458,7 +460,7 @@ class Ocpp extends utils.Adapter {
                         chargingSchedule: {
                             duration: 86400,
                             startSchedule: '2013-01-01T00:00Z',
-                            chargingRateUnit: 'A',
+                            chargingRateUnit: limitType,
                             chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0,
@@ -473,6 +475,9 @@ class Ocpp extends utils.Adapter {
             catch (e) {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
             }
+        }
+        else if (functionality === 'chargeLimitType' && typeof state.val === 'string') {
+            await this.extendObjectAsync(`${deviceName}.chargeLimit`, { common: { unit: state.val } });
         }
     }
     /**
