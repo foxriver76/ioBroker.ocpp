@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateObjects = void 0;
-exports.stateObjects = [
+exports.connectorObjects = exports.deviceObjects = void 0;
+exports.deviceObjects = [
     {
         _id: 'connected',
         type: 'state',
@@ -13,7 +13,9 @@ exports.stateObjects = [
             read: true
         },
         native: {}
-    },
+    }
+];
+exports.connectorObjects = [
     {
         _id: 'status',
         type: 'state',
@@ -34,18 +36,6 @@ exports.stateObjects = [
                 'Unavailable',
                 'Faulted'
             ]
-        },
-        native: {}
-    },
-    {
-        _id: 'connectorId',
-        type: 'state',
-        common: {
-            name: 'Connector ID',
-            type: 'number',
-            role: 'text',
-            write: false,
-            read: true
         },
         native: {}
     },

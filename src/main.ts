@@ -3,7 +3,7 @@
  */
 
 import * as utils from '@iobroker/adapter-core';
-import { stateObjects } from './lib/states';
+import { connectorObjects, deviceObjects } from './lib/states';
 import { BaseCommand, CentralSystem, OCPPCommands, OCPPConnection } from '@ampeco/ocpp-eliftech';
 import {
     AuthorizeResponse,
@@ -17,7 +17,8 @@ import {
     StatusNotificationResponse,
     StopTransactionResponse,
     DataTransferRequest,
-    DataTransferResponse
+    DataTransferResponse,
+    StartTransactionRequest
 } from '@ampeco/ocpp-eliftech/schemas';
 
 /** limit can be in ampere or watts */
@@ -26,9 +27,13 @@ type LimitType = 'A' | 'W';
 // cannot import the constants correctly, so define the necessary ones until fixed
 const CALL_MESSAGE = 2; // REQ
 
+interface KnownClient {
+    connectorIds: number[];
+}
+
 class Ocpp extends utils.Adapter {
-    private readonly clientTimeouts: Record<string, NodeJS.Timeout>;
-    private readonly knownClients: string[];
+    private readonly clientTimeouts: Map<string, NodeJS.Timeout> = new Map();
+    private readonly knownClients: Map<string, KnownClient> = new Map();
     private server: CentralSystem | undefined;
     private readonly knownDataTransfer = new Set<string>();
 
@@ -40,9 +45,6 @@ class Ocpp extends utils.Adapter {
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
-
-        this.clientTimeouts = {};
-        this.knownClients = [];
     }
 
     /**
@@ -127,10 +129,10 @@ class Ocpp extends utils.Adapter {
             const devName = connection.url.replace(/\./g, '_');
 
             // we received a new command, first check if the client is known to us
-            if (!this.knownClients.includes(connection.url)) {
+            if (!this.knownClients.has(connection.url)) {
                 this.log.info(`New device connected: "${connection.url}"`);
                 // not known yet
-                this.knownClients.push(connection.url);
+                this.knownClients.set(connection.url, { connectorIds: [] });
                 // request all important values at start, do not await this
                 this.requestNewClient(connection, command);
 
@@ -141,11 +143,14 @@ class Ocpp extends utils.Adapter {
             }
 
             // we give 90 seconds to send next heartbeat - every response can count as heartbeat according to OCPP
-            if (this.clientTimeouts[connection.url]) {
-                clearTimeout(this.clientTimeouts[connection.url]);
+            if (this.clientTimeouts.has(connection.url)) {
+                clearTimeout(this.clientTimeouts.get(connection.url));
             }
 
-            this.clientTimeouts[connection.url] = setTimeout(() => this.timedOut(connection.url), 90000);
+            this.clientTimeouts.set(
+                connection.url,
+                setTimeout(() => this.timedOut(connection.url), 90000)
+            );
 
             // for debug purposes log whole command here
             this.log.debug(JSON.stringify(command));
@@ -177,8 +182,9 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'StartTransaction': {
-                    this.log.info(`Received Start transaction from "${connection.url}"`);
-                    await this.setStateAsync(`${devName}.transactionActive`, true, true);
+                    const connectorId = (command as unknown as StartTransactionRequest).connectorId;
+                    this.log.info(`Received Start transaction from "${connection.url}.${connectorId}"`);
+                    await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, true, true);
                     const response: StartTransactionResponse = {
                         transactionId: 1,
                         idTagInfo: {
@@ -188,8 +194,9 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'StopTransaction': {
-                    this.log.info(`Received stop transaction from "${connection.url}"`);
-                    await this.setStateAsync(`${devName}.transactionActive`, false, true);
+                    const connectorId = (command as unknown as StartTransactionRequest).connectorId;
+                    this.log.info(`Received stop transaction from "${connection.url}.${connectorId}"`);
+                    await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, false, true);
                     const response: StopTransactionResponse = {
                         idTagInfo: {
                             status: 'Accepted'
@@ -206,21 +213,23 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'StatusNotification': {
+                    const connectorId = (command as unknown as StatusNotificationRequest).connectorId;
+
                     this.log.info(
-                        `Received Status Notification from "${connection.url}": ${
+                        `Received Status Notification from "${connection.url}.${connectorId}": ${
                             (command as unknown as StatusNotificationRequest).status
                         }`
                     );
                     // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing",
                     // "timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
-                    await this.setStateChangedAsync(
-                        `${devName}.connectorId`,
-                        (command as unknown as StatusNotificationRequest).connectorId,
-                        true
-                    );
+
+                    if (!this.knownClients.get(connection.url)!.connectorIds.includes(connectorId)) {
+                        this.knownClients.get(connection.url)!.connectorIds.push(connectorId);
+                        await this.createConnectorObjects(connection.url, connectorId);
+                    }
 
                     await this.setStateAsync(
-                        `${devName}.status`,
+                        `${devName}.${connectorId}.status`,
                         (command as unknown as StatusNotificationRequest).status,
                         true
                     );
@@ -229,11 +238,13 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'MeterValues': {
-                    this.log.info(`Received MeterValues from "${connection.url}"`);
+                    const connectorId = (command as unknown as StatusNotificationRequest).connectorId;
+                    this.log.info(`Received MeterValues from "${connection.url}.${connectorId}"`);
+
                     // {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
                     // "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
                     // "measurand":"Energy.Active.Import.Register","unit":"Wh"}]}]}
-                    await this._setMeterValues(devName, command as unknown as MeterValuesRequest);
+                    await this._setMeterValues(devName, connectorId, command as unknown as MeterValuesRequest);
 
                     const response: MeterValuesResponse = {};
                     return response;
@@ -268,7 +279,7 @@ class Ocpp extends utils.Adapter {
      * @param command command object
      */
     private async requestNewClient(connection: OCPPConnection, command: BaseCommand): Promise<void> {
-        // we want to request boot notification and status and meter values to ahve everything up to date again
+        // we want to request boot notification and status and meter values to have everything up to date again
         try {
             if (command.getCommandName() !== 'BootNotification') {
                 // it's not a boot notification so request
@@ -324,10 +335,8 @@ class Ocpp extends utils.Adapter {
      */
     private async timedOut(device: string): Promise<void> {
         this.log.warn(`Client "${device}" timed out`);
-        const idx = this.knownClients.indexOf(device);
-        if (idx !== -1) {
-            // client is in list, but now no longer active
-            this.knownClients.splice(idx, 1);
+        if (this.knownClients.has(device)) {
+            this.knownClients.delete(device);
         }
 
         await this.setStateAsync(`${device.replace(/\./g, '_')}.connected`, false, true);
@@ -384,9 +393,35 @@ class Ocpp extends utils.Adapter {
             { preserve: { common: ['name'] } }
         );
 
-        for (const obj of stateObjects) {
+        for (const obj of deviceObjects) {
             const id = obj._id;
             obj._id = `${device.replace(/\./g, '_')}.${obj._id}`;
+            await this.extendObjectAsync(obj._id, obj, { preserve: { common: ['name'] } });
+            obj._id = id;
+        }
+    }
+
+    /**
+     * Creates the corresponding state objects for a device
+     * @param device name of the wallbox device
+     * @param connectorId id of the connector
+     */
+    public async createConnectorObjects(device: string, connectorId: number): Promise<void> {
+        await this.extendObjectAsync(
+            `${device.replace(/\./g, '_')}.${connectorId}`,
+            {
+                type: 'channel',
+                common: {
+                    name: `Connector ${connectorId}`
+                },
+                native: {}
+            },
+            { preserve: { common: ['name'] } }
+        );
+
+        for (const obj of connectorObjects) {
+            const id = obj._id;
+            obj._id = `${device.replace(/\./g, '_')}.${connectorId}.${obj._id}`;
             await this.extendObjectAsync(obj._id, obj, { preserve: { common: ['name'] } });
             obj._id = id;
         }
@@ -470,7 +505,8 @@ class Ocpp extends utils.Adapter {
         // handle state change
         const idArr = id.split('.');
         const deviceName = idArr[2];
-        const functionality = idArr[3];
+        const connectorId = parseInt(idArr[3]);
+        const functionality = idArr[4];
 
         if (!this.server) {
             this.log.warn(`Cannot control "${deviceName}", because server is not running`);
@@ -487,16 +523,6 @@ class Ocpp extends utils.Adapter {
             return;
         }
 
-        // we need connectorId
-        const connIdState = await this.getStateAsync(`${deviceName}.connectorId`);
-
-        if (!connIdState?.val || typeof connIdState.val !== 'number') {
-            this.log.warn(`No valid connectorId for "${deviceName}"`);
-            return;
-        }
-
-        const connectorId = connIdState.val;
-
         if (functionality === 'transactionActive') {
             // enable/disable transaction
 
@@ -508,10 +534,11 @@ class Ocpp extends utils.Adapter {
                     idTag: await this._getIdTag(deviceName, connectorId)
                 };
 
-                const limitState = await this.getStateAsync(`${deviceName}.chargeLimit`);
+                const limitState = await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimit`);
 
                 if (limitState?.val && typeof limitState.val === 'number') {
-                    const limitType = (await this.getStateAsync(`${deviceName}.chargeLimitType`))!.val as LimitType;
+                    const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
+                        .val as LimitType;
 
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
@@ -534,11 +561,13 @@ class Ocpp extends utils.Adapter {
                     };
                 }
 
-                this.log.debug(`Sending RemoteStartTransaction for ${deviceName}: ${JSON.stringify(cmdObj)}`);
+                this.log.debug(
+                    `Sending RemoteStartTransaction for ${deviceName}.${connectorId}: ${JSON.stringify(cmdObj)}`
+                );
                 command = new OCPPCommands.RemoteStartTransaction(cmdObj);
             } else {
                 // disable
-                this.log.debug(`Sending RemoteStopTransaction for ${deviceName}`);
+                this.log.debug(`Sending RemoteStopTransaction for ${deviceName}.${connectorId}`);
                 command = new OCPPCommands.RemoteStopTransaction({
                     transactionId: connectorId
                 });
@@ -546,12 +575,16 @@ class Ocpp extends utils.Adapter {
             try {
                 await client.connection.send(command, CALL_MESSAGE);
             } catch (e: any) {
-                this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
+                this.log.error(
+                    `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                );
             }
         } else if (functionality === 'availability') {
             try {
                 this.log.debug(
-                    `Sending ChangeAvailability for ${deviceName}: ${state.val ? 'Operative' : 'Inoperative'}`
+                    `Sending ChangeAvailability for ${deviceName}.${connectorId}: ${
+                        state.val ? 'Operative' : 'Inoperative'
+                    }`
                 );
                 await client.connection.send(
                     new OCPPCommands.ChangeAvailability({
@@ -561,12 +594,15 @@ class Ocpp extends utils.Adapter {
                     CALL_MESSAGE
                 );
             } catch (e: any) {
-                this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
+                this.log.error(
+                    `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                );
             }
         } else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
             try {
-                const limitType = (await this.getStateAsync(`${deviceName}.chargeLimitType`))!.val as LimitType;
-                this.log.debug(`Sending SetChargingProfile for ${deviceName}`);
+                const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
+                    .val as LimitType;
+                this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
                 await client.connection.send(
                     new OCPPCommands.SetChargingProfile({
                         connectorId,
@@ -593,10 +629,12 @@ class Ocpp extends utils.Adapter {
                     CALL_MESSAGE
                 );
             } catch (e: any) {
-                this.log.error(`Cannot execute command "${functionality}" for "${deviceName}": ${e.message}`);
+                this.log.error(
+                    `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                );
             }
         } else if (functionality === 'chargeLimitType' && typeof state.val === 'string') {
-            await this.extendObjectAsync(`${deviceName}.chargeLimit`, { common: { unit: state.val } });
+            await this.extendObjectAsync(`${deviceName}.${connectorId}.chargeLimit`, { common: { unit: state.val } });
         }
     }
 
@@ -604,11 +642,16 @@ class Ocpp extends utils.Adapter {
      * Sets the meter values and creates objects if non existing
      *
      * @param devName name of the device
+     * @param connectorId the connector id
      * @param meterValues meter values object
      */
-    private async _setMeterValues(devName: string, meterValues: MeterValuesRequest): Promise<void> {
+    private async _setMeterValues(
+        devName: string,
+        connectorId: number,
+        meterValues: MeterValuesRequest
+    ): Promise<void> {
         for (const value of meterValues.meterValue[0].sampledValue) {
-            let id = `${devName}.meterValues.`;
+            let id = `${devName}.${connectorId}.meterValues.`;
             let name = '';
 
             if (value.measurand) {
@@ -659,13 +702,13 @@ class Ocpp extends utils.Adapter {
      */
     private async _getIdTag(deviceName: string, connectorId: number): Promise<string> {
         try {
-            const state = await this.getStateAsync(`${deviceName}.idTag`);
+            const state = await this.getStateAsync(`${deviceName}.${connectorId}.idTag`);
 
             if (state?.val) {
                 return typeof state.val !== 'string' ? state.val.toString() : state.val;
             }
         } catch (e: any) {
-            this.log.warn(`Could not determine idTag of "${deviceName}": ${e.message}`);
+            this.log.warn(`Could not determine idTag of "${deviceName}.${connectorId}": ${e.message}`);
         }
 
         return connectorId.toString();

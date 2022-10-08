@@ -1,4 +1,4 @@
-export const stateObjects: ioBroker.Object[] = [
+export const deviceObjects: ioBroker.Object[] = [
     {
         _id: 'connected',
         type: 'state',
@@ -10,7 +10,10 @@ export const stateObjects: ioBroker.Object[] = [
             read: true
         },
         native: {}
-    },
+    }
+];
+
+export const connectorObjects: ioBroker.Object[] = [
     {
         _id: 'status',
         type: 'state',
@@ -31,18 +34,6 @@ export const stateObjects: ioBroker.Object[] = [
                 'Unavailable',
                 'Faulted'
             ]
-        },
-        native: {}
-    },
-    {
-        _id: 'connectorId',
-        type: 'state',
-        common: {
-            name: 'Connector ID',
-            type: 'number',
-            role: 'text',
-            write: false,
-            read: true
         },
         native: {}
     },

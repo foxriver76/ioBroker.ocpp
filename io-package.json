@@ -135,6 +135,44 @@
     "adminUI": {
       "config": "json"
     },
+    "messages": [{
+      "condition": {
+        "operand": "and",
+        "rules": [
+          "oldVersion<=0.7.0",
+          "newVersion>0.7.0"
+        ]
+      },
+      "level": "info",
+      "title": {
+        "en": "Structure has changed!",
+        "de": "Struktur hat sich verändert!",
+        "ru": "Структура изменилась!",
+        "pt": "A estrutura mudou!",
+        "nl": "Structuur is veranderd!",
+        "fr": "La structure a changé !",
+        "it": "La struttura è cambiata!",
+        "es": "¡La estructura ha cambiado!",
+        "pl": "Struktura zmieniła się!",
+        "zh-cn": "结构已经改变!"
+      },
+      "text": {
+        "en": "The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!",
+        "de": "Die Struktur der Datenpunkte hat sich geändert, um Wandboxen mit mehreren Steckverbindern zu unterstützen. Bitte löschen Sie die Zustände einmal und justieren Sie Ihre Skripte!",
+        "ru": "Структура точек данных изменилась для поддержки настенных коробок с несколькими разъемами. Пожалуйста, удалите штаты один раз и настройте свои скрипты!",
+        "pt": "A estrutura dos datapoints mudou para suportar caixas de parede com vários conectores. Por favor, exclua estados uma vez e ajuste seus scripts!",
+        "nl": "De structuur van de datapoints is veranderd om muren te ondersteunen met meerdere connectoren. Verwijder de staten eens en pas je scripts aan!",
+        "fr": "La structure des points de données a changé pour soutenir les boîtes murales avec plusieurs connecteurs. Veuillez supprimer les états une fois et ajuster vos scripts!",
+        "it": "La struttura dei datapoint è cambiata per supportare le wallbox con connettori multipli. Si prega di eliminare gli stati una volta e regolare gli script!",
+        "es": "La estructura de los puntos de datos ha cambiado para soportar cajas de pared con múltiples conectores. Por favor, eliminar estados una vez y ajustar sus scripts!",
+        "pl": "Struktura punktów danych została zmieniona na obsługę skrzydeł z wieloma złączami. Okazuje się, że po raz pierwszy usuną i poprawiają swoje scenariusze!",
+        "zh-cn": "数据点的结构已改变,以支助有多种连接器的隔离墙。 请注意并调整你的文字!"
+      },
+      "buttons": [
+        "ok"
+      ]
+    }
+    ],
     "connectionType": "local",
     "dataSource": "push",
     "materialize": true,

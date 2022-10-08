@@ -23,6 +23,11 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) we now support wallboxes with multiple connectors
+__The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!__
+
 ### 0.7.0 (2022-09-21)
 * (foxriver76) we have introduced a state to sepcify if chargeLimit is in watts or ampere
 
