@@ -53,7 +53,7 @@ exports.connectorObjects = [
     },
     {
         _id: 'meterValues',
-        type: 'channel',
+        type: 'folder',
         common: {
             name: 'Meter values'
         },
@@ -94,7 +94,8 @@ exports.connectorObjects = [
             role: 'text',
             write: true,
             read: true,
-            states: ['A', 'W']
+            states: ['A', 'W'],
+            def: 'A'
         },
         native: {}
     },
