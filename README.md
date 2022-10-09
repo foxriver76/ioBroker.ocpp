@@ -26,6 +26,8 @@ Adapter to connect an OCPP 1.6 supported wallbox
 
 ### **WORK IN PROGRESS**
 * (foxriver76) we now support wallboxes with multiple connectors
+* (foxriver76) we added a new state `lastTransactionConsumption`
+* (foxriver76) implemented a `transactionId` handling
 __The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!__
 
 ### 0.7.0 (2022-09-21)

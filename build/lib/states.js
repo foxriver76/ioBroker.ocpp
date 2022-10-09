@@ -110,6 +110,19 @@ exports.connectorObjects = [
             read: false
         },
         native: {}
+    },
+    {
+        _id: 'lastTransactionConsumption',
+        type: 'state',
+        common: {
+            name: 'Consumption by last transaction',
+            type: 'number',
+            role: 'value.power',
+            write: true,
+            read: false,
+            unit: 'W'
+        },
+        native: {}
     }
 ];
 //# sourceMappingURL=states.js.map

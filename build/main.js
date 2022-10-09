@@ -31,6 +31,7 @@ const states_1 = require("./lib/states");
 const ocpp_eliftech_1 = require("@ampeco/ocpp-eliftech");
 // cannot import the constants correctly, so define the necessary ones until fixed
 const CALL_MESSAGE = 2; // REQ
+const MAX_TRANSACTION_ID = 10000;
 class Ocpp extends utils.Adapter {
     constructor(options = {}) {
         super({
@@ -40,6 +41,8 @@ class Ocpp extends utils.Adapter {
         this.clientTimeouts = new Map();
         this.knownClients = new Map();
         this.knownDataTransfer = new Set();
+        this.activeTransactions = new Map();
+        this.transactionId = 0;
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
         this.on('unload', this.onUnload.bind(this));
@@ -132,11 +135,14 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'StartTransaction': {
-                    const connectorId = command.connectorId;
+                    const startCommand = command;
+                    const connectorId = startCommand.connectorId;
+                    this.increaseTransactionId();
+                    this.activeTransactions.set(this.transactionId, startCommand);
                     this.log.info(`Received Start transaction from "${connection.url}.${connectorId}"`);
                     await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, true, true);
                     const response = {
-                        transactionId: 1,
+                        transactionId: this.transactionId,
                         idTagInfo: {
                             status: 'Accepted'
                         }
@@ -144,8 +150,17 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'StopTransaction': {
-                    const connectorId = command.connectorId;
+                    const stopCommand = command;
+                    if (!this.activeTransactions.has(stopCommand.transactionId)) {
+                        this.log.warn(`Stop recevied for unknown transaction${stopCommand.transactionId}`);
+                        return;
+                    }
+                    const startCommand = this.activeTransactions.get(stopCommand.transactionId);
+                    const connectorId = startCommand.connectorId;
                     this.log.info(`Received stop transaction from "${connection.url}.${connectorId}"`);
+                    const consumption = stopCommand.meterStop - startCommand.meterStart;
+                    this.activeTransactions.delete(stopCommand.transactionId);
+                    await this.setStateAsync(`${devName}.${connectorId}.lastTransactionConsumption`, consumption, true);
                     await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, false, true);
                     const response = {
                         idTagInfo: {
@@ -440,10 +455,20 @@ class Ocpp extends utils.Adapter {
                 command = new ocpp_eliftech_1.OCPPCommands.RemoteStartTransaction(cmdObj);
             }
             else {
-                // disable
+                // stop the transaction
                 this.log.debug(`Sending RemoteStopTransaction for ${deviceName}.${connectorId}`);
+                let transactionId;
+                for (const [id, startCommand] of this.activeTransactions) {
+                    if (startCommand.connectorId === connectorId) {
+                        transactionId = id;
+                    }
+                }
+                if (!transactionId) {
+                    this.log.warn(`Cannot stop transaction on ${deviceName}.${connectorId}, because no active transaction found`);
+                    return;
+                }
                 command = new ocpp_eliftech_1.OCPPCommands.RemoteStopTransaction({
-                    transactionId: connectorId
+                    transactionId
                 });
             }
             try {
@@ -564,6 +589,15 @@ class Ocpp extends utils.Adapter {
             this.log.warn(`Could not determine idTag of "${deviceName}.${connectorId}": ${e.message}`);
         }
         return connectorId.toString();
+    }
+    /**
+     * Calculate next transaction id
+     */
+    increaseTransactionId() {
+        this.transactionId++;
+        if (this.transactionId >= MAX_TRANSACTION_ID) {
+            this.transactionId = 0;
+        }
     }
 }
 if (require.main !== module) {
