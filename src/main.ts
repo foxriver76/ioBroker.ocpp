@@ -291,6 +291,9 @@ class Ocpp extends utils.Adapter {
 
                     const response: DataTransferResponse = { status: 'Accepted' };
                     return response;
+                case 'GetConfiguration':
+                    this.log.info(`Received GetConfiguration from "${connection.url}: ${JSON.stringify(command)}"`);
+                    break;
                 default:
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }

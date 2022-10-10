@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "news": {
+      "0.8.0": {
+        "en": "* we now support wallboxes with multiple connectors (closes #16)\n* we added a new state `lastTransactionConsumption`\n* implemented a `transactionId` handling\n__The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!__",
+        "de": "* wir unterstützen jetzt wandboxen mit mehreren steckverbindern (schließt #16)\n* wir haben einen neuen Zustand hinzugefügt\n* durchgeführte Transaktion Id-Handling\n_Die Struktur der Datenpunkte hat sich geändert, um Wandboxen mit mehreren Steckverbindern zu unterstützen. Bitte löschen Sie die Zustände einmal und passen Sie Ihre Skripte_",
+        "ru": "* теперь мы поддерживаем настенные коробки с несколькими разъемами (заметки #16)\n* мы добавили новое государство lastTransactionConsumption\n* реализована транзакция Id обработка\n_Структура точек данных изменилась для поддержки настенных коробок с несколькими разъемами. Пожалуйста, удалите штаты один раз и настройте свои скрипты_",
+        "pt": "* agora suportamos caixas de parede com vários conectores (fecha #16)\n* adicionamos um novo estado últimoTransactionConsumption\n* implementou uma transação Manuseio de Id\n_A estrutura dos datapoints mudou para suportar caixas de parede com vários conectores. Por favor, exclua estados uma vez e ajuste seus scripts_",
+        "nl": "♪ we now support wallboxes with multiple connectors ♪\n♪ we made a new State lastTransactionConsumption ♪\n♪ implemented a transactie ♪ Identificatie\nDe structuur van de datapoints is veranderd om muren te ondersteunen met meerdere connectoren. Verwijder de staten eens en pas je scripts aan",
+        "fr": "* nous appuyons maintenant des boîtes murales avec plusieurs connecteurs (fermetures #16)\n* nous avons ajouté un nouvel état dernière\n* mis en œuvre une transaction Manipulation des médicaments\n_La structure des points de données a changé pour soutenir les boîtes murales avec plusieurs connecteurs. Veuillez supprimer les états une fois et ajuster vos scripts_",
+        "it": "* ora supportiamo le cassette a parete con connettori multipli (chiude #16)\n* abbiamo aggiunto un nuovo stato\n* implementata una transazione Id gestione\n_La struttura dei datapoint è cambiata per supportare le wallbox con connettori multipli. Si prega di eliminare gli stati una volta e regolare gli script_",
+        "es": "* ahora apoyamos cajas de pared con múltiples conectores (cerca #16)\n* añadimos un nuevo estado últimoConsumo de Transacción\n* Aplicación de una transacción Id handling\n_La estructura de los puntos de datos ha cambiado para soportar cajas de pared con múltiples conectores. Por favor, eliminar estados una vez y ajustar sus scripts_",
+        "pl": "* – teraz obsługuje ścianki z wieloma złączami (odcinek #16)\n* – dodano nowy stan, ostatnia konwencja antykoncepcji\n* realizuje transakcję mądać\n_The structure of the datapoints zmieniło się na obsługę skrzydeł z wieloma złączami. Po raz pierwszy usunąć wasze skrypty",
+        "zh-cn": "* 我们现在支持与多种连接器的挂图(表16)\n* 我们增加了一个新国家,即最后一个过渡性消费国。\n* 实施的交易 处理\n- 数据点的结构已改变,以支助多种连接器的墙壁。 请注意并调整你的文字:"
+      },
       "0.7.0": {
         "en": "we have introduced a state to sepcify if chargeLimit is in watts or ampere",
         "de": "wir haben einen Zustand eingeführt, um zu trennen, wenn Limit ist in Watt oder Ampere",
@@ -74,18 +86,6 @@
         "es": "valor predeterminado fijo de `info.connection`",
         "pl": "ustalona domyślna wartość `info.connection`",
         "zh-cn": "修复了`info.connection`的默认值"
-      },
-      "0.3.2": {
-        "en": "set 'TxDefaultProfile' instead of 'TxProfile' if charging starts, else it may block overriding the limit during transaction",
-        "de": "Setzen Sie 'TxDefaultProfile' anstelle von 'TxProfile', wenn der Ladevorgang beginnt, andernfalls kann es das Überschreiben des Limits während der Transaktion blockieren",
-        "ru": "установите «TxDefaultProfile» вместо «TxProfile», если начинается зарядка, иначе это может заблокировать переопределение лимита во время транзакции",
-        "pt": "defina 'TxDefaultProfile' em vez de 'TxProfile' se o carregamento começar, caso contrário, ele pode bloquear a substituição do limite durante a transação",
-        "nl": "stel 'TxDefaultProfile' in in plaats van 'TxProfile' als het opladen begint, anders kan het overschrijven van de limiet tijdens de transactie blokkeren",
-        "fr": "définissez 'TxDefaultProfile' au lieu de 'TxProfile' si la charge commence, sinon cela peut bloquer le dépassement de la limite pendant la transaction",
-        "it": "impostare 'TxDefaultProfile' invece di 'TxProfile' se inizia l'addebito, altrimenti potrebbe bloccare l'override del limite durante la transazione",
-        "es": "establezca 'TxDefaultProfile' en lugar de 'TxProfile' si comienza la carga; de lo contrario, puede bloquear la anulación del límite durante la transacción",
-        "pl": "ustaw 'TxDefaultProfile' zamiast 'TxProfile' jeśli rozpocznie się ładowanie, w przeciwnym razie może zablokować przekroczenie limitu podczas transakcji",
-        "zh-cn": "如果收费开始，请设置“TxDefaultProfile”而不是“TxProfile”，否则它可能会阻止在交易期间覆盖限制"
       }
     },
     "title": "Open Charge Point Protocol",
@@ -135,43 +135,44 @@
     "adminUI": {
       "config": "json"
     },
-    "messages": [{
-      "condition": {
-        "operand": "and",
-        "rules": [
-          "oldVersion<=0.7.0",
-          "newVersion>0.7.0"
+    "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<=0.7.0",
+            "newVersion>0.7.0"
+          ]
+        },
+        "level": "info",
+        "title": {
+          "en": "Structure has changed!",
+          "de": "Struktur hat sich verändert!",
+          "ru": "Структура изменилась!",
+          "pt": "A estrutura mudou!",
+          "nl": "Structuur is veranderd!",
+          "fr": "La structure a changé !",
+          "it": "La struttura è cambiata!",
+          "es": "¡La estructura ha cambiado!",
+          "pl": "Struktura zmieniła się!",
+          "zh-cn": "结构已经改变!"
+        },
+        "text": {
+          "en": "The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!",
+          "de": "Die Struktur der Datenpunkte hat sich geändert, um Wandboxen mit mehreren Steckverbindern zu unterstützen. Bitte löschen Sie die Zustände einmal und justieren Sie Ihre Skripte!",
+          "ru": "Структура точек данных изменилась для поддержки настенных коробок с несколькими разъемами. Пожалуйста, удалите штаты один раз и настройте свои скрипты!",
+          "pt": "A estrutura dos datapoints mudou para suportar caixas de parede com vários conectores. Por favor, exclua estados uma vez e ajuste seus scripts!",
+          "nl": "De structuur van de datapoints is veranderd om muren te ondersteunen met meerdere connectoren. Verwijder de staten eens en pas je scripts aan!",
+          "fr": "La structure des points de données a changé pour soutenir les boîtes murales avec plusieurs connecteurs. Veuillez supprimer les états une fois et ajuster vos scripts!",
+          "it": "La struttura dei datapoint è cambiata per supportare le wallbox con connettori multipli. Si prega di eliminare gli stati una volta e regolare gli script!",
+          "es": "La estructura de los puntos de datos ha cambiado para soportar cajas de pared con múltiples conectores. Por favor, eliminar estados una vez y ajustar sus scripts!",
+          "pl": "Struktura punktów danych została zmieniona na obsługę skrzydeł z wieloma złączami. Okazuje się, że po raz pierwszy usuną i poprawiają swoje scenariusze!",
+          "zh-cn": "数据点的结构已改变,以支助有多种连接器的隔离墙。 请注意并调整你的文字!"
+        },
+        "buttons": [
+          "ok"
         ]
-      },
-      "level": "info",
-      "title": {
-        "en": "Structure has changed!",
-        "de": "Struktur hat sich verändert!",
-        "ru": "Структура изменилась!",
-        "pt": "A estrutura mudou!",
-        "nl": "Structuur is veranderd!",
-        "fr": "La structure a changé !",
-        "it": "La struttura è cambiata!",
-        "es": "¡La estructura ha cambiado!",
-        "pl": "Struktura zmieniła się!",
-        "zh-cn": "结构已经改变!"
-      },
-      "text": {
-        "en": "The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!",
-        "de": "Die Struktur der Datenpunkte hat sich geändert, um Wandboxen mit mehreren Steckverbindern zu unterstützen. Bitte löschen Sie die Zustände einmal und justieren Sie Ihre Skripte!",
-        "ru": "Структура точек данных изменилась для поддержки настенных коробок с несколькими разъемами. Пожалуйста, удалите штаты один раз и настройте свои скрипты!",
-        "pt": "A estrutura dos datapoints mudou para suportar caixas de parede com vários conectores. Por favor, exclua estados uma vez e ajuste seus scripts!",
-        "nl": "De structuur van de datapoints is veranderd om muren te ondersteunen met meerdere connectoren. Verwijder de staten eens en pas je scripts aan!",
-        "fr": "La structure des points de données a changé pour soutenir les boîtes murales avec plusieurs connecteurs. Veuillez supprimer les états une fois et ajuster vos scripts!",
-        "it": "La struttura dei datapoint è cambiata per supportare le wallbox con connettori multipli. Si prega di eliminare gli stati una volta e regolare gli script!",
-        "es": "La estructura de los puntos de datos ha cambiado para soportar cajas de pared con múltiples conectores. Por favor, eliminar estados una vez y ajustar sus scripts!",
-        "pl": "Struktura punktów danych została zmieniona na obsługę skrzydeł z wieloma złączami. Okazuje się, że po raz pierwszy usuną i poprawiają swoje scenariusze!",
-        "zh-cn": "数据点的结构已改变,以支助有多种连接器的隔离墙。 请注意并调整你的文字!"
-      },
-      "buttons": [
-        "ok"
-      ]
-    }
+      }
     ],
     "connectionType": "local",
     "dataSource": "push",
