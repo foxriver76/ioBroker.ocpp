@@ -237,13 +237,19 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'StatusNotification': {
-                    const connectorId = (command as unknown as StatusNotificationRequest).connectorId;
+                    const statusCommand = command as unknown as StatusNotificationRequest;
+                    const connectorId = statusCommand.connectorId;
 
                     this.log.info(
-                        `Received Status Notification from "${connection.url}.${connectorId}": ${
-                            (command as unknown as StatusNotificationRequest).status
-                        }`
+                        `Received Status Notification from "${connection.url}.${connectorId}": ${statusCommand.status}`
                     );
+
+                    if (statusCommand.errorCode) {
+                        this.log.warn(
+                            `Status from "${connection.url}.${connectorId}" contains an errorCode: ${statusCommand.errorCode}`
+                        );
+                    }
+
                     // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing",
                     // "timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
 
