@@ -28,8 +28,6 @@ type LimitType = 'A' | 'W';
 // cannot import the constants correctly, so define the necessary ones until fixed
 const CALL_MESSAGE = 2; // REQ
 
-const MAX_TRANSACTION_ID = 10_000;
-
 interface KnownClient {
     connectorIds: number[];
 }
@@ -39,8 +37,6 @@ class Ocpp extends utils.Adapter {
     private readonly knownClients: Map<string, KnownClient> = new Map();
     private server: CentralSystem | undefined;
     private readonly knownDataTransfer = new Set<string>();
-    private readonly activeTransactions: Map<number, StartTransactionRequest> = new Map();
-    private transactionId = 0;
 
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
@@ -190,13 +186,15 @@ class Ocpp extends utils.Adapter {
                     const startCommand = command as unknown as StartTransactionRequest;
                     const connectorId = startCommand.connectorId;
 
-                    this.increaseTransactionId();
-
-                    this.activeTransactions.set(this.transactionId, startCommand);
                     this.log.info(`Received Start transaction from "${connection.url}.${connectorId}"`);
+                    await this.setStateAsync(
+                        `${devName}.${connectorId}.transactionStartMeter`,
+                        startCommand.meterStart,
+                        true
+                    );
                     await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, true, true);
                     const response: StartTransactionResponse = {
-                        transactionId: this.transactionId,
+                        transactionId: connectorId,
                         idTagInfo: {
                             status: 'Accepted'
                         }
@@ -205,21 +203,27 @@ class Ocpp extends utils.Adapter {
                 }
                 case 'StopTransaction': {
                     const stopCommand = command as unknown as StopTransactionRequest;
+                    // we use connId as transactionId and vice versa
+                    const connectorId = stopCommand.transactionId;
 
-                    if (!this.activeTransactions.has(stopCommand.transactionId)) {
-                        this.log.warn(`Stop recevied for unknown transaction${stopCommand.transactionId}`);
-                        return;
+                    const startMeterState = await this.getStateAsync(`${devName}.${connectorId}.transactionStartMeter`);
+
+                    this.log.info(`Received stop transaction from "${connection.url}.${connectorId}"`);
+
+                    if (typeof startMeterState?.val === 'number') {
+                        const consumption = stopCommand.meterStop - startMeterState.val;
+                        await this.setStateAsync(
+                            `${devName}.${connectorId}.lastTransactionConsumption`,
+                            consumption,
+                            true
+                        );
                     }
 
-                    const startCommand = this.activeTransactions.get(stopCommand.transactionId)!;
-                    const connectorId = startCommand.connectorId;
-                    this.log.info(`Received stop transaction from "${connection.url}.${connectorId}"`);
-                    const consumption = stopCommand.meterStop - startCommand.meterStart;
-
-                    this.activeTransactions.delete(stopCommand.transactionId);
-
-                    await this.setStateAsync(`${devName}.${connectorId}.lastTransactionConsumption`, consumption, true);
-
+                    await this.setStateAsync(
+                        `${devName}.${connectorId}.transactionEndMeter`,
+                        stopCommand.meterStop,
+                        true
+                    );
                     await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, false, true);
                     const response: StopTransactionResponse = {
                         idTagInfo: {
@@ -602,22 +606,8 @@ class Ocpp extends utils.Adapter {
                 // stop the transaction
                 this.log.debug(`Sending RemoteStopTransaction for ${deviceName}.${connectorId}`);
 
-                let transactionId: number | undefined;
-                for (const [id, startCommand] of this.activeTransactions) {
-                    if (startCommand.connectorId === connectorId) {
-                        transactionId = id;
-                    }
-                }
-
-                if (!transactionId) {
-                    this.log.warn(
-                        `Cannot stop transaction on ${deviceName}.${connectorId}, because no active transaction found`
-                    );
-                    return;
-                }
-
                 command = new OCPPCommands.RemoteStopTransaction({
-                    transactionId
+                    transactionId: connectorId
                 });
             }
 
@@ -761,16 +751,6 @@ class Ocpp extends utils.Adapter {
         }
 
         return connectorId.toString();
-    }
-
-    /**
-     * Calculate next transaction id
-     */
-    private increaseTransactionId(): void {
-        this.transactionId++;
-        if (this.transactionId >= MAX_TRANSACTION_ID) {
-            this.transactionId = 0;
-        }
     }
 }
 

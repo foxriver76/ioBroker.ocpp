@@ -123,6 +123,32 @@ exports.connectorObjects = [
             unit: 'W'
         },
         native: {}
+    },
+    {
+        _id: 'transactionStartMeter',
+        type: 'state',
+        common: {
+            name: 'Meter at last transaction start',
+            type: 'number',
+            role: 'value.power',
+            write: true,
+            read: false,
+            unit: 'W'
+        },
+        native: {}
+    },
+    {
+        _id: 'transactionEndMeter',
+        type: 'state',
+        common: {
+            name: 'Meter at last transaction end',
+            type: 'number',
+            role: 'value.power',
+            write: true,
+            read: false,
+            unit: 'W'
+        },
+        native: {}
     }
 ];
 //# sourceMappingURL=states.js.map
