@@ -23,8 +23,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.8.1 (2022-11-21)
 * (foxriver76) make `transactionId` matching `connectorId` again
 
 ### 0.8.0 (2022-10-10)

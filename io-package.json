@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "news": {
+      "0.8.1": {
+        "en": "make `transactionId` matching `connectorId` again",
+        "de": "die Transaktion Identifizierbarer Anschluss wieder",
+        "ru": "сделать транзакцию Id соответствующий разъем Ид снова",
+        "pt": "fazer transação Conector de correspondência Id Id novamente",
+        "nl": "vertaling: Identificeer de connector Identificatie",
+        "fr": "transaction Connecteur correspondant à Id Id again",
+        "it": "effettuare transazioni Connettore di corrispondenza Id di nuovo",
+        "es": "hacer transacciones Conector de combinación de Id Id again",
+        "pl": "transakcja Id matching connector Ponownie znów",
+        "uk": "зробити операцію Роз'єм відповідності Id І знову",
+        "zh-cn": "交易 连接者 我再次发言"
+      },
       "0.8.0": {
         "en": "* we now support wallboxes with multiple connectors (closes #16)\n* we added a new state `lastTransactionConsumption`\n* implemented a `transactionId` handling\n__The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!__",
         "de": "* wir unterstützen jetzt wandboxen mit mehreren steckverbindern (schließt #16)\n* wir haben einen neuen Zustand hinzugefügt\n* durchgeführte Transaktion Id-Handling\n_Die Struktur der Datenpunkte hat sich geändert, um Wandboxen mit mehreren Steckverbindern zu unterstützen. Bitte löschen Sie die Zustände einmal und passen Sie Ihre Skripte_",
@@ -74,18 +87,6 @@
         "es": "autenticación implementada",
         "pl": "zaimplementowane uwierzytelnianie",
         "zh-cn": "实施认证"
-      },
-      "0.3.3": {
-        "en": "fixed default value of `info.connection`",
-        "de": "fester Standardwert von `info.connection`",
-        "ru": "фиксированное значение по умолчанию для `info.connection`",
-        "pt": "valor padrão fixo de `info.connection`",
-        "nl": "vaste standaardwaarde van `info.connection`",
-        "fr": "valeur fixe par défaut de `info.connection`",
-        "it": "fisso il valore predefinito di `info.connection`",
-        "es": "valor predeterminado fijo de `info.connection`",
-        "pl": "ustalona domyślna wartość `info.connection`",
-        "zh-cn": "修复了`info.connection`的默认值"
       }
     },
     "title": "Open Charge Point Protocol",
