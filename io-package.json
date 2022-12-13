@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "news": {
+      "0.8.2": {
+        "en": "only log the `errorCode` if it is different from `NoError`",
+        "de": "nur protokollieren Sie den Fehler Code, wenn es anders als NoError ist",
+        "ru": "только авторизируйте ошибку Код, если он отличается от NoError",
+        "pt": "só logar o erro Código se for diferente de NoError",
+        "nl": "alleen de fout inloggen Code als het anders is dan NoError",
+        "fr": "enregistrez seulement l'erreur Code si elle est différente de NoError",
+        "it": "solo registrare l'errore Codice se è diverso da NoError",
+        "es": "sólo registra el error Código si es diferente a NoError",
+        "pl": "słabnąć tylko błąd Poniższy kod jest różny od NoError",
+        "uk": "тільки ввійти помилки Код, якщо він відрізняється від NoError",
+        "zh-cn": "只是错误的逻辑 法律如果不同于第Error号。"
+      },
       "0.8.1": {
         "en": "make `transactionId` matching `connectorId` again",
         "de": "die Transaktion Identifizierbarer Anschluss wieder",
@@ -75,18 +88,6 @@
         "es": "añadido posibilidad de definir el idTag de la transacción (cerca #13)",
         "pl": "dodano możliwość zdefiniowania idTag transakcji (zamknięć #13)",
         "zh-cn": "进一步有可能界定交易的提示(编号:#13)"
-      },
-      "0.4.0": {
-        "en": "implemented authentication",
-        "de": "implementierte Authentifizierung",
-        "ru": "реализована аутентификация",
-        "pt": "autenticação implementada",
-        "nl": "geïmplementeerde authenticatie",
-        "fr": "authentification implémentée",
-        "it": "autenticazione implementata",
-        "es": "autenticación implementada",
-        "pl": "zaimplementowane uwierzytelnianie",
-        "zh-cn": "实施认证"
       }
     },
     "title": "Open Charge Point Protocol",

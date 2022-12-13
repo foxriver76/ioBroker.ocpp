@@ -248,9 +248,9 @@ class Ocpp extends utils.Adapter {
                         `Received Status Notification from "${connection.url}.${connectorId}": ${statusCommand.status}`
                     );
 
-                    if (statusCommand.errorCode) {
+                    if (statusCommand.errorCode !== 'NoError') {
                         this.log.warn(
-                            `Status from "${connection.url}.${connectorId}" contains an errorCode: ${statusCommand.errorCode}`
+                            `Status from "${connection.url}.${connectorId}" contains an error: ${statusCommand.errorCode}`
                         );
                     }
 
