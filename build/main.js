@@ -63,6 +63,10 @@ class Ocpp extends utils.Adapter {
                 }
             }
             this.log.info(`New valid connection from "${url}" (${protocol}${ocppProtocolVersion ? `/${ocppProtocolVersion}` : ''})`);
+            // sometimes a reconnect happens without time out - ensure to handle as new client (request states etc)
+            if (this.knownClients.has(url)) {
+                this.knownClients.delete(url);
+            }
             return Promise.resolve([true, 0, '']);
         };
         this.server = new ocpp_eliftech_1.CentralSystem({ validateConnection, wsOptions: {} });

@@ -93,6 +93,12 @@ class Ocpp extends utils.Adapter {
                     ocppProtocolVersion ? `/${ocppProtocolVersion}` : ''
                 })`
             );
+
+            // sometimes a reconnect happens without time out - ensure to handle as new client (request states etc)
+            if (this.knownClients.has(url)) {
+                this.knownClients.delete(url);
+            }
+
             return Promise.resolve([true, 0, '']);
         };
 
@@ -156,7 +162,7 @@ class Ocpp extends utils.Adapter {
 
             this.clientTimeouts.set(
                 connection.url,
-                setTimeout(() => this.timedOut(connection.url), 90000)
+                setTimeout(() => this.timedOut(connection.url), 90_000)
             );
 
             // for debug purposes log whole command here

@@ -25,12 +25,13 @@ Adapter to connect an OCPP 1.6 supported wallbox
 -->
 
 ### **WORK IN PROGRESS**
-* (foxriver76) removed states from main connector which are not allowed there
-* (foxriver76) synchronize configuration into adapter
-* (foxriver76) added ack flag to `availability` state
-* (foxriver76) added ack flag for `charge limit` states
-* (foxriver76) optimized error logging
-* (foxriver76) allow changing charger configuration via adapter
+* (foxriver76) we removed states from main connector which are not allowed there
+* (foxriver76) we now synchronize configuration into adapter
+* (foxriver76) we added ack flag to `availability` state
+* (foxriver76) we added ack flag for `charge limit` states
+* (foxriver76) we optimized error logging
+* (foxriver76) we now allow changing charger configuration via adapter
+* (foxriver76) we improved reconnect handling
 
 __Please delete all states of connector 0 once__
 
