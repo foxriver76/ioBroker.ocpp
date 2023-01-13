@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "news": {
+      "0.9.1": {
+        "en": "we now avoid not implemented logging if `chargeLimit` is set to null (deactivated)",
+        "de": "wir vermeiden jetzt nicht durchgeführte Protokollierung Limit wird auf Null gesetzt (deaktiviert)",
+        "ru": "мы теперь избегаем не реализованных логов, если заряд Лимит установлен на null (деактивирован)",
+        "pt": "nós evitamos agora o registro não implementado se cobrar Limite é definido para nulo (desativado)",
+        "nl": "we vermijden nu geen inrichting als aanklacht Limit is klaar om te kalmeren",
+        "fr": "nous évitons maintenant de ne pas implémenter l'enregistrement si la charge La limite est fixée à null (désactivée)",
+        "it": "ora evitiamo di non implementato logging se la carica Il limite è impostato a null (disattivato)",
+        "es": "ahora evitamos que no se implemente registro si carga El límite está fijado para anular (desactivado)",
+        "pl": "teraz unikamy wdrożenia logowania, jeśli akcje są obciążone. Limit jest ustawiony w null (deaktywowany)",
+        "uk": "ми зараз не втілюємо загибель, якщо заряд Ліміт встановлюється на null (деактивований)",
+        "zh-cn": "我们现在避免执行伐木,如果收费的话。 限制规定无效(终止)"
+      },
       "0.9.0": {
         "en": "* we removed states from main connector which are not allowed there\n* we now synchronize configuration into adapter\n* we added ack flag to `availability` state\n* we added ack flag for `charge limit` states\n* we optimized error logging\n* we now allow changing charger configuration via adapter\n* we improved reconnect handling\n\n__Please delete all states of connector 0 once__",
         "de": "* wir entfernte zustände vom hauptverbinder, die dort nicht erlaubt sind\n* wir synchronisieren jetzt konfiguration in adapter\n* wir haben ack flag zum verfügbarkeitszustand hinzugefügt\n* wir haben einck flag für `charge limit` zustände hinzugefügt\n* wir optimierte fehlerprotokollierung\n* wir erlauben nun eine änderung der ladegerätkonfiguration über adapter\n* wir verbesserte reconnect handling\n\n_Bitte löschen Sie alle Zustände des Steckverbinders 0 einmal_",
@@ -77,18 +90,6 @@
         "es": "ahora manejamos los mensajes de DataTransfer",
         "pl": "obecnie obsługuje komunikaty DataTransfer",
         "zh-cn": "我们现在处理数据流通信息"
-      },
-      "0.5.1": {
-        "en": "we have optimized some log messages",
-        "de": "wir haben einige protokollnachrichten optimiert",
-        "ru": "мы оптимизировали некоторые лог-сообщения",
-        "pt": "nós temos otimizado algumas mensagens de log",
-        "nl": "we hebben wat logberichten opgemerkt",
-        "fr": "nous avons optimisé certains messages",
-        "it": "abbiamo ottimizzato alcuni messaggi di log",
-        "es": "hemos optimizado algunos mensajes de registro",
-        "pl": "zoptymalizowano niektóre wiadomości logistyczne",
-        "zh-cn": "我们优化了一些逻辑信息"
       }
     },
     "title": "Open Charge Point Protocol",
