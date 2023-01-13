@@ -500,7 +500,10 @@ class Ocpp extends utils.Adapter {
                 });
             }
             try {
-                await client.connection.send(command, CALL_MESSAGE);
+                const res = (await client.connection.send(command, CALL_MESSAGE));
+                if (res.status === 'Rejected') {
+                    this.log.warn(`${state.val ? 'Starting' : 'Stopping'} transcation has been rejected by charge point`);
+                }
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);
@@ -526,7 +529,7 @@ class Ocpp extends utils.Adapter {
                 const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))
                     .val;
                 this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
-                await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
+                const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
                     connectorId,
                     csChargingProfiles: {
                         chargingProfileId: 1,
@@ -547,7 +550,14 @@ class Ocpp extends utils.Adapter {
                             // minChargingRate: 12 // if needed we add it
                         }
                     }
-                }), CALL_MESSAGE);
+                }), CALL_MESSAGE));
+                if (res.status === 'Accepted') {
+                    await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, limitType, true);
+                    await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, state.val, true);
+                }
+                else {
+                    this.log.warn(`Charge point responded with "${res.status}" on changing charge limit`);
+                }
             }
             catch (e) {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);

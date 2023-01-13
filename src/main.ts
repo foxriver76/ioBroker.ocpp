@@ -21,7 +21,10 @@ import {
     StartTransactionRequest,
     StopTransactionRequest,
     GetConfigurationResponse,
-    ChangeAvailabilityResponse
+    ChangeAvailabilityResponse,
+    RemoteStartTransactionResponse,
+    RemoteStopTransactionResponse,
+    SetChargingProfileResponse
 } from '@ampeco/ocpp-eliftech/schemas';
 
 /** limit can be in ampere or watts */
@@ -660,7 +663,15 @@ class Ocpp extends utils.Adapter {
             }
 
             try {
-                await client.connection.send(command, CALL_MESSAGE);
+                const res = (await client.connection.send(command, CALL_MESSAGE)) as
+                    | RemoteStartTransactionResponse
+                    | RemoteStopTransactionResponse;
+
+                if (res.status === 'Rejected') {
+                    this.log.warn(
+                        `${state.val ? 'Starting' : 'Stopping'} transcation has been rejected by charge point`
+                    );
+                }
             } catch (e: any) {
                 this.log.error(
                     `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
@@ -694,7 +705,7 @@ class Ocpp extends utils.Adapter {
                 const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
                     .val as LimitType;
                 this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
-                await client.connection.send(
+                const res = (await client.connection.send(
                     new OCPPCommands.SetChargingProfile({
                         connectorId,
                         csChargingProfiles: {
@@ -718,7 +729,14 @@ class Ocpp extends utils.Adapter {
                         }
                     }),
                     CALL_MESSAGE
-                );
+                )) as SetChargingProfileResponse;
+
+                if (res.status === 'Accepted') {
+                    await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, limitType, true);
+                    await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, state.val, true);
+                } else {
+                    this.log.warn(`Charge point responded with "${res.status}" on changing charge limit`);
+                }
             } catch (e: any) {
                 this.log.error(
                     `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
