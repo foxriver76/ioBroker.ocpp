@@ -242,6 +242,7 @@ class Ocpp extends utils.Adapter {
             }
             if (command.getCommandName() !== 'MeterValues') {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
+                // TODO: add connectorId if known or request it also if new connector detected?
                 // it's not MeterValues, so request
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'MeterValues'
@@ -329,11 +330,12 @@ class Ocpp extends utils.Adapter {
         await this.extendObjectAsync(`${device.replace(/\./g, '_')}.${connectorId}`, {
             type: 'channel',
             common: {
-                name: `Connector ${connectorId}`
+                name: connectorId ? `Connector ${connectorId}` : 'Main'
             },
             native: {}
         }, { preserve: { common: ['name'] } });
-        for (const obj of states_1.connectorObjects) {
+        const connectorObjects = (0, states_1.getConnectorObjects)(connectorId);
+        for (const obj of connectorObjects) {
             const id = obj._id;
             obj._id = `${device.replace(/\./g, '_')}.${connectorId}.${obj._id}`;
             await this.extendObjectAsync(obj._id, obj, { preserve: { common: ['name'] } });

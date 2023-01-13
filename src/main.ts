@@ -3,7 +3,7 @@
  */
 
 import * as utils from '@iobroker/adapter-core';
-import { connectorObjects, deviceObjects } from './lib/states';
+import { getConnectorObjects, deviceObjects } from './lib/states';
 import { BaseCommand, CentralSystem, OCPPCommands, OCPPConnection } from '@ampeco/ocpp-eliftech';
 import {
     AuthorizeResponse,
@@ -328,7 +328,7 @@ class Ocpp extends utils.Adapter {
                     CALL_MESSAGE
                 );
 
-                await this._wait(1000);
+                await this._wait(1_000);
             }
 
             if (command.getCommandName() !== 'StatusNotification') {
@@ -341,11 +341,12 @@ class Ocpp extends utils.Adapter {
                     CALL_MESSAGE
                 );
 
-                await this._wait(1000);
+                await this._wait(1_000);
             }
 
             if (command.getCommandName() !== 'MeterValues') {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
+                // TODO: add connectorId if known or request it also if new connector detected?
                 // it's not MeterValues, so request
                 await connection.send(
                     new OCPPCommands.TriggerMessage({
@@ -353,7 +354,7 @@ class Ocpp extends utils.Adapter {
                     }),
                     CALL_MESSAGE
                 );
-                await this._wait(1000);
+                await this._wait(1_000);
             }
 
             if (command.getCommandName() !== 'GetConfiguration') {
@@ -449,12 +450,14 @@ class Ocpp extends utils.Adapter {
             {
                 type: 'channel',
                 common: {
-                    name: `Connector ${connectorId}`
+                    name: connectorId ? `Connector ${connectorId}` : 'Main'
                 },
                 native: {}
             },
             { preserve: { common: ['name'] } }
         );
+
+        const connectorObjects = getConnectorObjects(connectorId);
 
         for (const obj of connectorObjects) {
             const id = obj._id;

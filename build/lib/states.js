@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectorObjects = exports.deviceObjects = void 0;
+exports.getConnectorObjects = exports.deviceObjects = void 0;
 exports.deviceObjects = [
     {
         _id: 'connected',
@@ -15,140 +15,153 @@ exports.deviceObjects = [
         native: {}
     }
 ];
-exports.connectorObjects = [
-    {
-        _id: 'status',
-        type: 'state',
-        common: {
-            name: 'Current status of wallbox',
-            type: 'string',
-            role: 'indicator.status',
-            write: false,
-            read: true,
-            states: [
-                'Available',
-                'Preparing',
-                'Charging',
-                'SuspendedEVSE',
-                'SuspendedEV',
-                'Finishing',
-                'Reserved',
-                'Unavailable',
-                'Faulted'
-            ]
+/**
+ * Returns the objects for a single connector, w.r.t. the connectorId
+ * The main (id = 0) does not have all states
+ * @param connectorId
+ */
+function getConnectorObjects(connectorId) {
+    const objs = [
+        {
+            _id: 'status',
+            type: 'state',
+            common: {
+                name: 'Current status of wallbox',
+                type: 'string',
+                role: 'indicator.status',
+                write: false,
+                read: true,
+                states: [
+                    'Available',
+                    'Preparing',
+                    'Charging',
+                    'SuspendedEVSE',
+                    'SuspendedEV',
+                    'Finishing',
+                    'Reserved',
+                    'Unavailable',
+                    'Faulted'
+                ]
+            },
+            native: {}
         },
-        native: {}
-    },
-    {
-        _id: 'transactionActive',
-        type: 'state',
-        common: {
-            name: 'Transaction active',
-            type: 'boolean',
-            role: 'switch.power',
-            write: true,
-            read: true
+        {
+            _id: 'meterValues',
+            type: 'folder',
+            common: {
+                name: 'Meter values'
+            },
+            native: {}
         },
-        native: {}
-    },
-    {
-        _id: 'meterValues',
-        type: 'folder',
-        common: {
-            name: 'Meter values'
-        },
-        native: {}
-    },
-    {
-        _id: 'availability',
-        type: 'state',
-        common: {
-            name: 'Switch availability',
-            type: 'boolean',
-            role: 'switch.power',
-            write: true,
-            read: true
-        },
-        native: {}
-    },
-    {
-        _id: 'chargeLimit',
-        type: 'state',
-        common: {
-            name: 'Limit Ampere of Charger',
-            type: 'number',
-            role: 'value.power',
-            write: true,
-            read: true,
-            unit: 'A',
-            min: 0
-        },
-        native: {}
-    },
-    {
-        _id: 'chargeLimitType',
-        type: 'state',
-        common: {
-            name: 'Limit Ampere of Charger',
-            type: 'string',
-            role: 'text',
-            write: true,
-            read: true,
-            states: ['A', 'W'],
-            def: 'A'
-        },
-        native: {}
-    },
-    {
-        _id: 'idTag',
-        type: 'state',
-        common: {
-            name: 'Tag ID to validate transaction',
-            type: 'string',
-            role: 'text',
-            write: true,
-            read: false
-        },
-        native: {}
-    },
-    {
-        _id: 'lastTransactionConsumption',
-        type: 'state',
-        common: {
-            name: 'Consumption by last transaction',
-            type: 'number',
-            role: 'value.power',
-            write: true,
-            read: false,
-            unit: 'W'
-        },
-        native: {}
-    },
-    {
-        _id: 'transactionStartMeter',
-        type: 'state',
-        common: {
-            name: 'Meter at last transaction start',
-            type: 'number',
-            role: 'value.power',
-            write: true,
-            read: false,
-            unit: 'W'
-        },
-        native: {}
-    },
-    {
-        _id: 'transactionEndMeter',
-        type: 'state',
-        common: {
-            name: 'Meter at last transaction end',
-            type: 'number',
-            role: 'value.power',
-            write: true,
-            read: false,
-            unit: 'W'
-        },
-        native: {}
+        {
+            _id: 'availability',
+            type: 'state',
+            common: {
+                name: 'Switch availability',
+                type: 'boolean',
+                role: 'switch.power',
+                write: true,
+                read: true,
+                desc: 'On main, this changes availability of all connectors'
+            },
+            native: {}
+        }
+    ];
+    // states which are not available for main
+    if (connectorId !== 0) {
+        objs.push({
+            _id: 'transactionActive',
+            type: 'state',
+            common: {
+                name: 'Transaction active',
+                type: 'boolean',
+                role: 'switch.power',
+                write: true,
+                read: true
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'lastTransactionConsumption',
+            type: 'state',
+            common: {
+                name: 'Consumption by last transaction',
+                type: 'number',
+                role: 'value.power',
+                write: true,
+                read: false,
+                unit: 'W'
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'transactionStartMeter',
+            type: 'state',
+            common: {
+                name: 'Meter at last transaction start',
+                type: 'number',
+                role: 'value.power',
+                write: true,
+                read: false,
+                unit: 'W'
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'transactionEndMeter',
+            type: 'state',
+            common: {
+                name: 'Meter at last transaction end',
+                type: 'number',
+                role: 'value.power',
+                write: true,
+                read: false,
+                unit: 'W'
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'idTag',
+            type: 'state',
+            common: {
+                name: 'Tag ID to validate transaction',
+                type: 'string',
+                role: 'text',
+                write: true,
+                read: false
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'chargeLimit',
+            type: 'state',
+            common: {
+                name: 'Limit Ampere of Charger',
+                type: 'number',
+                role: 'value.power',
+                write: true,
+                read: true,
+                unit: 'A',
+                min: 0
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'chargeLimitType',
+            type: 'state',
+            common: {
+                name: 'Limit Ampere of Charger',
+                type: 'string',
+                role: 'text',
+                write: true,
+                read: true,
+                states: ['A', 'W'],
+                def: 'A'
+            },
+            native: {}
+        });
     }
-];
+    return objs;
+}
+exports.getConnectorObjects = getConnectorObjects;
 //# sourceMappingURL=states.js.map
