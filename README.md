@@ -30,6 +30,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 * (foxriver76) added ack flag to `availability` state
 * (foxriver76) added ack flag for `charge limit` states
 * (foxriver76) optimized error logging
+* (foxriver76) allow changing charger configuration via adapter
 
 __Please delete all states of connector 0 once__
 

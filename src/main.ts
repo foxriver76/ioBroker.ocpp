@@ -24,7 +24,8 @@ import {
     ChangeAvailabilityResponse,
     RemoteStartTransactionResponse,
     RemoteStopTransactionResponse,
-    SetChargingProfileResponse
+    SetChargingProfileResponse,
+    ChangeConfigurationResponse
 } from '@ampeco/ocpp-eliftech/schemas';
 
 /** limit can be in ampere or watts */
@@ -476,7 +477,7 @@ class Ocpp extends utils.Adapter {
                 common: {
                     name: entry.key,
                     type: 'string',
-                    role: 'state',
+                    role: 'text',
                     write: !entry.readonly,
                     read: true
                 },
@@ -593,7 +594,8 @@ class Ocpp extends utils.Adapter {
         // handle state change
         const idArr = id.split('.');
         const deviceName = idArr[2];
-        const connectorId = parseInt(idArr[3]);
+        const channel = idArr[3];
+        const connectorId = parseInt(channel);
         const functionality = idArr[4];
 
         if (!this.server) {
@@ -744,6 +746,27 @@ class Ocpp extends utils.Adapter {
             }
         } else if (functionality === 'chargeLimitType' && typeof state.val === 'string') {
             await this.extendObjectAsync(`${deviceName}.${connectorId}.chargeLimit`, { common: { unit: state.val } });
+        } else if (channel === 'configuration' && typeof state.val === 'string') {
+            this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
+
+            const res = (await client.connection.send(
+                new OCPPCommands.ChangeConfiguration({ key: functionality, value: state.val }),
+                CALL_MESSAGE
+            )) as ChangeConfigurationResponse;
+
+            if (res.status === 'Accepted') {
+                await this.setStateAsync(`${deviceName}.configuration.${functionality}`, state.val, true);
+            } else if (res.status === 'RebootRequired') {
+                this.log.info(
+                    `Reboot Required: Configuration changed (device: ${deviceName}) of "${functionality}" to "${state.val}"`
+                );
+            } else {
+                this.log.warn(
+                    `Cannot change confiuration of ${deviceName} (key: ${functionality}, value: ${state.val}): ${res.status}`
+                );
+            }
+        } else {
+            this.log.warn(`State change of ${deviceName}.${connectorId}.${functionality} not implemented`);
         }
     }
 
