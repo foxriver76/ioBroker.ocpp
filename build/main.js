@@ -529,7 +529,10 @@ class Ocpp extends utils.Adapter {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);
             }
         }
-        else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
+        else if (functionality === 'chargeLimit') {
+            if (typeof state.val !== 'number') {
+                return;
+            }
             try {
                 const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))
                     .val;
@@ -568,10 +571,16 @@ class Ocpp extends utils.Adapter {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);
             }
         }
-        else if (functionality === 'chargeLimitType' && typeof state.val === 'string') {
+        else if (functionality === 'chargeLimitType') {
+            if (typeof state.val !== 'string') {
+                return;
+            }
             await this.extendObjectAsync(`${deviceName}.${connectorId}.chargeLimit`, { common: { unit: state.val } });
         }
-        else if (channel === 'configuration' && typeof state.val === 'string') {
+        else if (channel === 'configuration') {
+            if (typeof state.val !== 'string') {
+                return;
+            }
             this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
             const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeConfiguration({ key: functionality, value: state.val }), CALL_MESSAGE));
             if (res.status === 'Accepted') {

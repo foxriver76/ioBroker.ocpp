@@ -643,7 +643,7 @@ class Ocpp extends utils.Adapter {
                         chargingProfileKind: 'Recurring',
                         recurrencyKind: 'Daily',
                         chargingSchedule: {
-                            duration: 86400, // 24 hours
+                            duration: 86_400, // 24 hours
                             startSchedule: '2013-01-01T00:00Z',
                             chargingRateUnit: limitType, // Ampere or Watt
                             chargingSchedulePeriod: [
@@ -708,7 +708,11 @@ class Ocpp extends utils.Adapter {
                     `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
                 );
             }
-        } else if (functionality === 'chargeLimit' && typeof state.val === 'number') {
+        } else if (functionality === 'chargeLimit') {
+            if (typeof state.val !== 'number') {
+                return;
+            }
+
             try {
                 const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
                     .val as LimitType;
@@ -723,7 +727,7 @@ class Ocpp extends utils.Adapter {
                             chargingProfileKind: 'Recurring',
                             recurrencyKind: 'Daily',
                             chargingSchedule: {
-                                duration: 86400, // 24 hours
+                                duration: 86_400, // 24 hours
                                 startSchedule: '2013-01-01T00:00Z',
                                 chargingRateUnit: limitType, // Ampere or Watt
                                 chargingSchedulePeriod: [
@@ -750,9 +754,16 @@ class Ocpp extends utils.Adapter {
                     `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
                 );
             }
-        } else if (functionality === 'chargeLimitType' && typeof state.val === 'string') {
+        } else if (functionality === 'chargeLimitType') {
+            if (typeof state.val !== 'string') {
+                return;
+            }
             await this.extendObjectAsync(`${deviceName}.${connectorId}.chargeLimit`, { common: { unit: state.val } });
-        } else if (channel === 'configuration' && typeof state.val === 'string') {
+        } else if (channel === 'configuration') {
+            if (typeof state.val !== 'string') {
+                return;
+            }
+
             this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
 
             const res = (await client.connection.send(
