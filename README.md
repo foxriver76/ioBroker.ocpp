@@ -25,7 +25,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 -->
 
 ### **WORK IN PROGRESS**
-* (foxriver76) removed states from main connector which are not alloed there
+* (foxriver76) removed states from main connector which are not allowed there
+* (foxriver76) synchronize configuration into adapter
+* (foxriver76) added ack flag to `availability` state
 __Please delete all states of connector 0 once__
 
 ### 0.8.2 (2022-12-13)

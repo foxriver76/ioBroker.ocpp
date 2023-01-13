@@ -19,7 +19,9 @@ import {
     DataTransferRequest,
     DataTransferResponse,
     StartTransactionRequest,
-    StopTransactionRequest
+    StopTransactionRequest,
+    GetConfigurationResponse,
+    ChangeAvailabilityResponse
 } from '@ampeco/ocpp-eliftech/schemas';
 
 /** limit can be in ampere or watts */
@@ -360,7 +362,13 @@ class Ocpp extends utils.Adapter {
             if (command.getCommandName() !== 'GetConfiguration') {
                 this.log.info(`Sending GetConfiguration to "${connection.url}"`);
                 // it's not GetConfiguration try to request whole config
-                await connection.send(new OCPPCommands.GetConfiguration({}), CALL_MESSAGE);
+                const res = (await connection.send(
+                    new OCPPCommands.GetConfiguration({}),
+                    CALL_MESSAGE
+                )) as GetConfigurationResponse;
+
+                this.log.debug(`Recevied configuration from ${connection.url}: ${JSON.stringify(res)}`);
+                await this.createConfigurationObjects(connection.url, res);
             }
         } catch (e: any) {
             this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
@@ -436,6 +444,43 @@ class Ocpp extends utils.Adapter {
             obj._id = `${device.replace(/\./g, '_')}.${obj._id}`;
             await this.extendObjectAsync(obj._id, obj, { preserve: { common: ['name'] } });
             obj._id = id;
+        }
+    }
+
+    /**
+     * Creates configuration objects and states accordingly
+     * @param deviceName of the wallbox device
+     * @param config the config object
+     */
+    public async createConfigurationObjects(deviceName: string, config: GetConfigurationResponse): Promise<void> {
+        if (!config.configurationKey) {
+            return;
+        }
+
+        deviceName = deviceName.replace(/\./g, '_');
+
+        await this.extendObjectAsync(`${deviceName}.configuration`, {
+            type: 'channel',
+            common: {
+                name: 'Configuration'
+            },
+            native: {}
+        });
+
+        for (const entry of config.configurationKey) {
+            await this.extendObjectAsync(`${deviceName}.configuration.${entry.key}`, {
+                type: 'state',
+                common: {
+                    name: entry.key,
+                    type: 'string',
+                    role: 'state',
+                    write: !entry.readonly,
+                    read: true
+                },
+                native: {}
+            });
+
+            await this.setStateAsync(`${deviceName}.configuration.${entry.key}`, entry.value || '', true);
         }
     }
 
@@ -628,13 +673,17 @@ class Ocpp extends utils.Adapter {
                         state.val ? 'Operative' : 'Inoperative'
                     }`
                 );
-                await client.connection.send(
+                const res = (await client.connection.send(
                     new OCPPCommands.ChangeAvailability({
                         connectorId,
                         type: state.val ? 'Operative' : 'Inoperative'
                     }),
                     CALL_MESSAGE
-                );
+                )) as ChangeAvailabilityResponse;
+
+                if (res.status !== 'Rejected') {
+                    await this.setStateAsync(`${deviceName}.${connectorId}.availability`, state.val, true);
+                }
             } catch (e: any) {
                 this.log.error(
                     `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
