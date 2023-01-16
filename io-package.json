@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.9.1",
+    "version": "0.10.0",
     "news": {
+      "0.10.0": {
+        "en": "implemented state to control number of phases used for charging",
+        "de": "implementierter zustand zur steuerung der anzahl der zum laden verwendeten phasen",
+        "ru": "реализованное состояние для контроля количества фаз, используемых для зарядки",
+        "pt": "estado implementado para controlar o número de fases usadas para carregar",
+        "nl": "geïnformeerd tot controlenummer van fasen gebruikt voor het opladen van",
+        "fr": "état mis en œuvre pour contrôler le nombre de phases utilisées pour le chargement",
+        "it": "stato implementato per controllare il numero di fasi utilizzate per la ricarica",
+        "es": "estado implementado para controlar el número de fases utilizadas para la carga",
+        "pl": "wdrażany stan kontroli liczby faz używanych do ładowania ładowania",
+        "uk": "впроваджений стан для контролю кількості фаз, що використовуються для зарядки",
+        "zh-cn": "实施国家控制用于慈善阶段的数量"
+      },
       "0.9.1": {
         "en": "we now avoid not implemented logging if `chargeLimit` is set to null (deactivated)",
         "de": "wir vermeiden jetzt nicht durchgeführte Protokollierung Limit wird auf Null gesetzt (deaktiviert)",
@@ -78,18 +91,6 @@
         "es": "hemos introducido un estado para sepcificar si cobra El límite está en vatios o amperios",
         "pl": "wprowadzamy państwo do sektyfikowania, jeśli akcje zostaną obciążone. Limit znajduje się w watach lub ampere",
         "zh-cn": "我们已引入了一个国家,如果收费的话,就能实现统一。 限制是瓦砾或空。"
-      },
-      "0.6.0": {
-        "en": "we now handle `DataTransfer` messages",
-        "de": "wir behandeln jetzt DataTransfer Nachrichten",
-        "ru": "мы теперь обрабатываем сообщения DataTransfer",
-        "pt": "nós agora lidamos com as mensagens DataTransfer",
-        "nl": "we gaan nu met DataTransfer berichten",
-        "fr": "nous traitons maintenant les messages DataTransfer",
-        "it": "ora gestiamo i messaggi DataTransfer",
-        "es": "ahora manejamos los mensajes de DataTransfer",
-        "pl": "obecnie obsługuje komunikaty DataTransfer",
-        "zh-cn": "我们现在处理数据流通信息"
       }
     },
     "title": "Open Charge Point Protocol",
