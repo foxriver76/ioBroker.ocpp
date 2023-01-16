@@ -4,7 +4,7 @@
 
 import * as utils from '@iobroker/adapter-core';
 import { getConnectorObjects, deviceObjects } from './lib/states';
-import { BaseCommand, CentralSystem, OCPPCommands, OCPPConnection } from '@ampeco/ocpp-eliftech';
+import { BaseCommand, CentralSystem, CentralSystemClient, OCPPCommands, OCPPConnection } from '@ampeco/ocpp-eliftech';
 import {
     AuthorizeResponse,
     BootNotificationResponse,
@@ -36,6 +36,21 @@ const CALL_MESSAGE = 2; // REQ
 
 interface KnownClient {
     connectorIds: number[];
+}
+
+interface ChangeChargeLimitOptions {
+    /** Limit in watts or ampere according to type */
+    limit: number;
+    /** Ampere or Watt */
+    limitType: LimitType;
+    /** Number of phases 1 to 3 */
+    numberPhases: number;
+    /** Name of device according to objects */
+    deviceName: string;
+    /** ID of the connector */
+    connectorId: number;
+    /** Client for this charge point */
+    client: CentralSystemClient;
 }
 
 class Ocpp extends utils.Adapter {
@@ -636,6 +651,8 @@ class Ocpp extends utils.Adapter {
                     const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
                         .val as LimitType;
 
+                    const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
+
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 0, // some chargers only support 0
@@ -649,7 +666,8 @@ class Ocpp extends utils.Adapter {
                             chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0, // up from 00:00 h (whole day)
-                                    limit: limitState.val // e.g. 12 for 12 A
+                                    limit: limitState.val, // e.g. 12 for 12 A
+                                    numberPhases
                                 }
                             ]
                             // minChargingRate: 12 // if needed we add it
@@ -716,39 +734,48 @@ class Ocpp extends utils.Adapter {
             try {
                 const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
                     .val as LimitType;
-                this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
-                const res = (await client.connection.send(
-                    new OCPPCommands.SetChargingProfile({
-                        connectorId,
-                        csChargingProfiles: {
-                            chargingProfileId: 1,
-                            stackLevel: 0, // some chargers only support 0
-                            chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
-                            chargingProfileKind: 'Recurring',
-                            recurrencyKind: 'Daily',
-                            chargingSchedule: {
-                                duration: 86_400, // 24 hours
-                                startSchedule: '2013-01-01T00:00Z',
-                                chargingRateUnit: limitType, // Ampere or Watt
-                                chargingSchedulePeriod: [
-                                    {
-                                        startPeriod: 0, // up from 00:00 h (whole day)
-                                        limit: state.val // e.g. 12 for 12 A
-                                    }
-                                ]
-                                // minChargingRate: 12 // if needed we add it
-                            }
-                        }
-                    }),
-                    CALL_MESSAGE
-                )) as SetChargingProfileResponse;
 
-                if (res.status === 'Accepted') {
-                    await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, limitType, true);
-                    await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, state.val, true);
-                } else {
-                    this.log.warn(`Charge point responded with "${res.status}" on changing charge limit`);
+                const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
+
+                await this.changeChargeLimit({
+                    client,
+                    limitType,
+                    limit: state.val,
+                    deviceName,
+                    connectorId,
+                    numberPhases
+                });
+            } catch (e: any) {
+                this.log.error(
+                    `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                );
+            }
+        } else if (functionality === 'numberPhases') {
+            if (typeof state.val !== 'number') {
+                return;
+            }
+
+            try {
+                const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
+                    .val as LimitType;
+
+                const limit = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimit`))?.val;
+
+                if (typeof limit !== 'number') {
+                    this.log.error(
+                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": No chargeLimit set`
+                    );
+                    return;
                 }
+
+                await this.changeChargeLimit({
+                    client,
+                    limitType,
+                    limit,
+                    deviceName,
+                    connectorId,
+                    numberPhases: state.val
+                });
             } catch (e: any) {
                 this.log.error(
                     `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
@@ -785,6 +812,26 @@ class Ocpp extends utils.Adapter {
         } else {
             this.log.warn(`State change of ${deviceName}.${connectorId}.${functionality} not implemented`);
         }
+    }
+
+    /**
+     * Determines user-configured number of phases for charging
+     *
+     * @param deviceName name of device in objects
+     * @param connectorId Id of the connector
+     */
+    private async _getNumberOfPhases(deviceName: string, connectorId: number): Promise<number> {
+        let numberPhases = 3;
+
+        try {
+            numberPhases =
+                ((await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))?.val as number) ||
+                numberPhases;
+        } catch (e: any) {
+            this.log.warn(`Could not determine number of phases, fallback to 3 phase charging: ${e.message}`);
+        }
+
+        return numberPhases;
     }
 
     /**
@@ -861,6 +908,51 @@ class Ocpp extends utils.Adapter {
         }
 
         return connectorId.toString();
+    }
+
+    /**
+     * Changes the general charge limit
+     *
+     * @param options the charge limit options
+     */
+    private async changeChargeLimit(options: ChangeChargeLimitOptions): Promise<void> {
+        const { client, connectorId, deviceName, limitType, limit, numberPhases } = options;
+        this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
+
+        const res = (await client.connection.send(
+            new OCPPCommands.SetChargingProfile({
+                connectorId,
+                csChargingProfiles: {
+                    chargingProfileId: 1,
+                    stackLevel: 0, // some chargers only support 0
+                    chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
+                    chargingProfileKind: 'Recurring',
+                    recurrencyKind: 'Daily',
+                    chargingSchedule: {
+                        duration: 86_400, // 24 hours
+                        startSchedule: '2013-01-01T00:00Z',
+                        chargingRateUnit: limitType, // Ampere or Watt
+                        chargingSchedulePeriod: [
+                            {
+                                startPeriod: 0, // up from 00:00 h (whole day)
+                                limit, // e.g. 12 for 12 A
+                                numberPhases
+                            }
+                        ]
+                        // minChargingRate: 12 // if needed we add it
+                    }
+                }
+            }),
+            CALL_MESSAGE
+        )) as SetChargingProfileResponse;
+
+        if (res.status === 'Accepted') {
+            await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, limitType, true);
+            await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, limit, true);
+            await this.setStateAsync(`${deviceName}.${connectorId}.numberPhases`, numberPhases, true);
+        } else {
+            this.log.warn(`Charge point responded with "${res.status}" on changing charge limit`);
+        }
     }
 }
 

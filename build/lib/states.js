@@ -160,6 +160,21 @@ function getConnectorObjects(connectorId) {
             },
             native: {}
         });
+        objs.push({
+            _id: 'numberPhases',
+            type: 'state',
+            common: {
+                name: 'Number of phases used for charging',
+                type: 'number',
+                role: 'value',
+                write: true,
+                read: true,
+                def: 3,
+                min: 0,
+                max: 3
+            },
+            native: {}
+        });
     }
     return objs;
 }

@@ -23,6 +23,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) implemented state to control number of phases used for charging
+
 ### 0.9.1 (2023-01-13)
 * (foxriver76) we now avoid not implemented logging if `chargeLimit` is set to null (deactivated)
 
