@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.11.0",
+    "version": "0.11.1",
     "news": {
+      "0.11.1": {
+        "en": "we now correctly detect data type and role of configuration attributes",
+        "de": "wir erkennen nun den datentyp und die rolle von konfigurationsattributen korrekt",
+        "ru": "мы теперь правильно обнаруживаем тип данных и роль атрибутов конфигурации",
+        "pt": "agora detectamos corretamente o tipo de dados e o papel dos atributos de configuração",
+        "nl": "we detecteren datatype en rol van configuatie-aanklachten",
+        "fr": "nous détectons maintenant correctement le type de données et le rôle des attributs de configuration",
+        "it": "ora rilevare correttamente il tipo di dati e il ruolo degli attributi di configurazione",
+        "es": "detectamos correctamente el tipo de datos y el papel de los atributos de configuración",
+        "pl": "obecnie wykrywamy typ danych i rolę atrybutów konfiguracyjnych",
+        "uk": "ми тепер правильно виявити тип даних і роль атрибутів конфігурації",
+        "zh-cn": "我们现在正确地发现数据类型和组合特征的作用"
+      },
       "0.11.0": {
         "en": "`idTag` is now read correctly from `startTransaction` message (closes #21)\nimplemented possibility to trigger `hard` and `soft` reset",
         "de": "idTag wird nun korrekt von startTransaction message gelesen (schließt #21)\nimplementierte möglichkeit, harte und weiche rückstellung auszulösen",
@@ -80,18 +93,6 @@
         "pl": "transakcja Id matching connector Ponownie znów",
         "uk": "зробити операцію Роз'єм відповідності Id І знову",
         "zh-cn": "交易 连接者 我再次发言"
-      },
-      "0.8.0": {
-        "en": "* we now support wallboxes with multiple connectors (closes #16)\n* we added a new state `lastTransactionConsumption`\n* implemented a `transactionId` handling\n__The structure of the datapoints has changed to support wallboxes with multiple connectors. Please delete states once and adjust your scripts!__",
-        "de": "* wir unterstützen jetzt wandboxen mit mehreren steckverbindern (schließt #16)\n* wir haben einen neuen Zustand hinzugefügt\n* durchgeführte Transaktion Id-Handling\n_Die Struktur der Datenpunkte hat sich geändert, um Wandboxen mit mehreren Steckverbindern zu unterstützen. Bitte löschen Sie die Zustände einmal und passen Sie Ihre Skripte_",
-        "ru": "* теперь мы поддерживаем настенные коробки с несколькими разъемами (заметки #16)\n* мы добавили новое государство lastTransactionConsumption\n* реализована транзакция Id обработка\n_Структура точек данных изменилась для поддержки настенных коробок с несколькими разъемами. Пожалуйста, удалите штаты один раз и настройте свои скрипты_",
-        "pt": "* agora suportamos caixas de parede com vários conectores (fecha #16)\n* adicionamos um novo estado últimoTransactionConsumption\n* implementou uma transação Manuseio de Id\n_A estrutura dos datapoints mudou para suportar caixas de parede com vários conectores. Por favor, exclua estados uma vez e ajuste seus scripts_",
-        "nl": "♪ we now support wallboxes with multiple connectors ♪\n♪ we made a new State lastTransactionConsumption ♪\n♪ implemented a transactie ♪ Identificatie\nDe structuur van de datapoints is veranderd om muren te ondersteunen met meerdere connectoren. Verwijder de staten eens en pas je scripts aan",
-        "fr": "* nous appuyons maintenant des boîtes murales avec plusieurs connecteurs (fermetures #16)\n* nous avons ajouté un nouvel état dernière\n* mis en œuvre une transaction Manipulation des médicaments\n_La structure des points de données a changé pour soutenir les boîtes murales avec plusieurs connecteurs. Veuillez supprimer les états une fois et ajuster vos scripts_",
-        "it": "* ora supportiamo le cassette a parete con connettori multipli (chiude #16)\n* abbiamo aggiunto un nuovo stato\n* implementata una transazione Id gestione\n_La struttura dei datapoint è cambiata per supportare le wallbox con connettori multipli. Si prega di eliminare gli stati una volta e regolare gli script_",
-        "es": "* ahora apoyamos cajas de pared con múltiples conectores (cerca #16)\n* añadimos un nuevo estado últimoConsumo de Transacción\n* Aplicación de una transacción Id handling\n_La estructura de los puntos de datos ha cambiado para soportar cajas de pared con múltiples conectores. Por favor, eliminar estados una vez y ajustar sus scripts_",
-        "pl": "* – teraz obsługuje ścianki z wieloma złączami (odcinek #16)\n* – dodano nowy stan, ostatnia konwencja antykoncepcji\n* realizuje transakcję mądać\n_The structure of the datapoints zmieniło się na obsługę skrzydeł z wieloma złączami. Po raz pierwszy usunąć wasze skrypty",
-        "zh-cn": "* 我们现在支持与多种连接器的挂图(表16)\n* 我们增加了一个新国家,即最后一个过渡性消费国。\n* 实施的交易 处理\n- 数据点的结构已改变,以支助多种连接器的墙壁。 请注意并调整你的文字:"
       }
     },
     "title": "Open Charge Point Protocol",
