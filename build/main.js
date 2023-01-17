@@ -194,7 +194,7 @@ class Ocpp extends utils.Adapter {
                         this.knownClients.get(connection.url).connectorIds.push(connectorId);
                         await this.createConnectorObjects(connection.url, connectorId);
                     }
-                    await this.setStateAsync(`${devName}.${connectorId}.status`, command.status, true);
+                    await this.setStateAsync(`${devName}.${connectorId}.status`, statusCommand.status, true);
                     const response = {};
                     return response;
                 }
@@ -258,13 +258,11 @@ class Ocpp extends utils.Adapter {
                 }), CALL_MESSAGE);
                 await this._wait(1000);
             }
-            if (command.getCommandName() !== 'GetConfiguration') {
-                this.log.info(`Sending GetConfiguration to "${connection.url}"`);
-                // it's not GetConfiguration try to request whole config
-                const res = (await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({}), CALL_MESSAGE));
-                this.log.debug(`Recevied configuration from ${connection.url}: ${JSON.stringify(res)}`);
-                await this.createConfigurationObjects(connection.url, res);
-            }
+            this.log.info(`Sending GetConfiguration to "${connection.url}"`);
+            // it's not GetConfiguration try to request whole config
+            const res = (await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({}), CALL_MESSAGE));
+            this.log.debug(`Received configuration from ${connection.url}: ${JSON.stringify(res)}`);
+            await this.createConfigurationObjects(connection.url, res);
         }
         catch (e) {
             this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
@@ -350,19 +348,51 @@ class Ocpp extends utils.Adapter {
             native: {}
         });
         for (const entry of config.configurationKey) {
+            const { role, type, value } = this.parseConfigurationValue(entry.value || '', entry.readonly);
             await this.extendObjectAsync(`${deviceName}.configuration.${entry.key}`, {
                 type: 'state',
                 common: {
                     name: entry.key,
-                    type: 'string',
-                    role: 'text',
+                    type: type,
+                    role: role,
                     write: !entry.readonly,
                     read: true
                 },
                 native: {}
             });
-            await this.setStateAsync(`${deviceName}.configuration.${entry.key}`, entry.value || '', true);
+            await this.setStateAsync(`${deviceName}.configuration.${entry.key}`, value, true);
         }
+    }
+    /**
+     * Parses a configuration value and determines, data type, role and parsed value
+     * @param value value of config attribute
+     * @param readOnly readonly flag
+     */
+    parseConfigurationValue(value, readOnly) {
+        let parsedValue = value;
+        let role = 'text';
+        let type = 'string';
+        if (value === 'true') {
+            parsedValue = true;
+        }
+        else if (value === 'false') {
+            parsedValue = false;
+        }
+        if (value && !isNaN(Number(value))) {
+            parsedValue = parseFloat(value);
+            role = 'value';
+            type = 'number';
+        }
+        if (typeof parsedValue === 'boolean') {
+            type = 'boolean';
+            if (readOnly) {
+                role = 'indicator';
+            }
+            else {
+                role = 'switch';
+            }
+        }
+        return { role, value: parsedValue, type };
     }
     /**
      * Creates the corresponding state objects for a device
@@ -601,12 +631,13 @@ class Ocpp extends utils.Adapter {
             }
         }
         else if (channel === 'configuration') {
-            if (typeof state.val !== 'string') {
+            if (state.val === null) {
                 return;
             }
-            this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
+            const value = state.val.toString();
+            this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${value}"`);
             try {
-                const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeConfiguration({ key: functionality, value: state.val }), CALL_MESSAGE));
+                const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeConfiguration({ key: functionality, value }), CALL_MESSAGE));
                 if (res.status === 'Accepted') {
                     await this.setStateAsync(`${deviceName}.configuration.${functionality}`, state.val, true);
                 }

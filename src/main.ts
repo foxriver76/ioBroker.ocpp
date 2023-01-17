@@ -56,6 +56,15 @@ interface ChangeChargeLimitOptions {
     client: CentralSystemClient;
 }
 
+type ConfigurationRole = 'text' | 'value' | 'switch' | 'indicator';
+type ConfigurationType = 'string' | 'number' | 'boolean';
+
+interface ParsedConfigurationAttribute {
+    value: string | number | boolean;
+    type: ConfigurationType;
+    role: ConfigurationRole;
+}
+
 class Ocpp extends utils.Adapter {
     private readonly clientTimeouts: Map<string, NodeJS.Timeout> = new Map();
     private readonly knownClients: Map<string, KnownClient> = new Map();
@@ -304,11 +313,7 @@ class Ocpp extends utils.Adapter {
                         await this.createConnectorObjects(connection.url, connectorId);
                     }
 
-                    await this.setStateAsync(
-                        `${devName}.${connectorId}.status`,
-                        (command as unknown as StatusNotificationRequest).status,
-                        true
-                    );
+                    await this.setStateAsync(`${devName}.${connectorId}.status`, statusCommand.status, true);
 
                     const response: StatusNotificationResponse = {};
                     return response;
@@ -396,17 +401,15 @@ class Ocpp extends utils.Adapter {
                 await this._wait(1_000);
             }
 
-            if (command.getCommandName() !== 'GetConfiguration') {
-                this.log.info(`Sending GetConfiguration to "${connection.url}"`);
-                // it's not GetConfiguration try to request whole config
-                const res = (await connection.send(
-                    new OCPPCommands.GetConfiguration({}),
-                    CALL_MESSAGE
-                )) as GetConfigurationResponse;
+            this.log.info(`Sending GetConfiguration to "${connection.url}"`);
+            // it's not GetConfiguration try to request whole config
+            const res = (await connection.send(
+                new OCPPCommands.GetConfiguration({}),
+                CALL_MESSAGE
+            )) as GetConfigurationResponse;
 
-                this.log.debug(`Recevied configuration from ${connection.url}: ${JSON.stringify(res)}`);
-                await this.createConfigurationObjects(connection.url, res);
-            }
+            this.log.debug(`Received configuration from ${connection.url}: ${JSON.stringify(res)}`);
+            await this.createConfigurationObjects(connection.url, res);
         } catch (e: any) {
             this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
         }
@@ -440,7 +443,7 @@ class Ocpp extends utils.Adapter {
      * Sets the corresponding online states
      * @param device name of the wallbox device
      */
-    public async setDeviceOnline(device: string): Promise<void> {
+    private async setDeviceOnline(device: string): Promise<void> {
         await this.setStateAsync(`${device.replace(/\./g, '_')}.connected`, true, true);
 
         const connState = await this.getStateAsync('info.connection');
@@ -463,7 +466,7 @@ class Ocpp extends utils.Adapter {
      * Creates the corresponding state objects for a device
      * @param device name of the wallbox device
      */
-    public async createDeviceObjects(device: string): Promise<void> {
+    private async createDeviceObjects(device: string): Promise<void> {
         await this.extendObjectAsync(
             device.replace(/\./g, '_'),
             {
@@ -489,7 +492,7 @@ class Ocpp extends utils.Adapter {
      * @param deviceName of the wallbox device
      * @param config the config object
      */
-    public async createConfigurationObjects(deviceName: string, config: GetConfigurationResponse): Promise<void> {
+    private async createConfigurationObjects(deviceName: string, config: GetConfigurationResponse): Promise<void> {
         if (!config.configurationKey) {
             return;
         }
@@ -505,20 +508,56 @@ class Ocpp extends utils.Adapter {
         });
 
         for (const entry of config.configurationKey) {
+            const { role, type, value } = this.parseConfigurationValue(entry.value || '', entry.readonly);
+
             await this.extendObjectAsync(`${deviceName}.configuration.${entry.key}`, {
                 type: 'state',
                 common: {
                     name: entry.key,
-                    type: 'string',
-                    role: 'text',
+                    type: type,
+                    role: role,
                     write: !entry.readonly,
                     read: true
                 },
                 native: {}
             });
 
-            await this.setStateAsync(`${deviceName}.configuration.${entry.key}`, entry.value || '', true);
+            await this.setStateAsync(`${deviceName}.configuration.${entry.key}`, value, true);
         }
+    }
+
+    /**
+     * Parses a configuration value and determines, data type, role and parsed value
+     * @param value value of config attribute
+     * @param readOnly readonly flag
+     */
+    private parseConfigurationValue(value: string, readOnly: boolean): ParsedConfigurationAttribute {
+        let parsedValue: string | number | boolean = value;
+        let role: ConfigurationRole = 'text';
+        let type: ConfigurationType = 'string';
+
+        if (value === 'true') {
+            parsedValue = true;
+        } else if (value === 'false') {
+            parsedValue = false;
+        }
+
+        if (value && !isNaN(Number(value))) {
+            parsedValue = parseFloat(value);
+            role = 'value';
+            type = 'number';
+        }
+
+        if (typeof parsedValue === 'boolean') {
+            type = 'boolean';
+            if (readOnly) {
+                role = 'indicator';
+            } else {
+                role = 'switch';
+            }
+        }
+
+        return { role, value: parsedValue, type };
     }
 
     /**
@@ -526,7 +565,7 @@ class Ocpp extends utils.Adapter {
      * @param device name of the wallbox device
      * @param connectorId id of the connector
      */
-    public async createConnectorObjects(device: string, connectorId: number): Promise<void> {
+    private async createConnectorObjects(device: string, connectorId: number): Promise<void> {
         await this.extendObjectAsync(
             `${device.replace(/\./g, '_')}.${connectorId}`,
             {
@@ -814,15 +853,17 @@ class Ocpp extends utils.Adapter {
                 );
             }
         } else if (channel === 'configuration') {
-            if (typeof state.val !== 'string') {
+            if (state.val === null) {
                 return;
             }
 
-            this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
+            const value = state.val.toString();
+
+            this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${value}"`);
 
             try {
                 const res = (await client.connection.send(
-                    new OCPPCommands.ChangeConfiguration({ key: functionality, value: state.val }),
+                    new OCPPCommands.ChangeConfiguration({ key: functionality, value }),
                     CALL_MESSAGE
                 )) as ChangeConfigurationResponse;
 
