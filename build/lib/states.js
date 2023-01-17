@@ -163,7 +163,7 @@ function getConnectorObjects(connectorId) {
             _id: 'chargeLimit',
             type: 'state',
             common: {
-                name: 'Limit Ampere of Charger',
+                name: 'Limit Watt/Ampere of Charger',
                 type: 'number',
                 role: 'value.power',
                 write: true,
@@ -177,7 +177,7 @@ function getConnectorObjects(connectorId) {
             _id: 'chargeLimitType',
             type: 'state',
             common: {
-                name: 'Limit Ampere of Charger',
+                name: 'Type of Charge Limit',
                 type: 'string',
                 role: 'text',
                 write: true,
