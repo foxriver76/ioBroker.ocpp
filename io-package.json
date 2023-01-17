@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.10.0",
+    "version": "0.11.0",
     "news": {
+      "0.11.0": {
+        "en": "`idTag` is now read correctly from `startTransaction` message (closes #21)\nimplemented possibility to trigger `hard` and `soft` reset",
+        "de": "idTag wird nun korrekt von startTransaction message gelesen (schließt #21)\nimplementierte möglichkeit, harte und weiche rückstellung auszulösen",
+        "ru": "idTag теперь правильно читается с сообщения startTransaction (closes #21)\nреализована возможность вызвать жесткий и мягкий сброс",
+        "pt": "idTag é agora lido corretamente da mensagem startTransaction (closes #21)\npossibilidade implementada para desencadear hard e soft reset",
+        "nl": "IDTag wordt nu juist gelezen van start-Transactie bericht (closes #21)\nde mogelijkheid om hard en zacht reset te activeren",
+        "fr": "idTag est maintenant lu correctement à partir du message de lancementTransaction (ferme #21)\npossibilité de déclencher une réinitialisation dure et douce",
+        "it": "idTag è ora letto correttamente dal messaggio startTransaction (chiude #21)\npossibilità implementata per attivare reset rigido e morbido",
+        "es": "idTag ahora se lee correctamente desde el mensaje de inicioTransacción (cerca #21)\nposibilidad implementada para desencadenar el reinicio duro y suave",
+        "pl": "idTag jest teraz odczytywany z wiadomości startTransaction (o blisko 21)\nzaimplementowana możliwość wywołania twardego i łagodnego resetu",
+        "uk": "idTag тепер добре читається від початкуПереказ повідомлення (закриває #21)\nвпроваджено можливість викликати жорсткий і м'який скидання",
+        "zh-cn": "现已正确地阅读了自开始的流通信息(第21号行动)\nb. 实施的可能性"
+      },
       "0.10.0": {
         "en": "implemented state to control number of phases used for charging",
         "de": "implementierter zustand zur steuerung der anzahl der zum laden verwendeten phasen",
@@ -79,18 +92,6 @@
         "es": "* ahora apoyamos cajas de pared con múltiples conectores (cerca #16)\n* añadimos un nuevo estado últimoConsumo de Transacción\n* Aplicación de una transacción Id handling\n_La estructura de los puntos de datos ha cambiado para soportar cajas de pared con múltiples conectores. Por favor, eliminar estados una vez y ajustar sus scripts_",
         "pl": "* – teraz obsługuje ścianki z wieloma złączami (odcinek #16)\n* – dodano nowy stan, ostatnia konwencja antykoncepcji\n* realizuje transakcję mądać\n_The structure of the datapoints zmieniło się na obsługę skrzydeł z wieloma złączami. Po raz pierwszy usunąć wasze skrypty",
         "zh-cn": "* 我们现在支持与多种连接器的挂图(表16)\n* 我们增加了一个新国家,即最后一个过渡性消费国。\n* 实施的交易 处理\n- 数据点的结构已改变,以支助多种连接器的墙壁。 请注意并调整你的文字:"
-      },
-      "0.7.0": {
-        "en": "we have introduced a state to sepcify if chargeLimit is in watts or ampere",
-        "de": "wir haben einen Zustand eingeführt, um zu trennen, wenn Limit ist in Watt oder Ampere",
-        "ru": "мы ввели состояние для sepcify если заряд Лимит в ватт или ампере",
-        "pt": "nós temos introduzido um estado para sepcify se cobrar Limite é em watts ou ampere",
-        "nl": "we hebben een staat geïntroduceerd om te sepcificeren als aanklacht Limit is in watten of amper",
-        "fr": "nous avons introduit un état de sepcifier si la charge Limite est en watts ou ampere",
-        "it": "abbiamo introdotto uno stato per setificare se la carica Il limite è in watt o ampere",
-        "es": "hemos introducido un estado para sepcificar si cobra El límite está en vatios o amperios",
-        "pl": "wprowadzamy państwo do sektyfikowania, jeśli akcje zostaną obciążone. Limit znajduje się w watach lub ampere",
-        "zh-cn": "我们已引入了一个国家,如果收费的话,就能实现统一。 限制是瓦砾或空。"
       }
     },
     "title": "Open Charge Point Protocol",
