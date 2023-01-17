@@ -26,6 +26,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = require("crypto");
 const utils = __importStar(require("@iobroker/adapter-core"));
 const states_1 = require("./lib/states");
 const ocpp_eliftech_1 = require("@ampeco/ocpp-eliftech");
@@ -127,7 +128,8 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'Authorize': {
-                    this.log.info(`Received Authorization Request from "${connection.url}"`);
+                    const authCommand = command;
+                    this.log.info(`Received Authorization Request from "${connection.url}" with idTag "${authCommand.idTag}"`);
                     const response = {
                         idTagInfo: {
                             status: 'Accepted'
@@ -139,6 +141,7 @@ class Ocpp extends utils.Adapter {
                     const startCommand = command;
                     const connectorId = startCommand.connectorId;
                     this.log.info(`Received Start transaction from "${connection.url}.${connectorId}"`);
+                    await this.setStateAsync(`${devName}.${connectorId}.idTag`, startCommand.idTag, true);
                     await this.setStateAsync(`${devName}.${connectorId}.transactionStartMeter`, startCommand.meterStart, true);
                     await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, true, true);
                     const response = {
@@ -153,6 +156,9 @@ class Ocpp extends utils.Adapter {
                     const stopCommand = command;
                     // we use connId as transactionId and vice versa
                     const connectorId = stopCommand.transactionId;
+                    if (stopCommand.idTag) {
+                        await this.setStateAsync(`${devName}.${connectorId}.idTag`, stopCommand.idTag, true);
+                    }
                     const startMeterState = await this.getStateAsync(`${devName}.${connectorId}.transactionStartMeter`);
                     this.log.info(`Received stop transaction from "${connection.url}.${connectorId}"`);
                     if (typeof (startMeterState === null || startMeterState === void 0 ? void 0 : startMeterState.val) === 'number') {
@@ -193,28 +199,27 @@ class Ocpp extends utils.Adapter {
                     return response;
                 }
                 case 'MeterValues': {
-                    const connectorId = command.connectorId;
+                    const meterValuesCommand = command;
+                    const connectorId = meterValuesCommand.connectorId;
                     this.log.info(`Received MeterValues from "${connection.url}.${connectorId}"`);
                     // {"connectorId":1,"transactionId":1,"meterValue":[{"timestamp":"2021-10-27T17:35:01Z",
                     // "sampledValue":[{"value":"4264","format":"Raw","location":"Outlet","context":"Sample.Periodic",
                     // "measurand":"Energy.Active.Import.Register","unit":"Wh"}]}]}
-                    await this._setMeterValues(devName, connectorId, command);
+                    await this._setMeterValues(devName, connectorId, meterValuesCommand);
                     const response = {};
                     return response;
                 }
                 case 'DataTransfer':
-                    this.log.info(`Received DataTransfer from "${connection.url}" with id "${command.messageId}": ${command.data}`);
+                    const dataTransferCommand = command;
+                    this.log.info(`Received DataTransfer from "${connection.url}" with id "${dataTransferCommand.messageId}": ${dataTransferCommand.data}`);
                     try {
-                        await this.synchronizeDataTransfer(devName, command.messageId, command.data);
+                        await this.synchronizeDataTransfer(devName, dataTransferCommand.messageId, dataTransferCommand.data);
                     }
                     catch (e) {
                         this.log.warn(`Could not synchronize transfer data: ${e.message}`);
                     }
                     const response = { status: 'Accepted' };
                     return response;
-                case 'GetConfiguration':
-                    this.log.info(`Received GetConfiguration from "${connection.url}: ${JSON.stringify(command)}"`);
-                    break;
                 default:
                     this.log.warn(`Command not implemented from "${connection.url}": ${JSON.stringify(command)}`);
             }
@@ -469,7 +474,7 @@ class Ocpp extends utils.Adapter {
                 // enable
                 const cmdObj = {
                     connectorId,
-                    idTag: await this._getIdTag(deviceName, connectorId)
+                    idTag: this._getIdTag()
                 };
                 const limitState = await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimit`);
                 if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
@@ -510,7 +515,7 @@ class Ocpp extends utils.Adapter {
             try {
                 const res = (await client.connection.send(command, CALL_MESSAGE));
                 if (res.status === 'Rejected') {
-                    this.log.warn(`${state.val ? 'Starting' : 'Stopping'} transcation has been rejected by charge point`);
+                    this.log.warn(`${state.val ? 'Starting' : 'Stopping'} transaction has been rejected by charge point`);
                 }
             }
             catch (e) {
@@ -584,20 +589,36 @@ class Ocpp extends utils.Adapter {
             }
             await this.extendObjectAsync(`${deviceName}.${connectorId}.chargeLimit`, { common: { unit: state.val } });
         }
+        else if (functionality === 'hardReset' || functionality === 'softReset') {
+            try {
+                const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.Reset({ type: functionality === 'softReset' ? 'Soft' : 'Hard' }), CALL_MESSAGE));
+                if (res.status === 'Rejected') {
+                    this.log.warn(`${functionality} has been rejected by charge point`);
+                }
+            }
+            catch (e) {
+                this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);
+            }
+        }
         else if (channel === 'configuration') {
             if (typeof state.val !== 'string') {
                 return;
             }
             this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
-            const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeConfiguration({ key: functionality, value: state.val }), CALL_MESSAGE));
-            if (res.status === 'Accepted') {
-                await this.setStateAsync(`${deviceName}.configuration.${functionality}`, state.val, true);
+            try {
+                const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.ChangeConfiguration({ key: functionality, value: state.val }), CALL_MESSAGE));
+                if (res.status === 'Accepted') {
+                    await this.setStateAsync(`${deviceName}.configuration.${functionality}`, state.val, true);
+                }
+                else if (res.status === 'RebootRequired') {
+                    this.log.info(`Reboot Required: Configuration changed (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
+                }
+                else {
+                    this.log.warn(`Cannot change confiuration of ${deviceName} (key: ${functionality}, value: ${state.val}): ${res.status}`);
+                }
             }
-            else if (res.status === 'RebootRequired') {
-                this.log.info(`Reboot Required: Configuration changed (device: ${deviceName}) of "${functionality}" to "${state.val}"`);
-            }
-            else {
-                this.log.warn(`Cannot change confiuration of ${deviceName} (key: ${functionality}, value: ${state.val}): ${res.status}`);
+            catch (e) {
+                this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);
             }
         }
         else {
@@ -671,21 +692,11 @@ class Ocpp extends utils.Adapter {
         });
     }
     /**
-     * Determines the idTag for the connector
-     * @param deviceName the name of the device
-     * @param connectorId the connector id which will be used as fallback idTag
+     * Creates an idTag - it needs to be 20 characters long
      */
-    async _getIdTag(deviceName, connectorId) {
-        try {
-            const state = await this.getStateAsync(`${deviceName}.${connectorId}.idTag`);
-            if (state === null || state === void 0 ? void 0 : state.val) {
-                return typeof state.val !== 'string' ? state.val.toString() : state.val;
-            }
-        }
-        catch (e) {
-            this.log.warn(`Could not determine idTag of "${deviceName}.${connectorId}": ${e.message}`);
-        }
-        return connectorId.toString();
+    _getIdTag() {
+        const res = (0, crypto_1.randomBytes)(8).toString('base64');
+        return `ioBroker${res}`;
     }
     /**
      * Changes the general charge limit

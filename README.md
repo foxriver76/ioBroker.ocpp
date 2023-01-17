@@ -23,6 +23,11 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) `idTag` is now read correctly from `startTransaction` message
+* (foxriver76) implemented possibility to trigger `hard` and `soft` reset
+
 ### 0.10.0 (2023-01-16)
 * (foxriver76) implemented state to control number of phases used for charging
 

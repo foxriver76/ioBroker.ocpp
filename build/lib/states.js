@@ -67,6 +67,33 @@ function getConnectorObjects(connectorId) {
             native: {}
         }
     ];
+    // states only available for main
+    if (connectorId === 0) {
+        objs.push({
+            _id: 'softReset',
+            type: 'state',
+            common: {
+                name: 'Trigger soft reset',
+                type: 'boolean',
+                role: 'button',
+                write: true,
+                read: false
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'hardReset',
+            type: 'state',
+            common: {
+                name: 'Trigger hard reset',
+                type: 'boolean',
+                role: 'button',
+                write: true,
+                read: false
+            },
+            native: {}
+        });
+    }
     // states which are not available for main
     if (connectorId !== 0) {
         objs.push({
@@ -124,11 +151,11 @@ function getConnectorObjects(connectorId) {
             _id: 'idTag',
             type: 'state',
             common: {
-                name: 'Tag ID to validate transaction',
+                name: 'ID Tag of transaction',
                 type: 'string',
                 role: 'text',
-                write: true,
-                read: false
+                write: false,
+                read: true
             },
             native: {}
         });
