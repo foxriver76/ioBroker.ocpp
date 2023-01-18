@@ -2,7 +2,6 @@
  * Created with @iobroker/create-adapter v2.0.1
  */
 
-import { randomBytes } from 'crypto';
 import * as utils from '@iobroker/adapter-core';
 import { getConnectorObjects, deviceObjects } from './lib/states';
 import { BaseCommand, CentralSystem, CentralSystemClient, OCPPCommands, OCPPConnection } from '@ampeco/ocpp-eliftech';
@@ -693,7 +692,7 @@ class Ocpp extends utils.Adapter {
                 // enable
                 const cmdObj: RemoteStartTransactionRequest = {
                     connectorId,
-                    idTag: this._getIdTag()
+                    idTag: 'ioBroker'
                 };
 
                 const limitState = await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimit`);
@@ -963,15 +962,6 @@ class Ocpp extends utils.Adapter {
         return new Promise(resolve => {
             setTimeout(() => resolve(), ms);
         });
-    }
-
-    /**
-     * Creates an idTag - it needs to be 20 characters long
-     */
-    private _getIdTag(): string {
-        const res = randomBytes(8).toString('base64');
-
-        return `ioBroker${res}`;
     }
 
     /**

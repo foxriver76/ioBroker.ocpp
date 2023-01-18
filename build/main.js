@@ -26,7 +26,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_1 = require("crypto");
 const utils = __importStar(require("@iobroker/adapter-core"));
 const states_1 = require("./lib/states");
 const ocpp_eliftech_1 = require("@ampeco/ocpp-eliftech");
@@ -504,7 +503,7 @@ class Ocpp extends utils.Adapter {
                 // enable
                 const cmdObj = {
                     connectorId,
-                    idTag: this._getIdTag()
+                    idTag: 'ioBroker'
                 };
                 const limitState = await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimit`);
                 if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
@@ -721,13 +720,6 @@ class Ocpp extends utils.Adapter {
         return new Promise(resolve => {
             setTimeout(() => resolve(), ms);
         });
-    }
-    /**
-     * Creates an idTag - it needs to be 20 characters long
-     */
-    _getIdTag() {
-        const res = (0, crypto_1.randomBytes)(8).toString('base64');
-        return `ioBroker${res}`;
     }
     /**
      * Changes the general charge limit
