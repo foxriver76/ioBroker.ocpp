@@ -26,6 +26,9 @@ Adapter to connect an OCPP 1.6 supported wallbox
 
 ### **WORK IN PROGRESS**
 * (foxriver76) the `idTag` for remote transactions is now `ioBroker` persistent over all transactions
+* (foxriver76) implemented the management of authentication list
+* (foxriver76) only create states if supported by profile (closes #22)
+* (foxriver76) increased stability on first connection
 
 ### 0.11.1 (2023-01-17)
 * (foxriver76) we now correctly detect data type and role of configuration attributes

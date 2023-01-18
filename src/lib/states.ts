@@ -16,7 +16,7 @@ export const deviceObjects: ioBroker.Object[] = [
 /**
  * Returns the objects for a single connector, w.r.t. the connectorId
  * The main (id = 0) does not have all states
- * @param connectorId
+ * @param connectorId id of the connector
  */
 export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
     const objs: ioBroker.Object[] = [
@@ -90,6 +90,19 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 role: 'button',
                 write: true,
                 read: false
+            },
+            native: {}
+        });
+
+        objs.push({
+            _id: 'authList',
+            type: 'state',
+            common: {
+                name: 'CSV list of allowed ID Tags',
+                type: 'string',
+                role: 'text',
+                write: true,
+                read: true
             },
             native: {}
         });

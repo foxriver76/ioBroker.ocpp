@@ -18,7 +18,7 @@ exports.deviceObjects = [
 /**
  * Returns the objects for a single connector, w.r.t. the connectorId
  * The main (id = 0) does not have all states
- * @param connectorId
+ * @param connectorId id of the connector
  */
 function getConnectorObjects(connectorId) {
     const objs = [
@@ -90,6 +90,18 @@ function getConnectorObjects(connectorId) {
                 role: 'button',
                 write: true,
                 read: false
+            },
+            native: {}
+        });
+        objs.push({
+            _id: 'authList',
+            type: 'state',
+            common: {
+                name: 'CSV list of allowed ID Tags',
+                type: 'string',
+                role: 'text',
+                write: true,
+                read: true
             },
             native: {}
         });

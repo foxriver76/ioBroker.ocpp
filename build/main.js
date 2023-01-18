@@ -97,12 +97,12 @@ class Ocpp extends utils.Adapter {
                 this.log.info(`New device connected: "${connection.url}"`);
                 // not known yet
                 this.knownClients.set(connection.url, { connectorIds: [] });
-                // request all important values at start, do not await this
-                this.requestNewClient(connection, command);
                 // on connection, ensure objects for this device are existing
                 await this.createDeviceObjects(connection.url);
                 // device is now connected
                 await this.setDeviceOnline(connection.url);
+                // request all important values at start, do not await this
+                this.requestNewClient(connection, command);
             }
             // we give 90 seconds to send next heartbeat - every response can count as heartbeat according to OCPP
             if (this.clientTimeouts.has(connection.url)) {
@@ -129,9 +129,18 @@ class Ocpp extends utils.Adapter {
                 case 'Authorize': {
                     const authCommand = command;
                     this.log.info(`Received Authorization Request from "${connection.url}" with idTag "${authCommand.idTag}"`);
+                    const state = await this.getStateAsync(`${devName}.0.authList`);
+                    let status = 'Accepted';
+                    if (typeof (state === null || state === void 0 ? void 0 : state.val) === 'string') {
+                        const idTags = state.val.replace(/\s/g, '').split(',');
+                        if (!idTags.includes(authCommand.idTag)) {
+                            status = 'Invalid';
+                            this.log.warn(`ID Tag "${authCommand.idTag}" has been rejected`);
+                        }
+                    }
                     const response = {
                         idTagInfo: {
-                            status: 'Accepted'
+                            status
                         }
                     };
                     return response;
@@ -225,11 +234,25 @@ class Ocpp extends utils.Adapter {
         };
     }
     /**
+     * Request configuration
+     * @param connection the OCPP connection
+     */
+    async requestConfiguration(connection) {
+        this.log.info(`Sending GetConfiguration to "${connection.url}"`);
+        // it's not GetConfiguration try to request whole config
+        const res = (await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({}), CALL_MESSAGE));
+        this.log.debug(`Received configuration from ${connection.url}: ${JSON.stringify(res)}`);
+        await this.createConfigurationObjects(connection.url, res);
+    }
+    /**
      * Request BootNotification, StatusNotification and MeterValues
      * @param connection connection object
      * @param command command object
      */
     async requestNewClient(connection, command) {
+        var _a, _b;
+        // wait initially
+        await this._wait(1000);
         // we want to request boot notification and status and meter values to have everything up to date again
         try {
             if (command.getCommandName() !== 'BootNotification') {
@@ -250,21 +273,23 @@ class Ocpp extends utils.Adapter {
             }
             if (command.getCommandName() !== 'MeterValues') {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
-                // TODO: add connectorId if known or request it also if new connector detected?
                 // it's not MeterValues, so request
                 await connection.send(new ocpp_eliftech_1.OCPPCommands.TriggerMessage({
                     requestedMessage: 'MeterValues'
                 }), CALL_MESSAGE);
                 await this._wait(1000);
             }
-            this.log.info(`Sending GetConfiguration to "${connection.url}"`);
-            // it's not GetConfiguration try to request whole config
-            const res = (await connection.send(new ocpp_eliftech_1.OCPPCommands.GetConfiguration({}), CALL_MESSAGE));
-            this.log.debug(`Received configuration from ${connection.url}: ${JSON.stringify(res)}`);
-            await this.createConfigurationObjects(connection.url, res);
         }
         catch (e) {
             this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
+        }
+        try {
+            await this.requestConfiguration(connection);
+            const supportedProfiles = (_b = (_a = this.knownClients.get(connection.url)) === null || _a === void 0 ? void 0 : _a.supportedProfiles) !== null && _b !== void 0 ? _b : [];
+            await this.removeUnsupportedStates(connection.url, supportedProfiles);
+        }
+        catch (e) {
+            this.log.error(`Could not request configuration of ${connection.url}: ${e.message}`);
         }
     }
     /**
@@ -338,8 +363,8 @@ class Ocpp extends utils.Adapter {
         if (!config.configurationKey) {
             return;
         }
-        deviceName = deviceName.replace(/\./g, '_');
-        await this.extendObjectAsync(`${deviceName}.configuration`, {
+        const iobDeviceName = deviceName.replace(/\./g, '_');
+        await this.extendObjectAsync(`${iobDeviceName}.configuration`, {
             type: 'channel',
             common: {
                 name: 'Configuration'
@@ -348,7 +373,12 @@ class Ocpp extends utils.Adapter {
         });
         for (const entry of config.configurationKey) {
             const { role, type, value } = this.parseConfigurationValue(entry.value || '', entry.readonly);
-            await this.extendObjectAsync(`${deviceName}.configuration.${entry.key}`, {
+            if (entry.key === 'SupportedFeatureProfiles' && entry.value && this.knownClients.has(deviceName)) {
+                // Store the capabilities
+                this.log.info(`Supported profiles by client "${deviceName}" are "${entry.value}"`);
+                this.knownClients.get(deviceName).supportedProfiles = entry.value.split(',');
+            }
+            await this.extendObjectAsync(`${iobDeviceName}.configuration.${entry.key}`, {
                 type: 'state',
                 common: {
                     name: entry.key,
@@ -359,7 +389,7 @@ class Ocpp extends utils.Adapter {
                 },
                 native: {}
             });
-            await this.setStateAsync(`${deviceName}.configuration.${entry.key}`, value, true);
+            await this.setStateAsync(`${iobDeviceName}.configuration.${entry.key}`, value, true);
         }
     }
     /**
@@ -473,7 +503,7 @@ class Ocpp extends utils.Adapter {
      * Is called if a subscribed state changes
      */
     async onStateChange(id, state) {
-        var _a;
+        var _a, _b;
         if (!state || state.ack) {
             // if state deleted or already acknowledged
             return;
@@ -629,6 +659,18 @@ class Ocpp extends utils.Adapter {
                 this.log.error(`Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`);
             }
         }
+        else if (functionality === 'authList') {
+            const authList = (_b = state.val) !== null && _b !== void 0 ? _b : '';
+            if (typeof authList !== 'string') {
+                return;
+            }
+            try {
+                await this.syncAuthList(client, authList);
+            }
+            catch (e) {
+                this.log.error(`Could not synchronize Local Authentication List: ${e.message}`);
+            }
+        }
         else if (channel === 'configuration') {
             if (state.val === null) {
                 return;
@@ -759,6 +801,69 @@ class Ocpp extends utils.Adapter {
         }
         else {
             this.log.warn(`Charge point responded with "${res.status}" on changing charge limit`);
+        }
+    }
+    /**
+     * Synchronize auth list with local client
+     *
+     * @param client the CentralSystemClient
+     * @param authList csv string with tag ids
+     */
+    async syncAuthList(client, authList) {
+        const { listVersion } = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.GetLocalListVersion({}), CALL_MESSAGE));
+        authList = authList.replace(/\s/g, '');
+        const idTags = authList.split(',');
+        const localAuthorizationList = [];
+        for (const idTag of idTags) {
+            localAuthorizationList.push({ idTag, idTagInfo: { status: 'Accepted' } });
+        }
+        const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SendLocalList({ listVersion, updateType: 'Full', localAuthorizationList }), CALL_MESSAGE));
+        if (res.status === 'Accepted') {
+            await this.setStateAsync(`${client.connection.url.replace(/\./g, '_')}.0.authList`, authList, true);
+        }
+        else {
+            throw new Error(`Client has responded with status "${res.status}"`);
+        }
+    }
+    /**
+     * Remove states of non-supported profiles
+     * @param deviceName name of the device
+     * @param supportedProfiles supported profiles
+     */
+    async removeUnsupportedStates(deviceName, supportedProfiles) {
+        var _a;
+        const iobDeviceName = deviceName.replace(/\./g, '_');
+        const SMART_CHARGING_STATE_IDS = ['numberPhases', 'chargeLimitType', 'chargeLimit'];
+        const LOCAL_AUTH_LIST_STATE_IDS = ['authList'];
+        const connectorIds = (_a = this.knownClients.get(deviceName)) === null || _a === void 0 ? void 0 : _a.connectorIds;
+        if (!connectorIds) {
+            return;
+        }
+        if (!supportedProfiles.includes('SmartCharging')) {
+            this.log.info('Removing SmartCharging functionality as unsupported');
+            for (const connectorId of connectorIds) {
+                for (const id of SMART_CHARGING_STATE_IDS) {
+                    try {
+                        await this.delObjectAsync(`${iobDeviceName}.${connectorId}.${id}`);
+                    }
+                    catch (_b) {
+                        // ignore
+                    }
+                }
+            }
+        }
+        if (!supportedProfiles.includes('LocalAuthListManagement')) {
+            this.log.info('Removing LocalAuthListManagement functionality as unsupported');
+            for (const connectorId of connectorIds) {
+                for (const id of LOCAL_AUTH_LIST_STATE_IDS) {
+                    try {
+                        await this.delObjectAsync(`${iobDeviceName}.${connectorId}.${id}`);
+                    }
+                    catch (_c) {
+                        // ignore
+                    }
+                }
+            }
         }
     }
 }
