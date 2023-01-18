@@ -23,8 +23,7 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.12.0 (2023-01-18)
 * (foxriver76) the `idTag` for remote transactions is now `ioBroker` persistent over all transactions
 * (foxriver76) implemented the management of authentication list
 * (foxriver76) only create states if supported by profile (closes #22)

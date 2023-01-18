@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.11.1",
+    "version": "0.12.0",
     "news": {
+      "0.12.0": {
+        "en": "the `idTag` for remote transactions is now `ioBroker` persistent over all transactions\nimplemented the management of authentication list\nonly create states if supported by profile (closes #22)\nincreased stability on first connection",
+        "de": "der idTag für Remote-Transaktionen ist jetzt ioBroker persistent über alle Transaktionen\ndie verwaltung der authentifizierungsliste implementiert\nnur zustände erstellen, wenn von profil unterstützt (schließt #22)\nerhöhte stabilität beim ersten anschluss",
+        "ru": "idTag для удаленных транзакций теперь ioBroker настойчиво по всем операциям\nреализовано управление списком аутентификации\nтолько создавать государства, если поддерживается профилем (closes #22)\nповышенная стабильность при первом подключении",
+        "pt": "o idTag para transações remotas é agora ioBroker persistente sobre todas as transações\nimplementou a gestão da lista de autenticação\nsomente criar estados se suportado pelo perfil (fecha #22)\naumento da estabilidade na primeira conexão",
+        "nl": "de idTag voor afgelegen transacties is nu ioBroker volhardend over alle transacties\nde management van de authenticatielijst\ncreëer alleen staten als ondersteund door profiel (closes #22)\nverhoogde stabiliteit op het eerste verband",
+        "fr": "idTag pour les transactions à distance est maintenant ioBroker persistant sur toutes les transactions\nmis en œuvre la gestion de la liste d'authentification\ncréer des états uniquement si le profil est supporté (ferme #22)\nune stabilité accrue à la première connexion",
+        "it": "il idTag per le transazioni remote è ora ioBroker persistente su tutte le transazioni\nimplementato la gestione dell'elenco di autenticazione\nsolo creare stati se supportati dal profilo (chiude #22)\nmaggiore stabilità sul primo collegamento",
+        "es": "idTag para transacciones remotas es ahora ioBroker persistente sobre todas las transacciones\nimplementó la gestión de la lista de autenticación\nsólo crear estados si apoyados por perfil (cerca #22)\nmayor estabilidad en la primera conexión",
+        "pl": "idTag dla odległych transakcji jest obecnie ioBrokerem uproszczonym nad wszystkimi transakcjami\nzaimplementował zarządzanie listami autentyczności\nutwory mogą być wspierane przez profil (ogranicz #22)\nzwiększona stabilność pierwszego związku",
+        "uk": "idTag для віддалених транзакцій тепер ioBroker стійкий до всіх транзакцій\nвпроваджено управління переліком автентифікації\nтільки створити стани, якщо підтримується профіль (закриває #22)\nпідвищена стійкість при першому підключенні",
+        "zh-cn": "远距离交易的投标现在是对所有交易都保持沉默。\n执行核证清单的管理\n只有在概况(编号:第22号)支持下才能创建国家\nb. 第一个联系方面的稳定增加"
+      },
       "0.11.1": {
         "en": "we now correctly detect data type and role of configuration attributes",
         "de": "wir erkennen nun den datentyp und die rolle von konfigurationsattributen korrekt",
@@ -80,19 +93,6 @@
         "pl": "słabnąć tylko błąd Poniższy kod jest różny od NoError",
         "uk": "тільки ввійти помилки Код, якщо він відрізняється від NoError",
         "zh-cn": "只是错误的逻辑 法律如果不同于第Error号。"
-      },
-      "0.8.1": {
-        "en": "make `transactionId` matching `connectorId` again",
-        "de": "die Transaktion Identifizierbarer Anschluss wieder",
-        "ru": "сделать транзакцию Id соответствующий разъем Ид снова",
-        "pt": "fazer transação Conector de correspondência Id Id novamente",
-        "nl": "vertaling: Identificeer de connector Identificatie",
-        "fr": "transaction Connecteur correspondant à Id Id again",
-        "it": "effettuare transazioni Connettore di corrispondenza Id di nuovo",
-        "es": "hacer transacciones Conector de combinación de Id Id again",
-        "pl": "transakcja Id matching connector Ponownie znów",
-        "uk": "зробити операцію Роз'єм відповідності Id І знову",
-        "zh-cn": "交易 连接者 我再次发言"
       }
     },
     "title": "Open Charge Point Protocol",
