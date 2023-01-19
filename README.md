@@ -23,6 +23,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) ensure main connector is always created even if no status received there
+
 ### 0.12.1 (2023-01-19)
 * (foxriver76) we now also detect feature profiles if clients add unallowed whitespaces
 

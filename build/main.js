@@ -96,11 +96,13 @@ class Ocpp extends utils.Adapter {
             if (!this.knownClients.has(connection.url)) {
                 this.log.info(`New device connected: "${connection.url}"`);
                 // not known yet
-                this.knownClients.set(connection.url, { connectorIds: [] });
+                this.knownClients.set(connection.url, { connectorIds: [0] });
                 // on connection, ensure objects for this device are existing
                 await this.createDeviceObjects(connection.url);
                 // device is now connected
                 await this.setDeviceOnline(connection.url);
+                // Every device has a 0 connector
+                await this.createConnectorObjects(connection.url, 0);
                 // request all important values at start, do not await this
                 this.requestNewClient(connection, command);
             }
@@ -196,8 +198,6 @@ class Ocpp extends utils.Adapter {
                     if (statusCommand.errorCode !== 'NoError') {
                         this.log.warn(`Status from "${connection.url}.${connectorId}" contains an error: ${statusCommand.errorCode}`);
                     }
-                    // {"connectorId":1,"errorCode":"NoError","info":"","status":"Preparing",
-                    // "timestamp":"2021-10-27T15:30:09Z","vendorId":"","vendorErrorCode":""}
                     if (!this.knownClients.get(connection.url).connectorIds.includes(connectorId)) {
                         this.knownClients.get(connection.url).connectorIds.push(connectorId);
                         await this.createConnectorObjects(connection.url, connectorId);
@@ -429,7 +429,8 @@ class Ocpp extends utils.Adapter {
      * @param connectorId id of the connector
      */
     async createConnectorObjects(device, connectorId) {
-        await this.extendObjectAsync(`${device.replace(/\./g, '_')}.${connectorId}`, {
+        const iobDevice = device.replace(/\./g, '_');
+        await this.extendObjectAsync(`${iobDevice}.${connectorId}`, {
             type: 'channel',
             common: {
                 name: connectorId ? `Connector ${connectorId}` : 'Main'
@@ -439,7 +440,7 @@ class Ocpp extends utils.Adapter {
         const connectorObjects = (0, states_1.getConnectorObjects)(connectorId);
         for (const obj of connectorObjects) {
             const id = obj._id;
-            obj._id = `${device.replace(/\./g, '_')}.${connectorId}.${obj._id}`;
+            obj._id = `${iobDevice}.${connectorId}.${obj._id}`;
             await this.extendObjectAsync(obj._id, obj, { preserve: { common: ['name'] } });
             obj._id = id;
         }
