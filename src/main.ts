@@ -547,7 +547,7 @@ class Ocpp extends utils.Adapter {
             if (entry.key === 'SupportedFeatureProfiles' && entry.value && this.knownClients.has(deviceName)) {
                 // Store the capabilities
                 this.log.info(`Supported profiles by client "${deviceName}" are "${entry.value}"`);
-                this.knownClients.get(deviceName)!.supportedProfiles = entry.value.split(',');
+                this.knownClients.get(deviceName)!.supportedProfiles = entry.value.replace(/\s/g, '').split(',');
             }
 
             await this.extendObjectAsync(`${iobDeviceName}.configuration.${entry.key}`, {
