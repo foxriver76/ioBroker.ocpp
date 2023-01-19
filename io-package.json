@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.12.0",
+    "version": "0.12.1",
     "news": {
+      "0.12.1": {
+        "en": "we now also detect feature profiles if clients add unallowed whitespaces",
+        "de": "wir erkennen nun auch feature-profile, wenn clients unallowed whitespaces hinzufügen",
+        "ru": "мы теперь также обнаруживаем профили функции, если клиенты добавляют неразрешенные белые пространства",
+        "pt": "agora também detectamos perfis de recursos se os clientes adicionarem espaços brancos não permitidos",
+        "nl": "we detecteren nu ook kenmerken als cliënten onopgeloste witspaces toevoegen",
+        "fr": "nous détectons maintenant des profils de fonctionnalités si les clients ajoutent des espaces blancs non autorisés",
+        "it": "ora anche rilevare profili di funzionalità se i client aggiungono spazi bianchi non consentiti",
+        "es": "ahora también detectamos perfiles de características si los clientes añaden espacios blancos no permitidos",
+        "pl": "obecnie wykrywamy również profile, jeśli klienci dodają nieprzyzwyczajne białej przestrzeni",
+        "uk": "ми тепер також визначаємо профілі функцій, якщо клієнти додають неперевершені білі простори",
+        "zh-cn": "现在,如果客户增加白空间,我们也发现各种特点。"
+      },
       "0.12.0": {
         "en": "the `idTag` for remote transactions is now `ioBroker` persistent over all transactions\nimplemented the management of authentication list\nonly create states if supported by profile (closes #22)\nincreased stability on first connection",
         "de": "der idTag für Remote-Transaktionen ist jetzt ioBroker persistent über alle Transaktionen\ndie verwaltung der authentifizierungsliste implementiert\nnur zustände erstellen, wenn von profil unterstützt (schließt #22)\nerhöhte stabilität beim ersten anschluss",
@@ -80,19 +93,6 @@
         "pl": "* usunął stan z głównego złącza, które nie są dozwolone w tym miejscu\n* – obecnie synchronizujemy konfigurację do adaptatora\n* - dodano flagę dotyczącą dostępności państwa\ndodał także flagę dla państw ograniczoną do ładowania\n* zoptymalizowano błąd logowania\n* teraz umożliwiamy zmianę konfiguracji ładunku poprzez adapter\n* ulepszamy ponowne połączenia\n\n_Please usuwa wszystkie stany złącza 0",
         "uk": "* ми видалили штати з основного роз'єму, які не допускаються там\n* ми тепер синхронізуємо конфігурацію в адаптер\n* ми додали стійку прапору до стану доступності\n* ми додали прапорець ack для станів `зарядного ліміту`\n* ми оптимізуємо запис помилок\n* тепер ми можемо змінити налаштування зарядного пристрою через адаптер\n* ми вдосконалили роботу з відключенням\n\n_Видалити всі стани роз'єму 0 раз_",
         "zh-cn": "* 我们从没有允许的主要联系国中除名。\n* 我们现在将组合与适应人员同步进行\n* 我们增添了有国旗的旗帜。\n* 我们增加了“附加限额”的旗帜。\n* 我们优化了错误伐木\n* 我们现在能够通过适应办法改变费用配置\n* 我们改善了重新安排工作\n\n—— 删除所有连接国0国。"
-      },
-      "0.8.2": {
-        "en": "only log the `errorCode` if it is different from `NoError`",
-        "de": "nur protokollieren Sie den Fehler Code, wenn es anders als NoError ist",
-        "ru": "только авторизируйте ошибку Код, если он отличается от NoError",
-        "pt": "só logar o erro Código se for diferente de NoError",
-        "nl": "alleen de fout inloggen Code als het anders is dan NoError",
-        "fr": "enregistrez seulement l'erreur Code si elle est différente de NoError",
-        "it": "solo registrare l'errore Codice se è diverso da NoError",
-        "es": "sólo registra el error Código si es diferente a NoError",
-        "pl": "słabnąć tylko błąd Poniższy kod jest różny od NoError",
-        "uk": "тільки ввійти помилки Код, якщо він відрізняється від NoError",
-        "zh-cn": "只是错误的逻辑 法律如果不同于第Error号。"
       }
     },
     "title": "Open Charge Point Protocol",
