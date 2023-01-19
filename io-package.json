@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.12.1",
+    "version": "0.12.2",
     "news": {
+      "0.12.2": {
+        "en": "ensure main connector is always created even if no status received there",
+        "de": "sicherzustellen, dass der hauptverbinder immer erstellt wird, auch wenn dort kein status erhalten wird",
+        "ru": "обеспечить главный соединитель всегда созданный даже если никакой статус не получил там",
+        "pt": "assegurar o conector principal é sempre criado mesmo que nenhum status recebido lá",
+        "nl": "zorg ervoor dat de belangrijkste connector altijd gecreëerd wordt, zelfs als er geen status is ontvangen",
+        "fr": "assurer le connecteur principal est toujours créé même si aucun statut n'y a été reçu",
+        "it": "garantire il connettore principale è sempre creato anche se non lo stato ricevuto lì",
+        "es": "garantizar el conector principal siempre se crea incluso si no se recibe ningún estado allí",
+        "pl": "zastrzeżenia głównego połączenia są zawsze tworzone, nawet jeśli nie otrzyma się żadnej ustawy",
+        "uk": "забезпечення основного роз'єму завжди створюється навіть якщо його немає",
+        "zh-cn": "为了确保主要联系者,即使没有获得任何身份,也总是建立起来。"
+      },
       "0.12.1": {
         "en": "we now also detect feature profiles if clients add unallowed whitespaces",
         "de": "wir erkennen nun auch feature-profile, wenn clients unallowed whitespaces hinzufügen",
@@ -80,19 +93,6 @@
         "pl": "teraz unikamy wdrożenia logowania, jeśli akcje są obciążone. Limit jest ustawiony w null (deaktywowany)",
         "uk": "ми зараз не втілюємо загибель, якщо заряд Ліміт встановлюється на null (деактивований)",
         "zh-cn": "我们现在避免执行伐木,如果收费的话。 限制规定无效(终止)"
-      },
-      "0.9.0": {
-        "en": "* we removed states from main connector which are not allowed there\n* we now synchronize configuration into adapter\n* we added ack flag to `availability` state\n* we added ack flag for `charge limit` states\n* we optimized error logging\n* we now allow changing charger configuration via adapter\n* we improved reconnect handling\n\n__Please delete all states of connector 0 once__",
-        "de": "* wir entfernte zustände vom hauptverbinder, die dort nicht erlaubt sind\n* wir synchronisieren jetzt konfiguration in adapter\n* wir haben ack flag zum verfügbarkeitszustand hinzugefügt\n* wir haben einck flag für `charge limit` zustände hinzugefügt\n* wir optimierte fehlerprotokollierung\n* wir erlauben nun eine änderung der ladegerätkonfiguration über adapter\n* wir verbesserte reconnect handling\n\n_Bitte löschen Sie alle Zustände des Steckverbinders 0 einmal_",
-        "ru": "* мы удалили штаты от главного соединителя который не позволенный там\n* мы теперь синхронизируем конфигурацию в адаптер\n* мы добавили ack флаг в состояние доступности\n* мы добавили флаг ack для `charge limit` состояния\n* мы оптимизировали логирование ошибок\n* теперь мы позволяем изменить конфигурацию зарядного устройства через адаптер\n* мы улучшили переподключение обработки\n\n_Пожалуйста, удалите все состояния разъема 0 раз_",
-        "pt": "* removemos estados do conector principal que não são permitidos lá\n* agora sincronizamos a configuração no adaptador\n* adicionamos ack flag ao estado de disponibilidade\n* nós adicionamos ack flag for `charge limit` states\n* nós otimizado registro de erro\n* agora permitimos alterar a configuração do carregador através do adaptador\n* melhoramos o manuseio de reconectação\n\nPor favor, exclua todos os estados do conector 0 uma vez_",
-        "nl": "♪ we verwijderde staten van de belangrijkste connector die daar niet mogen\n♪ we now synchronize configuration into adapter ♪\n♪ we made ack vlag to availity state ♪\nquality over quantity (qoq) releases vertaling:\n♪ we optimiseerde fout logging ♪\n♪ we nu toestaan het veranderen van oplader configuration via adapter ♪\n♪ we verbeterde verbinding\n\nVerwijder alle staten van connector 0 eens",
-        "fr": "* nous avons enlevé les états du connecteur principal qui ne sont pas permis là\n* nous synchronisons maintenant la configuration en adaptateur\n* nous avons ajouté ack flag à la disponibilité état\n* nous avons ajouté ack flag pour les états de charge\n* nous avons optimisé l'enregistrement des erreurs\n* nous permettons maintenant de modifier la configuration du chargeur via adaptateur\n* nous avons amélioré la manipulation de reconnect\n\n_Veuillez supprimer tous les états du connecteur 0 once_",
-        "it": "* abbiamo rimosso gli stati dal connettore principale che non sono ammessi lì\n* ora sincronizzamo la configurazione in adattatore\n* abbiamo aggiunto ack flag allo stato di disponibilità\n* abbiamo aggiunto ack flag per `charge limit` stati\n* abbiamo ottimizzato la registrazione degli errori\n* ora permettiamo la modifica della configurazione del caricabatterie tramite adattatore\n* abbiamo migliorato la gestione delle connessioni\n\n_ Si prega di eliminare tutti gli stati del connettore 0 una volta_",
-        "es": "* eliminamos estados del conector principal que no están permitidos allí\n* ahora sincronizamos la configuración en adaptador\n* añadimos bandera a la disponibilidad del estado\n* añadimos bandera para los estados del límite de carga\n* optimizamos el registro de errores\n* ahora permitimos cambiar la configuración del cargador a través del adaptador\n* mejoramos el manejo de reconexión\n\n_Por favor, elimine todos los estados del conector 0 una vez_",
-        "pl": "* usunął stan z głównego złącza, które nie są dozwolone w tym miejscu\n* – obecnie synchronizujemy konfigurację do adaptatora\n* - dodano flagę dotyczącą dostępności państwa\ndodał także flagę dla państw ograniczoną do ładowania\n* zoptymalizowano błąd logowania\n* teraz umożliwiamy zmianę konfiguracji ładunku poprzez adapter\n* ulepszamy ponowne połączenia\n\n_Please usuwa wszystkie stany złącza 0",
-        "uk": "* ми видалили штати з основного роз'єму, які не допускаються там\n* ми тепер синхронізуємо конфігурацію в адаптер\n* ми додали стійку прапору до стану доступності\n* ми додали прапорець ack для станів `зарядного ліміту`\n* ми оптимізуємо запис помилок\n* тепер ми можемо змінити налаштування зарядного пристрою через адаптер\n* ми вдосконалили роботу з відключенням\n\n_Видалити всі стани роз'єму 0 раз_",
-        "zh-cn": "* 我们从没有允许的主要联系国中除名。\n* 我们现在将组合与适应人员同步进行\n* 我们增添了有国旗的旗帜。\n* 我们增加了“附加限额”的旗帜。\n* 我们优化了错误伐木\n* 我们现在能够通过适应办法改变费用配置\n* 我们改善了重新安排工作\n\n—— 删除所有连接国0国。"
       }
     },
     "title": "Open Charge Point Protocol",
