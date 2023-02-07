@@ -23,6 +23,10 @@ Adapter to connect an OCPP 1.6 supported wallbox
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) allow deactivating `numberPhases` by setting `null
+
 ### 0.12.2 (2023-01-19)
 * (foxriver76) ensure main connector is always created even if no status received there
 

@@ -706,14 +706,13 @@ class Ocpp extends utils.Adapter {
      */
     async _getNumberOfPhases(deviceName, connectorId) {
         var _a;
-        let numberPhases = 3;
+        let numberPhases;
         try {
             numberPhases =
-                ((_a = (await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))) === null || _a === void 0 ? void 0 : _a.val) ||
-                    numberPhases;
+                ((_a = (await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))) === null || _a === void 0 ? void 0 : _a.val) || undefined;
         }
         catch (e) {
-            this.log.warn(`Could not determine number of phases, fallback to 3 phase charging: ${e.message}`);
+            this.log.warn(`Could not determine number of phases: ${e.message}`);
         }
         return numberPhases;
     }
@@ -798,7 +797,7 @@ class Ocpp extends utils.Adapter {
         if (res.status === 'Accepted') {
             await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, limitType, true);
             await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, limit, true);
-            await this.setStateAsync(`${deviceName}.${connectorId}.numberPhases`, numberPhases, true);
+            await this.setStateAsync(`${deviceName}.${connectorId}.numberPhases`, numberPhases !== null && numberPhases !== void 0 ? numberPhases : null, true);
         }
         else {
             this.log.warn(`Charge point responded with "${res.status}" on changing charge limit`);
