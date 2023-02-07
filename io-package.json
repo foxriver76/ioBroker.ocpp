@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.12.2",
+    "version": "0.12.3",
     "news": {
+      "0.12.3": {
+        "en": "allow deactivating `numberPhases` by setting `null",
+        "de": "deaktivieren der Anzahl Phasen durch Einstellung `null",
+        "ru": "позволяют деактивировать номер Фазы по настройке `null",
+        "pt": "permitir o número de desativação Fases por definição `null",
+        "nl": "_ Fases door te zetten",
+        "fr": "permettre de désactiver le nombre Phases en définissant `null",
+        "it": "consentire di disattivare il numero Fasi per impostazione `null",
+        "es": "permite desactivar el número Phases by setting `null",
+        "pl": "pozwala dezaktywować liczbę Phases by setting the Null (ang.)",
+        "uk": "дозволяє деактивувати номер Фази за допомогою налаштування `null",
+        "zh-cn": "允许人数减少 D. 确定“绝对”的阶段"
+      },
       "0.12.2": {
         "en": "ensure main connector is always created even if no status received there",
         "de": "sicherzustellen, dass der hauptverbinder immer erstellt wird, auch wenn dort kein status erhalten wird",
@@ -80,19 +93,6 @@
         "pl": "wdrażany stan kontroli liczby faz używanych do ładowania ładowania",
         "uk": "впроваджений стан для контролю кількості фаз, що використовуються для зарядки",
         "zh-cn": "实施国家控制用于慈善阶段的数量"
-      },
-      "0.9.1": {
-        "en": "we now avoid not implemented logging if `chargeLimit` is set to null (deactivated)",
-        "de": "wir vermeiden jetzt nicht durchgeführte Protokollierung Limit wird auf Null gesetzt (deaktiviert)",
-        "ru": "мы теперь избегаем не реализованных логов, если заряд Лимит установлен на null (деактивирован)",
-        "pt": "nós evitamos agora o registro não implementado se cobrar Limite é definido para nulo (desativado)",
-        "nl": "we vermijden nu geen inrichting als aanklacht Limit is klaar om te kalmeren",
-        "fr": "nous évitons maintenant de ne pas implémenter l'enregistrement si la charge La limite est fixée à null (désactivée)",
-        "it": "ora evitiamo di non implementato logging se la carica Il limite è impostato a null (disattivato)",
-        "es": "ahora evitamos que no se implemente registro si carga El límite está fijado para anular (desactivado)",
-        "pl": "teraz unikamy wdrożenia logowania, jeśli akcje są obciążone. Limit jest ustawiony w null (deaktywowany)",
-        "uk": "ми зараз не втілюємо загибель, якщо заряд Ліміт встановлюється на null (деактивований)",
-        "zh-cn": "我们现在避免执行伐木,如果收费的话。 限制规定无效(终止)"
       }
     },
     "title": "Open Charge Point Protocol",
