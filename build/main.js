@@ -540,7 +540,6 @@ class Ocpp extends utils.Adapter {
                 if ((limitState === null || limitState === void 0 ? void 0 : limitState.val) && typeof limitState.val === 'number') {
                     const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))
                         .val;
-                    const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 0,
@@ -554,13 +553,16 @@ class Ocpp extends utils.Adapter {
                             chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0,
-                                    limit: limitState.val,
-                                    numberPhases
+                                    limit: limitState.val // e.g. 12 for 12 A
                                 }
                             ]
                             // minChargingRate: 12 // if needed we add it
                         }
                     };
+                    const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
+                    if (numberPhases) {
+                        cmdObj.chargingProfile.chargingSchedule.chargingSchedulePeriod[0].numberPhases = numberPhases;
+                    }
                 }
                 this.log.debug(`Sending RemoteStartTransaction for ${deviceName}.${connectorId}: ${JSON.stringify(cmdObj)}`);
                 command = new ocpp_eliftech_1.OCPPCommands.RemoteStartTransaction(cmdObj);
@@ -708,13 +710,12 @@ class Ocpp extends utils.Adapter {
         var _a;
         let numberPhases;
         try {
-            numberPhases =
-                ((_a = (await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))) === null || _a === void 0 ? void 0 : _a.val) || undefined;
+            numberPhases = (_a = (await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))) === null || _a === void 0 ? void 0 : _a.val;
         }
         catch (e) {
             this.log.warn(`Could not determine number of phases: ${e.message}`);
         }
-        return numberPhases;
+        return typeof numberPhases === 'number' ? numberPhases : undefined;
     }
     /**
      * Sets the meter values and creates objects if non existing
@@ -771,7 +772,7 @@ class Ocpp extends utils.Adapter {
     async changeChargeLimit(options) {
         const { client, connectorId, deviceName, limitType, limit, numberPhases } = options;
         this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
-        const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile({
+        const command = {
             connectorId,
             csChargingProfiles: {
                 chargingProfileId: 1,
@@ -786,14 +787,17 @@ class Ocpp extends utils.Adapter {
                     chargingSchedulePeriod: [
                         {
                             startPeriod: 0,
-                            limit,
-                            numberPhases
+                            limit // e.g. 12 for 12 A
                         }
                     ]
                     // minChargingRate: 12 // if needed we add it
                 }
             }
-        }), CALL_MESSAGE));
+        };
+        if (numberPhases) {
+            command.csChargingProfiles.chargingSchedule.chargingSchedulePeriod[0].numberPhases = numberPhases;
+        }
+        const res = (await client.connection.send(new ocpp_eliftech_1.OCPPCommands.SetChargingProfile(command), CALL_MESSAGE));
         if (res.status === 'Accepted') {
             await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, limitType, true);
             await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, limit, true);

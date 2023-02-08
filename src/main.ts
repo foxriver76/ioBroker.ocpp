@@ -29,7 +29,8 @@ import {
     AuthorizeRequest,
     ResetResponse,
     GetLocalListVersionResponse,
-    SendLocalListResponse
+    SendLocalListResponse,
+    SetChargingProfileRequest
 } from '@ampeco/ocpp-eliftech/schemas';
 import { SendLocalListRequest } from '@ampeco/ocpp-eliftech/schemas/SendLocalList';
 
@@ -743,8 +744,6 @@ class Ocpp extends utils.Adapter {
                     const limitType = (await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimitType`))!
                         .val as LimitType;
 
-                    const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
-
                     cmdObj.chargingProfile = {
                         chargingProfileId: 1,
                         stackLevel: 0, // some chargers only support 0
@@ -758,13 +757,18 @@ class Ocpp extends utils.Adapter {
                             chargingSchedulePeriod: [
                                 {
                                     startPeriod: 0, // up from 00:00 h (whole day)
-                                    limit: limitState.val, // e.g. 12 for 12 A
-                                    numberPhases
+                                    limit: limitState.val // e.g. 12 for 12 A
                                 }
                             ]
                             // minChargingRate: 12 // if needed we add it
                         }
                     };
+
+                    const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
+
+                    if (numberPhases) {
+                        cmdObj.chargingProfile!.chargingSchedule.chargingSchedulePeriod[0].numberPhases = numberPhases;
+                    }
                 }
 
                 this.log.debug(
@@ -951,13 +955,12 @@ class Ocpp extends utils.Adapter {
         let numberPhases;
 
         try {
-            numberPhases =
-                ((await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))?.val as number) || undefined;
+            numberPhases = (await this.getStateAsync(`${deviceName}.${connectorId}.numberPhases`))?.val;
         } catch (e: any) {
             this.log.warn(`Could not determine number of phases: ${e.message}`);
         }
 
-        return numberPhases;
+        return typeof numberPhases === 'number' ? numberPhases : undefined;
     }
 
     /**
@@ -1026,30 +1029,35 @@ class Ocpp extends utils.Adapter {
         const { client, connectorId, deviceName, limitType, limit, numberPhases } = options;
         this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
 
-        const res = (await client.connection.send(
-            new OCPPCommands.SetChargingProfile({
-                connectorId,
-                csChargingProfiles: {
-                    chargingProfileId: 1,
-                    stackLevel: 0, // some chargers only support 0
-                    chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
-                    chargingProfileKind: 'Recurring',
-                    recurrencyKind: 'Daily',
-                    chargingSchedule: {
-                        duration: 86_400, // 24 hours
-                        startSchedule: '2013-01-01T00:00Z',
-                        chargingRateUnit: limitType, // Ampere or Watt
-                        chargingSchedulePeriod: [
-                            {
-                                startPeriod: 0, // up from 00:00 h (whole day)
-                                limit, // e.g. 12 for 12 A
-                                numberPhases
-                            }
-                        ]
-                        // minChargingRate: 12 // if needed we add it
-                    }
+        const command: SetChargingProfileRequest = {
+            connectorId,
+            csChargingProfiles: {
+                chargingProfileId: 1,
+                stackLevel: 0, // some chargers only support 0
+                chargingProfilePurpose: 'TxDefaultProfile', // default not only for transaction
+                chargingProfileKind: 'Recurring',
+                recurrencyKind: 'Daily',
+                chargingSchedule: {
+                    duration: 86_400, // 24 hours
+                    startSchedule: '2013-01-01T00:00Z',
+                    chargingRateUnit: limitType, // Ampere or Watt
+                    chargingSchedulePeriod: [
+                        {
+                            startPeriod: 0, // up from 00:00 h (whole day)
+                            limit // e.g. 12 for 12 A
+                        }
+                    ]
+                    // minChargingRate: 12 // if needed we add it
                 }
-            }),
+            }
+        };
+
+        if (numberPhases) {
+            command.csChargingProfiles.chargingSchedule.chargingSchedulePeriod[0].numberPhases = numberPhases;
+        }
+
+        const res = (await client.connection.send(
+            new OCPPCommands.SetChargingProfile(command),
             CALL_MESSAGE
         )) as SetChargingProfileResponse;
 
