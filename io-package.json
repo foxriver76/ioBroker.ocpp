@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.12.3",
+    "version": "0.12.4",
     "news": {
+      "0.12.4": {
+        "en": "only send number phases if it is of type number",
+        "de": "nur nummernphasen senden, wenn es sich um typnummer handelt",
+        "ru": "только отправить число фаз, если это номер типа",
+        "pt": "só enviar fases de número se for de número de tipo",
+        "nl": "stuur alleen nummerfases als het een soort nummer is",
+        "fr": "seulement envoyer des phases de nombre si elle est de type numéro",
+        "it": "solo inviare fasi di numero se è di numero di tipo",
+        "es": "sólo enviar fases de número si es de tipo número",
+        "pl": "wysyłana jest tylko liczba typów",
+        "uk": "тільки надсилайте ряд фази, якщо це число типу",
+        "zh-cn": "只派遣若干阶段,只有种类数量"
+      },
       "0.12.3": {
         "en": "allow deactivating `numberPhases` by setting `null",
         "de": "deaktivieren der Anzahl Phasen durch Einstellung `null",
@@ -80,19 +93,6 @@
         "pl": "idTag jest teraz odczytywany z wiadomości startTransaction (o blisko 21)\nzaimplementowana możliwość wywołania twardego i łagodnego resetu",
         "uk": "idTag тепер добре читається від початкуПереказ повідомлення (закриває #21)\nвпроваджено можливість викликати жорсткий і м'який скидання",
         "zh-cn": "现已正确地阅读了自开始的流通信息(第21号行动)\nb. 实施的可能性"
-      },
-      "0.10.0": {
-        "en": "implemented state to control number of phases used for charging",
-        "de": "implementierter zustand zur steuerung der anzahl der zum laden verwendeten phasen",
-        "ru": "реализованное состояние для контроля количества фаз, используемых для зарядки",
-        "pt": "estado implementado para controlar o número de fases usadas para carregar",
-        "nl": "geïnformeerd tot controlenummer van fasen gebruikt voor het opladen van",
-        "fr": "état mis en œuvre pour contrôler le nombre de phases utilisées pour le chargement",
-        "it": "stato implementato per controllare il numero di fasi utilizzate per la ricarica",
-        "es": "estado implementado para controlar el número de fases utilizadas para la carga",
-        "pl": "wdrażany stan kontroli liczby faz używanych do ładowania ładowania",
-        "uk": "впроваджений стан для контролю кількості фаз, що використовуються для зарядки",
-        "zh-cn": "实施国家控制用于慈善阶段的数量"
       }
     },
     "title": "Open Charge Point Protocol",
