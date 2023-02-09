@@ -1,6 +1,6 @@
 {
   "name": "iobroker.ocpp",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "description": "Adapter for OCPP 1.6",
   "author": {
     "name": "Moritz Heusinger",
@@ -70,7 +70,6 @@
     "watch": "npm run watch:ts",
     "test:ts": "mocha --config test/mocharc.custom.json src/**/*.test.ts",
     "test:package": "mocha test/package --exit",
-    "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:ts && npm run test:package",
     "check": "tsc --noEmit",
