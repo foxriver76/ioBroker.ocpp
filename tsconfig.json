@@ -36,8 +36,7 @@
 		"target": "es2018",
 
 		"sourceMap": true,
-		"inlineSourceMap": false,
-		"watch": false
+		"inlineSourceMap": false
 	},
 	"include": [
 		"src/**/*.ts",

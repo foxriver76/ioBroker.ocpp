@@ -7,7 +7,8 @@ export const deviceObjects: ioBroker.Object[] = [
             type: 'boolean',
             role: 'indicator.connected',
             write: false,
-            read: true
+            read: true,
+            def: false
         },
         native: {}
     }
@@ -29,6 +30,7 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 role: 'indicator.status',
                 write: false,
                 read: true,
+                def: 'Available',
                 states: [
                     'Available',
                     'Preparing',
@@ -45,7 +47,7 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
         },
         {
             _id: 'meterValues',
-            type: 'folder',
+            type: 'channel',
             common: {
                 name: 'Meter values'
             },
@@ -60,6 +62,7 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 role: 'switch.power',
                 write: true,
                 read: true,
+                def: true,
                 desc: 'On main, this changes availability of all connectors'
             },
             native: {}
@@ -76,7 +79,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'boolean',
                 role: 'button',
                 write: true,
-                read: false
+                read: false,
+                def: false
             },
             native: {}
         });
@@ -89,7 +93,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'boolean',
                 role: 'button',
                 write: true,
-                read: false
+                read: false,
+                def: false
             },
             native: {}
         });
@@ -102,7 +107,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'string',
                 role: 'text',
                 write: true,
-                read: true
+                read: true,
+                def: ''
             },
             native: {}
         });
@@ -118,7 +124,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'boolean',
                 role: 'switch.power',
                 write: true,
-                read: true
+                read: true,
+                def: false
             },
             native: {}
         });
@@ -129,10 +136,11 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
             common: {
                 name: 'Consumption by last transaction',
                 type: 'number',
-                role: 'value.power',
-                write: true,
-                read: false,
-                unit: 'W'
+                role: 'value.power.consumption',
+                write: false,
+                read: true,
+                unit: 'Wh',
+                def: 0
             },
             native: {}
         });
@@ -143,10 +151,11 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
             common: {
                 name: 'Meter at last transaction start',
                 type: 'number',
-                role: 'value.power',
-                write: true,
-                read: false,
-                unit: 'W'
+                role: 'value.power.consumption',
+                write: false,
+                read: true,
+                unit: 'Wh',
+                def: 0
             },
             native: {}
         });
@@ -157,10 +166,11 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
             common: {
                 name: 'Meter at last transaction end',
                 type: 'number',
-                role: 'value.power',
-                write: true,
-                read: false,
-                unit: 'W'
+                role: 'value.power.consumption',
+                write: false,
+                read: true,
+                unit: 'Wh',
+                def: 0
             },
             native: {}
         });
@@ -173,7 +183,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'string',
                 role: 'text',
                 write: false,
-                read: true
+                read: true,
+                def: ''
             },
             native: {}
         });
@@ -188,7 +199,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 write: true,
                 read: true,
                 unit: 'A',
-                min: 0
+                min: 0,
+                def: 0
             },
             native: {}
         });
