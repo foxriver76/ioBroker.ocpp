@@ -2,10 +2,10 @@
   "name": "iobroker.ocpp",
   "version": "0.12.5",
   "description": "Adapter for OCPP 1.6",
-  "author": {
-    "name": "Moritz Heusinger",
-    "email": "moritz.heusinger@gmail.com"
-  },
+  "author": "Moritz Heusinger <moritz.heusinger@gmail.com>",
+  "contributors": [
+    "iobroker-community-adapters <iobroker-community-adapters@gmx.de>"
+  ],
   "homepage": "https://github.com/foxriver76/ioBroker.ocpp",
   "license": "MIT",
   "keywords": [
@@ -74,7 +74,7 @@
     "test": "npm run test:ts && npm run test:package",
     "check": "tsc --noEmit",
     "lint": "eslint --ext .ts src/",
-    "release": "release-script -p iobroker"
+    "release": "release-script"
   },
   "bugs": {
     "url": "https://github.com/foxriver76/ioBroker.ocpp/issues"
