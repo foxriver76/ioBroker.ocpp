@@ -26,7 +26,8 @@ const enReadmeSrc = path.join(rootDir, 'README.md');
 const enReadmeDst = path.join(docsDir, 'en', 'README.md');
 if (fs.existsSync(enReadmeSrc)) {
     let content = fs.readFileSync(enReadmeSrc, 'utf8');
-    // Replace link to German version docs/de/README.md with relative link to ../de/README.md
+    // Replace links to docs/en/README.md and docs/de/README.md with relative links
+    content = content.replace(/\]\(docs\/en\/README\.md\)/g, '](../en/README.md)');
     content = content.replace(/\]\(docs\/de\/README\.md\)/g, '](../de/README.md)');
     // Replace link to older changelog CHANGELOG_OLD.md with relative link to root
     content = content.replace(/\]\(CHANGELOG_OLD\.md\)/g, '](../../CHANGELOG_OLD.md)');

@@ -1,8 +1,6 @@
 ![Logo](../../admin/ocpp.png)
 # ioBroker.ocpp
 
-🇩🇪 **[Deutsche Dokumentation](../de/README.md)**
-
 [![NPM version](https://img.shields.io/npm/v/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
 ![Number of Installations](https://iobroker.live/badges/ocpp-installed.svg)
@@ -18,6 +16,10 @@ or any associated subsidiaries, logos or trademarks.
 
 ## OCPP adapter for ioBroker
 Adapter to connect and control OCPP 1.6-J compatible wallboxes and EV charging stations via a local WebSocket server.
+
+## Documentation
+- 🇺🇸 [Documentation](../en/README.md)
+- 🇩🇪 [Dokumentation](../de/README.md)
 
 ## Configuration
 - **Server port:** TCP port the OCPP WebSocket server listens on (default: `9220`). Configure your wallbox to connect to `ws://<iobroker-ip>:9220/<ChargePointId>`.
