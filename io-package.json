@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "0.12.5",
+    "version": "1.0.0-alpha.0",
     "news": {
+      "1.0.0-alpha.0": {
+        "en": "Adapter has been migrated to iobroker-communities organisation\nAdapter requires js-controller >= 7.2.5 now\nAdapter requires admin >= 8.3.5 now\nAdapter requires Node.js >= 22.19.0 now\nDependencies have been updated",
+        "de": "Der Adapter wurde zur Organisation Iobroker-Communities migriert\nAdapter benötigt jetzt JS-Controller >= 7.2.5\nAdapter benötigt jetzt Admin >= 8.3.5\nAdapter benötigt jetzt Node.js >= 22.19.0\nAbhängigkeiten wurden aktualisiert",
+        "ru": "Адаптер перенесен в организацию сообществ iobroker\nТеперь для адаптера требуется js-контроллер >= 7.2.5\nДля адаптера теперь требуется администратор >= 8.3.5\nТеперь для адаптера требуется Node.js >= 22.19.0\nЗависимости обновлены",
+        "pt": "O adaptador foi migrado para a iobroker-communities\nAgora o adaptador exige js-controller >= 7.2.5\nAgora o adaptador exige admin >= 8.3.5\nO adaptador exige Node.js >= 22.19.0\nAs dependências foram atualizadas",
+        "nl": "De adapter is gemigreerd naar de organisatie iobroker-communities\nVoor de adapter is nu een js-controller >= 7.2.5 vereist\nAdapter vereist nu admin >= 8.3.5\nVoor de adapter is nu Node.js >= 22.19.0 nodig\nAfhankelijkheden zijn bijgewerkt",
+        "fr": "L'adaptateur a été migré vers l'organisation iobroker-communities\nAdapter nécessite JS-Controller >= 7.2.5\nAdapter nécessite admin >= 8.3.5\nAdapter nécessite Node.js >= 22.19.0\nLes dépendances ont été mises à jour",
+        "it": "Adapter è stato migrato a iobroker-communities\nAdapter richiede js-controller >= 7.2.5 ora\nAdapter richiede admin >= 8.3.5 ora\nAdapter richiede Node.js >= 22.19.0 ora\nLe dipendenze sono aggiornate",
+        "es": "El adaptador se ha migrado a la organización iobroker-communities\nEl adaptador ahora requiere js-controller >= 7.2.5\nEl adaptador necesita admin >= 8.3.5 ahora\nEl adaptador ahora necesita Node.js >= 22.19.0\nSe han actualizado las dependencias",
+        "pl": "Adapter został przeniesiony do organizacji społeczności iobroker-\nAdapter wymaga kontrolera js->= 7.2.5 teraz\nAdapter wymaga administratora >= 8.3.5 teraz\nAdapter wymaga teraz Node.js >= 22.19.0\nZależności zostały zaktualizowane",
+        "uk": "Адаптер перенесено до організації спільнот iobroker\nАдаптер вимагає js-контролера >= 7.2.5 зараз\nАдаптер вимагає адміністратора >= 8.3.5 зараз\nАдаптер вимагає Node.js >= 22.19.0 зараз\nЗалежності оновлено",
+        "zh-cn": "适配器已迁移到 iobroker 社区组织\n适配器现在需要 js-controller >= 7.2.5\n适配器现在需要管理员 >= 8.3.5\n适配器现在需要 Node.js >= 22.19.0\n依赖关系已更新"
+      },
       "0.12.5": {
         "en": "revert changes of 0.12.4",
         "de": "revert-änderungen von 0,12,4",
@@ -80,19 +93,6 @@
         "pl": "obecnie wykrywamy typ danych i rolę atrybutów konfiguracyjnych",
         "uk": "ми тепер правильно виявити тип даних і роль атрибутів конфігурації",
         "zh-cn": "我们现在正确地发现数据类型和组合特征的作用"
-      },
-      "0.11.0": {
-        "en": "`idTag` is now read correctly from `startTransaction` message (closes #21)\nimplemented possibility to trigger `hard` and `soft` reset",
-        "de": "idTag wird nun korrekt von startTransaction message gelesen (schließt #21)\nimplementierte möglichkeit, harte und weiche rückstellung auszulösen",
-        "ru": "idTag теперь правильно читается с сообщения startTransaction (closes #21)\nреализована возможность вызвать жесткий и мягкий сброс",
-        "pt": "idTag é agora lido corretamente da mensagem startTransaction (closes #21)\npossibilidade implementada para desencadear hard e soft reset",
-        "nl": "IDTag wordt nu juist gelezen van start-Transactie bericht (closes #21)\nde mogelijkheid om hard en zacht reset te activeren",
-        "fr": "idTag est maintenant lu correctement à partir du message de lancementTransaction (ferme #21)\npossibilité de déclencher une réinitialisation dure et douce",
-        "it": "idTag è ora letto correttamente dal messaggio startTransaction (chiude #21)\npossibilità implementata per attivare reset rigido e morbido",
-        "es": "idTag ahora se lee correctamente desde el mensaje de inicioTransacción (cerca #21)\nposibilidad implementada para desencadenar el reinicio duro y suave",
-        "pl": "idTag jest teraz odczytywany z wiadomości startTransaction (o blisko 21)\nzaimplementowana możliwość wywołania twardego i łagodnego resetu",
-        "uk": "idTag тепер добре читається від початкуПереказ повідомлення (закриває #21)\nвпроваджено можливість викликати жорсткий і м'який скидання",
-        "zh-cn": "现已正确地阅读了自开始的流通信息(第21号行动)\nb. 实施的可能性"
       }
     },
     "titleLang": {
