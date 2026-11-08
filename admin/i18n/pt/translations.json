@@ -1,0 +1,8 @@
+{
+    "port": "Porta do servidor",
+    "authentication": "Autenticação",
+    "username": "Nome do usuário",
+    "password": "Senha",
+    "stripLeadingSlash": "Remover barra inicial (/) dos IDs dos pontos de carregamento",
+    "stripLeadingSlashHelp": "Ative para novas instalações ou compatibilidade com Node-RED. Deixe desativado para manter os IDs de objetos existentes."
+}

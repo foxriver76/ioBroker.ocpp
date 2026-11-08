@@ -31,6 +31,7 @@ This adapter would not have been possible without the great work of @foxriver76 
 * (meistermopper) use `TxProfile` for `RemoteStartTransaction` and track `transactionId` (#24, #65)
 * (meistermopper) prevent zombie sockets on reconnect (#20) and serialize outgoing OCPP commands
 * (meistermopper) support `DiagnosticsStatusNotification` and `FirmwareStatusNotification` (#32)
+* (meistermopper) add `stripLeadingSlash` option and responsive `jsonConfig` with i18n (#30, #60)
 
 ### 1.0.0-alpha.3 (2026-11-08)
 - (mcm1957) Adapter has been migrated to iobroker-communities organisation
