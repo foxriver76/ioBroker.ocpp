@@ -8,8 +8,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.ocpp.png?downloads=true)](https://nodei.co/npm/iobroker.ocpp/)
 
-**Tests:** ![Test and Release](https://github.com/foxriver76/ioBroker.ocpp/workflows/Test%20and%20Release/badge.svg)
-
+**Tests:** ![Test and Release](https://github.com/iobroker-community-adapters/ioBroker.ocpp/workflows/Test%20and%20Release/badge.svg)
 
 ## Disclaimer
 The developers of this module are in no way endorsed by or affiliated with Open Charge Alliance,
@@ -19,7 +18,6 @@ or any associated subsidiaries, logos or trademarks.
 Adapter to connect an OCPP 1.6 supported wallbox
 
 ## Credits
-
 This adapter would not have been possible without the great work of @foxriver76 (https://github.com/foxriver76), who developed former releases of this adapter.
 
 ## Changelog
@@ -27,6 +25,13 @@ This adapter would not have been possible without the great work of @foxriver76 
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (meistermopper) replace legacy `@ampeco/ocpp-eliftech` with native TypeScript OCPP 1.6J server
+* (meistermopper) fix SmartCharging removal when `GetConfigurationMaxKeys` truncates response (#65)
+* (meistermopper) use `TxProfile` for `RemoteStartTransaction` and track `transactionId` (#24, #65)
+* (meistermopper) prevent zombie sockets on reconnect (#20) and serialize outgoing OCPP commands
+* (meistermopper) support `DiagnosticsStatusNotification` and `FirmwareStatusNotification` (#32)
+
 ### 1.0.0-alpha.3 (2026-11-08)
 - (mcm1957) Adapter has been migrated to iobroker-communities organisation
 - (copilot) Adapter requires js-controller >= 7.2.5 now
@@ -46,9 +51,9 @@ This adapter would not have been possible without the great work of @foxriver76 
 ### 0.12.1 (2023-01-19)
 * (foxriver76) we now also detect feature profiles if clients add unallowed whitespaces
 
+[Older changelog entries can be found in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 ## License
 MIT License
-
 
 Copyright (c) 2026 iobroker-community-adapters <iobroker-community-adapters@gmx.de>  
 Copyright (c) 2022 Moritz Heusinger <moritz.heusinger@gmail.com>
