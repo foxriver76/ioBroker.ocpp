@@ -6,3 +6,4 @@
     "stripLeadingSlash": "Supprimer la barre oblique initiale (/) des ID de bornes de recharge",
     "stripLeadingSlashHelp": "Activer pour les nouvelles installations ou la compatibilité Node-RED. Laisser désactivé pour conserver les ID d'objets existants."
 }
+

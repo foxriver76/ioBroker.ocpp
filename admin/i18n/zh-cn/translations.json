@@ -6,3 +6,4 @@
     "stripLeadingSlash": "移除充电桩 ID 开头的斜杠 (/)",
     "stripLeadingSlashHelp": "为新安装或 Node-RED 兼容性启用。保持禁用以保留现有的对象 ID。"
 }
+

@@ -6,3 +6,4 @@
     "stripLeadingSlash": "Usuń początkowy ukośnik (/) z identyfikatorów stacji ładowania",
     "stripLeadingSlashHelp": "Włącz dla nowych instalacji lub kompatybilności z Node-RED. Pozostaw wyłączone, aby zachować istniejące identyfikatory obiektów."
 }
+

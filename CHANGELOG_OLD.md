@@ -110,3 +110,4 @@ __The structure of the datapoints has changed to support wallboxes with multiple
 
 ## 0.0.3 (2021-10-27)
 * (foxriver76) initial release
+

@@ -154,3 +154,4 @@ function processReadme(filePath, startRegex, endRegex, isEnglish) {
 
 processReadme(readmePath, /^##\s+Changelog\b/im, /^(?:\[Older changelog|##\s+License)/im, true);
 processReadme(readmeDePath, /^##\s+Änderungsprotokoll\s+\(Changelog\)/im, /^(?:\[Ältere Einträge|##\s+Lizenz)/im, false);
+
