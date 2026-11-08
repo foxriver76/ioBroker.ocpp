@@ -80,5 +80,8 @@
   "bugs": {
     "url": "https://github.com/iobroker-community-adapters/ioBroker.ocpp/issues"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "engines": {
+    "node": ">=22.19.0"
+  }
 }

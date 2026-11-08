@@ -25,6 +25,8 @@ Adapter to connect an OCPP 1.6 supported wallbox
 -->
 
 ### **WORK IN PROGRESS**
+- (copilot) Adapter requires js-controller >= 7.2.5 now
+- (copilot) Adapter requires admin >= 8.3.5 now
 - (copilot) Adapter requires js-controller >= 6.0.11 now
 - (copilot) Adapter requires admin >= 7.7.22 now
 
