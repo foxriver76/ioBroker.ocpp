@@ -26,6 +26,9 @@ Adapter to connect and control OCPP 1.6-J compatible wallboxes and EV charging s
 - **Remove leading slash (`/`) from Charge Point IDs (`stripLeadingSlash`):** Enable for new installations or Node-RED compatibility so device objects are created as `ocpp.0.EVB-P123456` instead of `ocpp.0./EVB-P123456` (or `ocpp.0.http://192_168_178_80:9220/EVB-P123456` for wallboxes sending an absolute URL during the WebSocket handshake). Leave disabled to preserve existing object IDs.
 - **Authentication:** Optional HTTP Basic Authentication (`username` and `password`) required during the WebSocket handshake.
 
+## Credits
+This adapter would not have been possible without the great work of @foxriver76 (https://github.com/foxriver76), who developed former releases of this adapter.
+
 ## Changelog
 <!--
 	Placeholder for the next version (at the beginning of the line):
@@ -39,6 +42,13 @@ Adapter to connect and control OCPP 1.6-J compatible wallboxes and EV charging s
 * (meistermopper) support `DiagnosticsStatusNotification` and `FirmwareStatusNotification` (#32)
 * (meistermopper) add `stripLeadingSlash` option and responsive `jsonConfig` with i18n (#30, #60)
 
+### 1.0.0-alpha.3 (2026-11-08)
+- (mcm1957) Adapter has been migrated to iobroker-communities organisation
+- (copilot) Adapter requires js-controller >= 7.2.5 now
+- (copilot) Adapter requires admin >= 8.3.5 now
+- (copilot) Adapter requires Node.js >= 22.19.0 now
+- (mcm1957) Dependencies have been updated
+
 ### 0.12.5 (2023-02-09)
 * (foxriver76) revert changes of 0.12.4
 
@@ -51,18 +61,12 @@ Adapter to connect and control OCPP 1.6-J compatible wallboxes and EV charging s
 ### 0.12.1 (2023-01-19)
 * (foxriver76) we now also detect feature profiles if clients add unallowed whitespaces
 
-### 0.12.0 (2023-01-18)
-* (foxriver76) the `idTag` for remote transactions is now `ioBroker` persistent over all transactions
-* (foxriver76) implemented the management of authentication list
-* (foxriver76) only create states if supported by profile (closes #22)
-* (foxriver76) increased stability on first connection
-
 [Older changelog entries can be found in CHANGELOG_OLD.md](../../CHANGELOG_OLD.md)
-
 ## License
 MIT License
 
-Copyright (c) 2022-2026 Moritz Heusinger <moritz.heusinger@gmail.com>
+Copyright (c) 2026 iobroker-community-adapters <iobroker-community-adapters@gmx.de>  
+Copyright (c) 2022 Moritz Heusinger <moritz.heusinger@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

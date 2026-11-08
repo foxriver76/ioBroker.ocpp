@@ -19,10 +19,9 @@
     "url": "git+https://github.com/iobroker-community-adapters/ioBroker.ocpp.git"
   },
   "dependencies": {
-    "@ampeco/ocpp-eliftech": "https://github.com/ampeco/cpd-ocpp/tarball/17c0473511a6415421a367ae5e59e6be87a000e5",
     "@iobroker/adapter-core": "^3.4.3",
     "axios": "^1.21.0",
-    "babel-runtime": "^6.26.0"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
@@ -32,6 +31,7 @@
     "@iobroker/adapter-dev": "^1.5.0",
     "@iobroker/testing": "^6.3.1",
     "@types/node": "^14.18.63",
+    "@types/ws": "^8.5.14",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "eslint": "^8.23.1",
@@ -58,6 +58,11 @@
     "build": "npm run build:ts",
     "watch:ts": "tsc -p tsconfig.build.json --watch",
     "watch": "npm run watch:ts",
+    "dev": "node scripts/patch-ps-tree.js && dev-server watch",
+    "update:dev": "node scripts/patch-ps-tree.js && dev-server update",
+    "sync-docs": "node scripts/sync-docs.js",
+    "check-wip": "node scripts/check-wip.js",
+    "manage-changelogs": "node scripts/manage-changelogs.js",
     "test:ts": "mocha --config test/mocharc.custom.json src/**/*.test.ts",
     "test:package": "mocha test/package --exit",
     "test:integration": "mocha test/integration --exit",

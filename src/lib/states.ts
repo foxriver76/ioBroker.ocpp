@@ -1,4 +1,11 @@
-export const deviceObjects: ioBroker.Object[] = [
+export interface AdapterObjectDefinition {
+    _id: string;
+    type: 'state' | 'channel';
+    common: ioBroker.StateCommon | ioBroker.ChannelCommon;
+    native: Record<string, any>;
+}
+
+export const deviceObjects: AdapterObjectDefinition[] = [
     {
         _id: 'connected',
         type: 'state',
@@ -19,8 +26,8 @@ export const deviceObjects: ioBroker.Object[] = [
  * The main (id = 0) does not have all states
  * @param connectorId id of the connector
  */
-export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
-    const objs: ioBroker.Object[] = [
+export function getConnectorObjects(connectorId: number): AdapterObjectDefinition[] {
+    const objs: AdapterObjectDefinition[] = [
         {
             _id: 'status',
             type: 'state',

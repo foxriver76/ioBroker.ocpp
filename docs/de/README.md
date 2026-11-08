@@ -38,6 +38,13 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 * (meistermopper) Unterstützung für `DiagnosticsStatusNotification` und `FirmwareStatusNotification` (#32)
 * (meistermopper) Option `stripLeadingSlash` sowie responsive `jsonConfig` mit i18n ergänzt (#30, #60)
 
+### 1.0.0-alpha.3 (2026-11-08)
+- (mcm1957) Adapter wurde in die iobroker-community-adapters Organisation überführt
+- (copilot) Adapter erfordert nun js-controller >= 7.2.5
+- (copilot) Adapter erfordert nun admin >= 8.3.5
+- (copilot) Adapter erfordert nun Node.js >= 22.19.0
+- (mcm1957) Abhängigkeiten wurden aktualisiert
+
 ### 0.12.5 (2023-02-09)
 * (foxriver76) Änderungen aus 0.12.4 zurückgenommen
 
@@ -49,12 +56,6 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 
 ### 0.12.1 (2023-01-19)
 * (foxriver76) Erkennung von Feature-Profilen auch bei unerlaubten Leerzeichen
-
-### 0.12.0 (2023-01-18)
-* (foxriver76) `idTag` für Remote-Transaktionen ist nun durchgehend `ioBroker`
-* (foxriver76) Verwaltung der lokalen Authentifizierungsliste implementiert
-* (foxriver76) Datenpunkte nur erstellen, wenn vom Profil unterstützt (schließt #22)
-* (foxriver76) Erhöhte Stabilität bei der ersten Verbindung
 
 [Ältere Einträge befinden sich in der CHANGELOG_OLD.md](../../CHANGELOG_OLD.md)
 

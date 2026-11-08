@@ -105,6 +105,10 @@
     "mode": "daemon",
     "type": "energy",
     "compact": true,
+    "docs": {
+      "en": "docs/en/README.md",
+      "de": "docs/de/README.md"
+    },
     "adminUI": {
       "config": "json"
     },
@@ -166,7 +170,8 @@
     "port": 9220,
     "authentication": false,
     "username": "",
-    "password": ""
+    "password": "",
+    "stripLeadingSlash": false
   },
   "protectedNative": [
     "username",

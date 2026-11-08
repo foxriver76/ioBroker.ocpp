@@ -782,7 +782,9 @@ class Ocpp extends utils.Adapter {
 
         for (const obj of deviceObjects) {
             const fullId = `${devId}.${obj._id}`;
-            await this.extendObjectAsync(fullId, { ...obj, _id: fullId }, { preserve: { common: ['name'] } });
+            await this.extendObjectAsync(fullId, { ...obj, _id: fullId } as ioBroker.PartialObject, {
+                preserve: { common: ['name'] }
+            });
         }
     }
 
@@ -920,7 +922,9 @@ class Ocpp extends utils.Adapter {
             }
 
             const fullId = `${iobDevice}.${connectorId}.${obj._id}`;
-            await this.extendObjectAsync(fullId, { ...obj, _id: fullId }, { preserve: { common: ['name'] } });
+            await this.extendObjectAsync(fullId, { ...obj, _id: fullId } as ioBroker.PartialObject, {
+                preserve: { common: ['name'] }
+            });
         }
     }
 
