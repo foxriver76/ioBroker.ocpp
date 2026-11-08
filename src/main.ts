@@ -231,9 +231,9 @@ class Ocpp extends utils.Adapter {
                 ocppProtocolVersion?: string
             ): Promise<[boolean, number, string]> => {
                 this.log.debug(
-                    `Connection from "${url}" with credentials "${JSON.stringify(
-                        credentials
-                    )}", protocol: "${protocol}"${ocppProtocolVersion ? `, OCPP: ${ocppProtocolVersion}` : ''}`
+                    `Connection from "${url}" (auth: ${credentials ? 'provided' : 'none'}), protocol: "${protocol}"${
+                        ocppProtocolVersion ? `, OCPP: ${ocppProtocolVersion}` : ''
+                    }`
                 );
 
                 if (this.config.authentication) {
