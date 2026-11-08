@@ -18,6 +18,10 @@ or any associated subsidiaries, logos or trademarks.
 ## OCPP adapter for ioBroker
 Adapter to connect an OCPP 1.6 supported wallbox
 
+## Credits
+
+This adapter would not have been possible without the great work of @foxriver76 (https://github.com/foxriver76), who developed former releases of this adapter.
+
 ## Changelog
 <!--
 	Placeholder for the next version (at the beginning of the line):
