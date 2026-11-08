@@ -9,6 +9,7 @@
   "homepage": "https://github.com/iobroker-community-adapters/ioBroker.ocpp",
   "license": "MIT",
   "keywords": [
+    "ioBroker",
     "wallbox",
     "ocpp",
     "energy"
