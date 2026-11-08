@@ -27,7 +27,7 @@ This adapter would not have been possible without the great work of @foxriver76 
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.0-alpha.3 (2026-11-08)
 - (mcm1957) Adapter has been migrated to iobroker-communities organisation
 - (copilot) Adapter requires js-controller >= 7.2.5 now
 - (copilot) Adapter requires admin >= 8.3.5 now

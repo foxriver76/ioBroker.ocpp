@@ -1,35 +1,9 @@
 {
   "common": {
     "name": "ocpp",
-    "version": "1.0.0-alpha.2",
+    "version": "1.0.0-alpha.3",
     "news": {
-      "1.0.0-alpha.2": {
-        "en": "Adapter has been migrated to iobroker-communities organisation\nAdapter requires js-controller >= 7.2.5 now\nAdapter requires admin >= 8.3.5 now\nAdapter requires Node.js >= 22.19.0 now\nDependencies have been updated",
-        "de": "Der Adapter wurde zur Organisation Iobroker-Communities migriert\nAdapter benötigt jetzt JS-Controller >= 7.2.5\nAdapter benötigt jetzt Admin >= 8.3.5\nAdapter benötigt jetzt Node.js >= 22.19.0\nAbhängigkeiten wurden aktualisiert",
-        "ru": "Адаптер перенесен в организацию сообществ iobroker\nТеперь для адаптера требуется js-контроллер >= 7.2.5\nДля адаптера теперь требуется администратор >= 8.3.5\nТеперь для адаптера требуется Node.js >= 22.19.0\nЗависимости обновлены",
-        "pt": "O adaptador foi migrado para a iobroker-communities\nAgora o adaptador exige js-controller >= 7.2.5\nAgora o adaptador exige admin >= 8.3.5\nO adaptador exige Node.js >= 22.19.0\nAs dependências foram atualizadas",
-        "nl": "De adapter is gemigreerd naar de organisatie iobroker-communities\nVoor de adapter is nu een js-controller >= 7.2.5 vereist\nAdapter vereist nu admin >= 8.3.5\nVoor de adapter is nu Node.js >= 22.19.0 nodig\nAfhankelijkheden zijn bijgewerkt",
-        "fr": "L'adaptateur a été migré vers l'organisation iobroker-communities\nAdapter nécessite JS-Controller >= 7.2.5\nAdapter nécessite admin >= 8.3.5\nAdapter nécessite Node.js >= 22.19.0\nLes dépendances ont été mises à jour",
-        "it": "Adapter è stato migrato a iobroker-communities\nAdapter richiede js-controller >= 7.2.5 ora\nAdapter richiede admin >= 8.3.5 ora\nAdapter richiede Node.js >= 22.19.0 ora\nLe dipendenze sono aggiornate",
-        "es": "El adaptador se ha migrado a la organización iobroker-communities\nEl adaptador ahora requiere js-controller >= 7.2.5\nEl adaptador necesita admin >= 8.3.5 ahora\nEl adaptador ahora necesita Node.js >= 22.19.0\nSe han actualizado las dependencias",
-        "pl": "Adapter został przeniesiony do organizacji społeczności iobroker-\nAdapter wymaga kontrolera js->= 7.2.5 teraz\nAdapter wymaga administratora >= 8.3.5 teraz\nAdapter wymaga teraz Node.js >= 22.19.0\nZależności zostały zaktualizowane",
-        "uk": "Адаптер перенесено до організації спільнот iobroker\nАдаптер вимагає js-контролера >= 7.2.5 зараз\nАдаптер вимагає адміністратора >= 8.3.5 зараз\nАдаптер вимагає Node.js >= 22.19.0 зараз\nЗалежності оновлено",
-        "zh-cn": "适配器已迁移到 iobroker 社区组织\n适配器现在需要 js-controller >= 7.2.5\n适配器现在需要管理员 >= 8.3.5\n适配器现在需要 Node.js >= 22.19.0\n依赖关系已更新"
-      },
-      "1.0.0-alpha.1": {
-        "en": "Adapter has been migrated to iobroker-communities organisation\nAdapter requires js-controller >= 7.2.5 now\nAdapter requires admin >= 8.3.5 now\nAdapter requires Node.js >= 22.19.0 now\nDependencies have been updated",
-        "de": "Der Adapter wurde zur Organisation Iobroker-Communities migriert\nAdapter benötigt jetzt JS-Controller >= 7.2.5\nAdapter benötigt jetzt Admin >= 8.3.5\nAdapter benötigt jetzt Node.js >= 22.19.0\nAbhängigkeiten wurden aktualisiert",
-        "ru": "Адаптер перенесен в организацию сообществ iobroker\nТеперь для адаптера требуется js-контроллер >= 7.2.5\nДля адаптера теперь требуется администратор >= 8.3.5\nТеперь для адаптера требуется Node.js >= 22.19.0\nЗависимости обновлены",
-        "pt": "O adaptador foi migrado para a iobroker-communities\nAgora o adaptador exige js-controller >= 7.2.5\nAgora o adaptador exige admin >= 8.3.5\nO adaptador exige Node.js >= 22.19.0\nAs dependências foram atualizadas",
-        "nl": "De adapter is gemigreerd naar de organisatie iobroker-communities\nVoor de adapter is nu een js-controller >= 7.2.5 vereist\nAdapter vereist nu admin >= 8.3.5\nVoor de adapter is nu Node.js >= 22.19.0 nodig\nAfhankelijkheden zijn bijgewerkt",
-        "fr": "L'adaptateur a été migré vers l'organisation iobroker-communities\nAdapter nécessite JS-Controller >= 7.2.5\nAdapter nécessite admin >= 8.3.5\nAdapter nécessite Node.js >= 22.19.0\nLes dépendances ont été mises à jour",
-        "it": "Adapter è stato migrato a iobroker-communities\nAdapter richiede js-controller >= 7.2.5 ora\nAdapter richiede admin >= 8.3.5 ora\nAdapter richiede Node.js >= 22.19.0 ora\nLe dipendenze sono aggiornate",
-        "es": "El adaptador se ha migrado a la organización iobroker-communities\nEl adaptador ahora requiere js-controller >= 7.2.5\nEl adaptador necesita admin >= 8.3.5 ahora\nEl adaptador ahora necesita Node.js >= 22.19.0\nSe han actualizado las dependencias",
-        "pl": "Adapter został przeniesiony do organizacji społeczności iobroker-\nAdapter wymaga kontrolera js->= 7.2.5 teraz\nAdapter wymaga administratora >= 8.3.5 teraz\nAdapter wymaga teraz Node.js >= 22.19.0\nZależności zostały zaktualizowane",
-        "uk": "Адаптер перенесено до організації спільнот iobroker\nАдаптер вимагає js-контролера >= 7.2.5 зараз\nАдаптер вимагає адміністратора >= 8.3.5 зараз\nАдаптер вимагає Node.js >= 22.19.0 зараз\nЗалежності оновлено",
-        "zh-cn": "适配器已迁移到 iobroker 社区组织\n适配器现在需要 js-controller >= 7.2.5\n适配器现在需要管理员 >= 8.3.5\n适配器现在需要 Node.js >= 22.19.0\n依赖关系已更新"
-      },
-      "1.0.0-alpha.0": {
+      "1.0.0-alpha.3": {
         "en": "Adapter has been migrated to iobroker-communities organisation\nAdapter requires js-controller >= 7.2.5 now\nAdapter requires admin >= 8.3.5 now\nAdapter requires Node.js >= 22.19.0 now\nDependencies have been updated",
         "de": "Der Adapter wurde zur Organisation Iobroker-Communities migriert\nAdapter benötigt jetzt JS-Controller >= 7.2.5\nAdapter benötigt jetzt Admin >= 8.3.5\nAdapter benötigt jetzt Node.js >= 22.19.0\nAbhängigkeiten wurden aktualisiert",
         "ru": "Адаптер перенесен в организацию сообществ iobroker\nТеперь для адаптера требуется js-контроллер >= 7.2.5\nДля адаптера теперь требуется администратор >= 8.3.5\nТеперь для адаптера требуется Node.js >= 22.19.0\nЗависимости обновлены",
@@ -80,19 +54,6 @@
         "pl": "zastrzeżenia głównego połączenia są zawsze tworzone, nawet jeśli nie otrzyma się żadnej ustawy",
         "uk": "забезпечення основного роз'єму завжди створюється навіть якщо його немає",
         "zh-cn": "为了确保主要联系者,即使没有获得任何身份,也总是建立起来。"
-      },
-      "0.12.1": {
-        "en": "we now also detect feature profiles if clients add unallowed whitespaces",
-        "de": "wir erkennen nun auch feature-profile, wenn clients unallowed whitespaces hinzufügen",
-        "ru": "мы теперь также обнаруживаем профили функции, если клиенты добавляют неразрешенные белые пространства",
-        "pt": "agora também detectamos perfis de recursos se os clientes adicionarem espaços brancos não permitidos",
-        "nl": "we detecteren nu ook kenmerken als cliënten onopgeloste witspaces toevoegen",
-        "fr": "nous détectons maintenant des profils de fonctionnalités si les clients ajoutent des espaces blancs non autorisés",
-        "it": "ora anche rilevare profili di funzionalità se i client aggiungono spazi bianchi non consentiti",
-        "es": "ahora también detectamos perfiles de características si los clientes añaden espacios blancos no permitidos",
-        "pl": "obecnie wykrywamy również profile, jeśli klienci dodają nieprzyzwyczajne białej przestrzeni",
-        "uk": "ми тепер також визначаємо профілі функцій, якщо клієнти додають неперевершені білі простори",
-        "zh-cn": "现在,如果客户增加白空间,我们也发现各种特点。"
       }
     },
     "titleLang": {
