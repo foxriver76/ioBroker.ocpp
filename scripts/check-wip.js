@@ -27,6 +27,6 @@ function checkWip(file) {
 }
 
 checkWip('README.md');
-checkWip('README_de.md');
+checkWip('docs/de/README.md');
 
 console.log('Changelog (WORK IN PROGRESS) verified successfully.');

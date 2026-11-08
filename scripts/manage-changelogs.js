@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const readmePath = path.join(__dirname, '../README.md');
-const readmeDePath = path.join(__dirname, '../README_de.md');
+const readmeDePath = path.join(__dirname, '../docs/de/README.md');
 const changelogOldPath = path.join(__dirname, '../CHANGELOG_OLD.md');
 
 function migrateToChangelogOld(moveBlocks) {

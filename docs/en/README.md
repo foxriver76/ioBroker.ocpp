@@ -1,7 +1,7 @@
 ![Logo](../../admin/ocpp.png)
 # ioBroker.ocpp
 
-**[German version / Deutsche Version (README_de.md)](../de/README.md)**
+🇩🇪 **[Deutsche Dokumentation](../de/README.md)**
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
