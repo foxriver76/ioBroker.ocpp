@@ -109,16 +109,21 @@ class Ocpp extends utils.Adapter {
     }
 
     /**
-     * Converts a raw connection URL (e.g. "/EVB-123.45") into the ioBroker device ID
+     * Converts a raw connection URL (e.g. "/EVB-123.45" or "http://192.168.178.80:9220/EVB-123.45")
+     * into the ioBroker device ID.
      * Respects `config.stripLeadingSlash` (Issue #60) while keeping 100% backward compatibility by default
      *
      * @param url raw connection URL
      */
     private getDeviceId(url: string): string {
-        let normalized = url.replace(/\./g, '_');
+        let normalized = url;
         if (this.config.stripLeadingSlash) {
-            normalized = normalized.replace(/^\/+/, '');
+            normalized = normalized
+                .replace(/^\/+/, '')
+                .replace(/^(?:https?|wss?):\/\/[^/]+/i, '')
+                .replace(/^\/+/, '');
         }
+        normalized = normalized.replace(/\./g, '_');
         if (this.FORBIDDEN_CHARS) {
             normalized = normalized.replace(this.FORBIDDEN_CHARS, '_');
         }

@@ -22,7 +22,7 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 
 ## Konfiguration
 - **Server-Port:** TCP-Port, auf dem der OCPP-WebSocket-Server lauscht (Standard: `9220`). In der Wallbox wird als OCPP-Backend-URL `ws://<iobroker-ip>:9220/<Wallbox-ID>` eingetragen.
-- **Führenden Schrägstrich (`/`) aus Wallbox-IDs entfernen (`stripLeadingSlash`):** Für Neuinstallationen oder Node-RED-Kompatibilität aktivieren, damit Geräte-Objekte als `ocpp.0.EVB-P123456` statt `ocpp.0./EVB-P123456` angelegt werden. Bei Bestandsinstallationen deaktiviert lassen, um bestehende Objekt-IDs beizubehalten.
+- **Führenden Schrägstrich (`/`) aus Wallbox-IDs entfernen (`stripLeadingSlash`):** Für Neuinstallationen oder Node-RED-Kompatibilität aktivieren, damit Geräte-Objekte als `ocpp.0.EVB-P123456` statt `ocpp.0./EVB-P123456` (bzw. `ocpp.0.http://192_168_178_80:9220/EVB-P123456` bei Wallboxen wie EVBox, die beim Handshake eine komplette URL senden) angelegt werden. Bei Bestandsinstallationen deaktiviert lassen, um bestehende Objekt-IDs beizubehalten.
 - **Authentifizierung:** Optionale HTTP Basic-Authentifizierung (`username` und `password`) beim WebSocket-Verbindungsaufbau.
 
 ## Änderungsprotokoll (Changelog)

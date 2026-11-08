@@ -23,7 +23,7 @@ Adapter to connect and control OCPP 1.6-J compatible wallboxes and EV charging s
 
 ## Configuration
 - **Server port:** TCP port the OCPP WebSocket server listens on (default: `9220`). Configure your wallbox to connect to `ws://<iobroker-ip>:9220/<ChargePointId>`.
-- **Remove leading slash (`/`) from Charge Point IDs (`stripLeadingSlash`):** Enable for new installations or Node-RED compatibility so device objects are created as `ocpp.0.EVB-P123456` instead of `ocpp.0./EVB-P123456`. Leave disabled to preserve existing object IDs.
+- **Remove leading slash (`/`) from Charge Point IDs (`stripLeadingSlash`):** Enable for new installations or Node-RED compatibility so device objects are created as `ocpp.0.EVB-P123456` instead of `ocpp.0./EVB-P123456` (or `ocpp.0.http://192_168_178_80:9220/EVB-P123456` for wallboxes sending an absolute URL during the WebSocket handshake). Leave disabled to preserve existing object IDs.
 - **Authentication:** Optional HTTP Basic Authentication (`username` and `password`) required during the WebSocket handshake.
 
 ## Credits
