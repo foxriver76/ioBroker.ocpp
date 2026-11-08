@@ -15,7 +15,16 @@ The developers of this module are in no way endorsed by or affiliated with Open 
 or any associated subsidiaries, logos or trademarks.
 
 ## OCPP adapter for ioBroker
-Adapter to connect an OCPP 1.6 supported wallbox
+Adapter to connect and control OCPP 1.6-J compatible wallboxes and EV charging stations via a local WebSocket server.
+
+## Documentation
+- 🇺🇸 [Documentation](docs/en/README.md)
+- 🇩🇪 [Dokumentation](docs/de/README.md)
+
+## Configuration
+- **Server port:** TCP port the OCPP WebSocket server listens on (default: `9220`). Configure your wallbox to connect to `ws://<iobroker-ip>:9220/<ChargePointId>`.
+- **Remove leading slash (`/`) from Charge Point IDs (`stripLeadingSlash`):** Enable for new installations or Node-RED compatibility so device objects are created as `ocpp.0.EVB-P123456` instead of `ocpp.0./EVB-P123456`. Leave disabled to preserve existing object IDs.
+- **Authentication:** Optional HTTP Basic Authentication (`username` and `password`) required during the WebSocket handshake.
 
 ## Credits
 This adapter would not have been possible without the great work of @foxriver76 (https://github.com/foxriver76), who developed former releases of this adapter.
