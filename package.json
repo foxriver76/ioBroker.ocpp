@@ -6,7 +6,7 @@
   "contributors": [
     "iobroker-community-adapters <iobroker-community-adapters@gmx.de>"
   ],
-  "homepage": "https://github.com/foxriver76/ioBroker.ocpp",
+  "homepage": "https://github.com/iobroker-community-adapters/ioBroker.ocpp",
   "license": "MIT",
   "keywords": [
     "wallbox",
@@ -77,7 +77,7 @@
     "release": "release-script"
   },
   "bugs": {
-    "url": "https://github.com/foxriver76/ioBroker.ocpp/issues"
+    "url": "https://github.com/iobroker-community-adapters/ioBroker.ocpp/issues"
   },
   "readmeFilename": "README.md"
 }

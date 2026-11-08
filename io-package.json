@@ -135,7 +135,7 @@
     "icon": "ocpp.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/foxriver76/ioBroker.ocpp/main/admin/ocpp.png",
-    "readme": "https://github.com/foxriver76/ioBroker.ocpp/blob/main/README.md",
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.ocpp/blob/main/README.md",
     "loglevel": "info",
     "mode": "daemon",
     "type": "energy",
