@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:foxriver76/ioBroker.ocpp.git"
+    "url": "git+https://github.com/iobroker-community-adapters/ioBroker.ocpp.git"
   },
   "dependencies": {
     "@ampeco/ocpp-eliftech": "https://github.com/ampeco/cpd-ocpp/tarball/17c0473511a6415421a367ae5e59e6be87a000e5",
