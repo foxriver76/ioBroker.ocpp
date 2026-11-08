@@ -1,6 +1,6 @@
 {
   "name": "iobroker.ocpp",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Adapter for OCPP 1.6",
   "author": "Moritz Heusinger <moritz.heusinger@gmail.com>",
   "contributors": [
