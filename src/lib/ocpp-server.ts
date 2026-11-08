@@ -61,6 +61,8 @@ export class OcppClientConnection {
     private readonly ws: WebSocket;
     private readonly callTimeoutMs: number;
     private readonly pendingCalls: Map<string, PendingCall> = new Map();
+    /** Serializes outgoing CALL messages per OCPP-J specification (max 1 in-flight CALL at a time) */
+    private sendQueue: Promise<unknown> = Promise.resolve();
 
     public onRequest?: (action: string, payload: Record<string, unknown>) => Promise<Record<string, unknown>>;
     public onError?: (action: string | undefined, error: Error) => void;
@@ -95,17 +97,34 @@ export class OcppClientConnection {
     }
 
     /**
-     * Sends an OCPP-J CALL message to the Charge Point and awaits CALLRESULT
+     * Sends an OCPP-J CALL message to the Charge Point and awaits CALLRESULT.
+     * Automatically queues concurrent calls so only one CALL is in-flight at any given time (OCPP-J section 4.1).
      *
      * @param action OCPP action name (e.g. "RemoteStartTransaction", "SetChargingProfile")
      * @param payload Action request payload
      */
-    public async sendCommand<TReq extends object, TRes = Record<string, unknown>>(
+    public sendCommand<TReq extends object, TRes = Record<string, unknown>>(
+        action: string,
+        payload: TReq
+    ): Promise<TRes> {
+        const nextTask = this.sendQueue.then(
+            () => this.executeCommand<TReq, TRes>(action, payload),
+            () => this.executeCommand<TReq, TRes>(action, payload)
+        );
+        // Keep queue chain alive without unhandled rejection on the internal tail
+        this.sendQueue = nextTask.then(
+            () => undefined,
+            () => undefined
+        );
+        return nextTask;
+    }
+
+    private executeCommand<TReq extends object, TRes = Record<string, unknown>>(
         action: string,
         payload: TReq
     ): Promise<TRes> {
         if (!this.isOpen()) {
-            throw new Error(`WebSocket connection to "${this.url}" is not open`);
+            return Promise.reject(new Error(`WebSocket connection to "${this.url}" is not open`));
         }
 
         const messageId = randomUUID();
@@ -400,6 +419,7 @@ export class OcppServer {
      */
     public async close(): Promise<void> {
         for (const client of this.activeClients.values()) {
+            client.onClose = undefined;
             client.close(1001, 'Server shutting down');
         }
         this.activeClients.clear();
@@ -454,25 +474,29 @@ export class OcppServer {
                     requestedProtocol
                 );
 
-                if (!isValid) {
-                    const code = statusCode && statusCode >= 400 ? statusCode : 401;
-                    const msg = statusMessage || 'Unauthorized';
-                    socket.write(
-                        `HTTP/1.1 ${code} ${msg}\r\n` +
-                            'WWW-Authenticate: Basic realm="OCPP"\r\n' +
-                            'Connection: close\r\n\r\n'
-                    );
-                    socket.destroy();
+                if (!isValid || socket.destroyed) {
+                    if (!socket.destroyed) {
+                        const code = statusCode && statusCode >= 400 ? statusCode : 401;
+                        const msg = statusMessage || 'Unauthorized';
+                        socket.write(
+                            `HTTP/1.1 ${code} ${msg}\r\n` +
+                                'WWW-Authenticate: Basic realm="OCPP"\r\n' +
+                                'Connection: close\r\n\r\n'
+                        );
+                        socket.destroy();
+                    }
                     return;
                 }
             } catch {
-                socket.write('HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\n\r\n');
-                socket.destroy();
+                if (!socket.destroyed) {
+                    socket.write('HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\n\r\n');
+                    socket.destroy();
+                }
                 return;
             }
         }
 
-        if (!this.wss) {
+        if (!this.wss || socket.destroyed) {
             socket.destroy();
             return;
         }

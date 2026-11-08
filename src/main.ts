@@ -51,8 +51,15 @@ import {
 /** limit can be in ampere or watts */
 type LimitType = 'A' | 'W';
 
+const SMART_CHARGING_STATE_IDS: readonly string[] = ['numberPhases', 'chargeLimitType', 'chargeLimit'];
+const LOCAL_AUTH_LIST_STATE_IDS: readonly string[] = ['authList'];
+
 interface KnownClient {
     connectorIds: number[];
+    /** Promises tracking connector object creation to prevent race conditions on concurrent requests */
+    connectorInitPromises: Map<number, Promise<void>>;
+    /** Promise tracking initial device + connector 0 object creation */
+    initPromise?: Promise<void>;
     supportedProfiles?: string[];
     /** Maps connectorId -> active transactionId */
     activeTransactions: Map<number, number>;
@@ -86,8 +93,10 @@ class Ocpp extends utils.Adapter {
     private readonly clientTimeouts: Map<string, ioBroker.Timeout> = new Map();
     private readonly knownClients: Map<string, KnownClient> = new Map();
     private server: OcppServer | undefined;
-    private readonly knownDataTransfer = new Set<string>();
+    private readonly knownDataTransferChannels = new Set<string>();
+    private readonly knownDataTransferStates = new Set<string>();
     private nextTransactionId = 1;
+    private isUnloading = false;
 
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
@@ -110,7 +119,23 @@ class Ocpp extends utils.Adapter {
         if (this.config.stripLeadingSlash) {
             normalized = normalized.replace(/^\/+/, '');
         }
+        if (this.FORBIDDEN_CHARS) {
+            normalized = normalized.replace(this.FORBIDDEN_CHARS, '_');
+        }
         return normalized || 'chargepoint';
+    }
+
+    /**
+     * Sanitizes a dynamic key (configuration key, dataTransfer messageId, measurand) for safe ioBroker object IDs
+     *
+     * @param part raw key segment
+     */
+    private sanitizeIdPart(part: string): string {
+        let clean = part.replace(/[.\s/\\]+/g, '_');
+        if (this.FORBIDDEN_CHARS) {
+            clean = clean.replace(this.FORBIDDEN_CHARS, '_');
+        }
+        return clean || 'unknown';
     }
 
     /**
@@ -131,6 +156,59 @@ class Ocpp extends utils.Adapter {
     private hasProfile(supportedProfiles: string[], targetProfile: string): boolean {
         const target = this.normalizeProfileName(targetProfile);
         return supportedProfiles.some(p => this.normalizeProfileName(p) === target);
+    }
+
+    /**
+     * Checks whether a client connection is still the active session and the adapter is not unloading
+     *
+     * @param connection client connection to check
+     */
+    private isClientStillActive(connection: OcppClientConnection): boolean {
+        return (
+            !this.isUnloading &&
+            connection.isOpen() &&
+            this.server?.getClient(connection.url) === connection &&
+            this.knownClients.has(connection.url)
+        );
+    }
+
+    /**
+     * Ensures a connector and all its objects exist before any state updates are written (prevents concurrent race conditions)
+     *
+     * @param url raw device URL
+     * @param connectorId connector ID (0..N)
+     */
+    private async ensureConnectorInitialized(url: string, connectorId: number): Promise<void> {
+        const knownClient = this.knownClients.get(url);
+        if (!knownClient) {
+            return;
+        }
+
+        if (knownClient.initPromise) {
+            await knownClient.initPromise;
+        }
+
+        if (!knownClient.connectorIds.includes(connectorId)) {
+            knownClient.connectorIds.push(connectorId);
+        }
+
+        let connPromise = knownClient.connectorInitPromises.get(connectorId);
+        if (!connPromise) {
+            connPromise = this.createConnectorObjects(url, connectorId);
+            knownClient.connectorInitPromises.set(connectorId, connPromise);
+        }
+        await connPromise;
+    }
+
+    /**
+     * Updates the `info.connection` state deterministically from `knownClients` without read-modify-write races
+     */
+    private async updateConnectionInfoState(): Promise<void> {
+        if (this.isUnloading) {
+            return;
+        }
+        const connectedUrls = Array.from(this.knownClients.keys());
+        await this.setStateAsync('info.connection', connectedUrls.join(','), true);
     }
 
     /**
@@ -176,7 +254,18 @@ class Ocpp extends utils.Adapter {
 
                 // sometimes a reconnect happens without time out - ensure to handle as new client (request states etc)
                 if (this.knownClients.has(url)) {
+                    const prevClient = this.knownClients.get(url);
                     this.knownClients.delete(url);
+                    // Preserve activeTransactions across brief TCP reconnects so StopTransaction can still resolve connectorId
+                    if (prevClient?.activeTransactions.size) {
+                        this.knownClients.set(url, {
+                            connectorIds: [0],
+                            connectorInitPromises: new Map(),
+                            activeTransactions: new Map(prevClient.activeTransactions)
+                        });
+                        // Delete again so onRequest triggers full initialization while keeping transactions via closure if needed
+                        this.knownClients.delete(url);
+                    }
                 }
 
                 return Promise.resolve([true, 200, 'OK']);
@@ -199,31 +288,55 @@ class Ocpp extends utils.Adapter {
                 );
             };
 
+            this.server.onClientDisconnect = (client, code, reason): void => {
+                if (this.isUnloading) {
+                    return;
+                }
+                this.log.info(
+                    `Client "${client.url}" disconnected (code: ${code}${reason ? `, reason: ${reason}` : ''})`
+                );
+                void this.handleClientOffline(client.url);
+            };
+
             this.server.onRequest = async (
                 client: OcppClientConnection,
                 action: string,
                 payload: Record<string, unknown>
             ): Promise<Record<string, unknown>> => {
+                if (this.isUnloading) {
+                    return {};
+                }
+
                 const url = client.url;
                 const devName = this.getDeviceId(url);
 
                 // we received a new command, first check if the client is known to us
-                if (!this.knownClients.has(url)) {
+                let knownClient = this.knownClients.get(url);
+                if (!knownClient) {
                     this.log.info(`New device connected: "${url}"`);
-                    this.knownClients.set(url, {
+                    knownClient = {
                         connectorIds: [0],
+                        connectorInitPromises: new Map(),
                         activeTransactions: new Map()
-                    });
+                    };
+                    this.knownClients.set(url, knownClient);
 
-                    // on connection, ensure objects for this device are existing
-                    await this.createDeviceObjects(url);
-                    // device is now connected
-                    await this.setDeviceOnline(url);
-                    // Every device has a 0 connector
-                    await this.createConnectorObjects(url, 0);
+                    const initTask = (async (): Promise<void> => {
+                        await this.createDeviceObjects(url);
+                        await this.setDeviceOnline(url);
+                        const conn0Promise = this.createConnectorObjects(url, 0);
+                        knownClient.connectorInitPromises.set(0, conn0Promise);
+                        await conn0Promise;
+                    })();
+
+                    knownClient.initPromise = initTask;
+                    await initTask;
 
                     // request all important values at start, do not await this
                     void this.requestNewClient(client, action);
+                } else if (knownClient.initPromise) {
+                    // Wait for ongoing device initialization if a second message arrived concurrently
+                    await knownClient.initPromise;
                 }
 
                 // we give 90 seconds to send next heartbeat - every request can count as heartbeat according to OCPP
@@ -287,15 +400,11 @@ class Ocpp extends utils.Adapter {
                     case 'StartTransaction': {
                         const startCommand = payload as unknown as StartTransactionRequest;
                         const connectorId = startCommand.connectorId;
-                        const knownClient = this.knownClients.get(url);
 
-                        if (knownClient && !knownClient.connectorIds.includes(connectorId)) {
-                            knownClient.connectorIds.push(connectorId);
-                            await this.createConnectorObjects(url, connectorId);
-                        }
+                        await this.ensureConnectorInitialized(url, connectorId);
 
                         const transactionId = this.nextTransactionId++;
-                        knownClient?.activeTransactions.set(connectorId, transactionId);
+                        knownClient.activeTransactions.set(connectorId, transactionId);
 
                         this.log.info(
                             `Received Start transaction from "${url}.${connectorId}" (transactionId: ${transactionId})`
@@ -319,19 +428,31 @@ class Ocpp extends utils.Adapter {
                     }
                     case 'StopTransaction': {
                         const stopCommand = payload as unknown as StopTransactionRequest;
-                        const knownClient = this.knownClients.get(url);
 
-                        // Resolve connectorId from tracked activeTransactions, falling back to transactionId if matching
-                        let connectorId = stopCommand.transactionId;
-                        if (knownClient) {
-                            for (const [connId, txId] of knownClient.activeTransactions.entries()) {
-                                if (txId === stopCommand.transactionId) {
-                                    connectorId = connId;
-                                    knownClient.activeTransactions.delete(connId);
-                                    break;
-                                }
+                        // Resolve connectorId from tracked activeTransactions, falling back to transactionId if matching a known connector
+                        let connectorId: number | undefined;
+                        for (const [connId, txId] of knownClient.activeTransactions.entries()) {
+                            if (txId === stopCommand.transactionId) {
+                                connectorId = connId;
+                                knownClient.activeTransactions.delete(connId);
+                                break;
                             }
                         }
+
+                        if (connectorId === undefined) {
+                            if (
+                                knownClient.connectorIds.includes(stopCommand.transactionId) &&
+                                stopCommand.transactionId > 0
+                            ) {
+                                connectorId = stopCommand.transactionId;
+                            } else {
+                                // Default to connector 1 if single-connector charger restarted and lost transaction mapping
+                                connectorId =
+                                    knownClient.connectorIds.find(id => id > 0) ?? (stopCommand.transactionId || 1);
+                            }
+                        }
+
+                        await this.ensureConnectorInitialized(url, connectorId);
 
                         if (stopCommand.idTag) {
                             await this.setStateAsync(`${devName}.${connectorId}.idTag`, stopCommand.idTag, true);
@@ -388,11 +509,7 @@ class Ocpp extends utils.Adapter {
                             );
                         }
 
-                        const knownClient = this.knownClients.get(url);
-                        if (knownClient && !knownClient.connectorIds.includes(connectorId)) {
-                            knownClient.connectorIds.push(connectorId);
-                            await this.createConnectorObjects(url, connectorId);
-                        }
+                        await this.ensureConnectorInitialized(url, connectorId);
 
                         await this.setStateAsync(`${devName}.${connectorId}.status`, statusCommand.status, true);
 
@@ -404,11 +521,7 @@ class Ocpp extends utils.Adapter {
                         const connectorId = meterValuesCommand.connectorId;
                         this.log.info(`Received MeterValues from "${url}.${connectorId}"`);
 
-                        const knownClient = this.knownClients.get(url);
-                        if (knownClient && !knownClient.connectorIds.includes(connectorId)) {
-                            knownClient.connectorIds.push(connectorId);
-                            await this.createConnectorObjects(url, connectorId);
-                        }
+                        await this.ensureConnectorInitialized(url, connectorId);
 
                         await this._setMeterValues(devName, connectorId, meterValuesCommand);
 
@@ -471,11 +584,19 @@ class Ocpp extends utils.Adapter {
      * @param connection the OCPP client connection
      */
     private async requestConfiguration(connection: OcppClientConnection): Promise<void> {
+        if (!this.isClientStillActive(connection)) {
+            return;
+        }
+
         this.log.info(`Sending GetConfiguration to "${connection.url}"`);
         const res = await connection.sendCommand<GetConfigurationRequest, GetConfigurationResponse>(
             'GetConfiguration',
             {}
         );
+
+        if (!this.isClientStillActive(connection)) {
+            return;
+        }
 
         this.log.debug(`Received configuration from ${connection.url}: ${JSON.stringify(res)}`);
         await this.createConfigurationObjects(connection.url, res);
@@ -484,14 +605,16 @@ class Ocpp extends utils.Adapter {
         const hasSupportedProfilesKey = (res.configurationKey || []).some(
             entry => entry.key === 'SupportedFeatureProfiles'
         );
-        if (!hasSupportedProfilesKey) {
+        if (!hasSupportedProfilesKey && this.isClientStillActive(connection)) {
             try {
                 this.log.debug(`Explicitly requesting SupportedFeatureProfiles from "${connection.url}"`);
                 const profileRes = await connection.sendCommand<GetConfigurationRequest, GetConfigurationResponse>(
                     'GetConfiguration',
                     { key: ['SupportedFeatureProfiles'] }
                 );
-                await this.createConfigurationObjects(connection.url, profileRes);
+                if (this.isClientStillActive(connection)) {
+                    await this.createConfigurationObjects(connection.url, profileRes);
+                }
             } catch (e: any) {
                 this.log.debug(
                     `Could not explicitly query SupportedFeatureProfiles from "${connection.url}": ${e.message}`
@@ -509,10 +632,13 @@ class Ocpp extends utils.Adapter {
     private async requestNewClient(connection: OcppClientConnection, initialAction: string): Promise<void> {
         // wait initially
         await this._wait(1_000);
+        if (!this.isClientStillActive(connection)) {
+            return;
+        }
 
         // we want to request boot notification and status and meter values to have everything up to date again
         try {
-            if (initialAction !== 'BootNotification') {
+            if (initialAction !== 'BootNotification' && this.isClientStillActive(connection)) {
                 this.log.info(`Requesting BootNotification from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
                     requestedMessage: 'BootNotification'
@@ -521,7 +647,7 @@ class Ocpp extends utils.Adapter {
                 await this._wait(1_000);
             }
 
-            if (initialAction !== 'StatusNotification') {
+            if (initialAction !== 'StatusNotification' && this.isClientStillActive(connection)) {
                 this.log.info(`Requesting StatusNotification from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
                     requestedMessage: 'StatusNotification'
@@ -530,7 +656,7 @@ class Ocpp extends utils.Adapter {
                 await this._wait(1_000);
             }
 
-            if (initialAction !== 'MeterValues') {
+            if (initialAction !== 'MeterValues' && this.isClientStillActive(connection)) {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
                     requestedMessage: 'MeterValues'
@@ -539,18 +665,53 @@ class Ocpp extends utils.Adapter {
                 await this._wait(1_000);
             }
         } catch (e: any) {
-            this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
+            if (this.isClientStillActive(connection)) {
+                this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
+            }
+        }
+
+        if (!this.isClientStillActive(connection)) {
+            return;
         }
 
         try {
             await this.requestConfiguration(connection);
             const supportedProfiles = this.knownClients.get(connection.url)?.supportedProfiles;
             // Only remove unsupported states if SupportedFeatureProfiles was actually reported by the charger (#65)
-            if (supportedProfiles && supportedProfiles.length > 0) {
+            if (supportedProfiles && supportedProfiles.length > 0 && this.isClientStillActive(connection)) {
                 await this.removeUnsupportedStates(connection.url, supportedProfiles);
             }
         } catch (e: any) {
-            this.log.error(`Could not request configuration of ${connection.url}: ${e.message}`);
+            if (this.isClientStillActive(connection)) {
+                this.log.error(`Could not request configuration of ${connection.url}: ${e.message}`);
+            }
+        }
+    }
+
+    /**
+     * Marks a client offline and updates `connected` and `info.connection` states
+     *
+     * @param device raw URL of the wallbox device
+     */
+    private async handleClientOffline(device: string): Promise<void> {
+        try {
+            const timeout = this.clientTimeouts.get(device);
+            if (timeout) {
+                this.clearTimeout(timeout);
+                this.clientTimeouts.delete(device);
+            }
+
+            if (this.knownClients.has(device)) {
+                this.knownClients.delete(device);
+            }
+
+            if (!this.isUnloading) {
+                const devId = this.getDeviceId(device);
+                await this.setStateAsync(`${devId}.connected`, false, true);
+                await this.updateConnectionInfoState();
+            }
+        } catch (e: any) {
+            this.log.error(`Error setting client "${device}" offline: ${e.message}`);
         }
     }
 
@@ -560,27 +721,8 @@ class Ocpp extends utils.Adapter {
      * @param device raw URL of the wallbox device
      */
     private async timedOut(device: string): Promise<void> {
-        try {
-            this.log.warn(`Client "${device}" timed out`);
-            if (this.knownClients.has(device)) {
-                this.knownClients.delete(device);
-            }
-            this.clientTimeouts.delete(device);
-
-            const devId = this.getDeviceId(device);
-            await this.setStateAsync(`${devId}.connected`, false, true);
-            const connState = await this.getStateAsync('info.connection');
-            if (connState?.val && typeof connState.val === 'string') {
-                const devices = connState.val.split(',');
-                const idx = devices.indexOf(device);
-                if (idx !== -1) {
-                    devices.splice(idx, 1);
-                    await this.setStateAsync('info.connection', devices.join(','), true);
-                }
-            }
-        } catch (e: any) {
-            this.log.error(`Error handling timeout for "${device}": ${e.message}`);
-        }
+        this.log.warn(`Client "${device}" timed out`);
+        await this.handleClientOffline(device);
     }
 
     /**
@@ -591,18 +733,7 @@ class Ocpp extends utils.Adapter {
     private async setDeviceOnline(device: string): Promise<void> {
         const devId = this.getDeviceId(device);
         await this.setStateAsync(`${devId}.connected`, true, true);
-
-        const connState = await this.getStateAsync('info.connection');
-
-        if (typeof connState?.val === 'string') {
-            const devices = connState.val ? connState.val.split(',') : [];
-            if (devices.indexOf(device) === -1) {
-                devices.push(device);
-                await this.setStateAsync('info.connection', devices.join(','), true);
-            }
-        } else {
-            await this.setStateAsync('info.connection', device, true);
-        }
+        await this.updateConnectionInfoState();
     }
 
     /**
@@ -637,7 +768,7 @@ class Ocpp extends utils.Adapter {
      * @param config the config object
      */
     private async createConfigurationObjects(deviceName: string, config: GetConfigurationResponse): Promise<void> {
-        if (!config.configurationKey) {
+        if (!config.configurationKey || this.isUnloading) {
             return;
         }
 
@@ -652,6 +783,10 @@ class Ocpp extends utils.Adapter {
         });
 
         for (const entry of config.configurationKey) {
+            if (this.isUnloading) {
+                return;
+            }
+
             const { role, type, value } = this.parseConfigurationValue(entry.value || '', entry.readonly);
 
             if (entry.key === 'SupportedFeatureProfiles' && entry.value && this.knownClients.has(deviceName)) {
@@ -662,7 +797,9 @@ class Ocpp extends utils.Adapter {
                     .filter(Boolean);
             }
 
-            await this.extendObjectAsync(`${iobDeviceName}.configuration.${entry.key}`, {
+            const safeKey = this.sanitizeIdPart(entry.key);
+
+            await this.extendObjectAsync(`${iobDeviceName}.configuration.${safeKey}`, {
                 type: 'state',
                 common: {
                     name: entry.key,
@@ -672,10 +809,12 @@ class Ocpp extends utils.Adapter {
                     read: true,
                     def: type === 'number' ? 0 : type === 'boolean' ? false : ''
                 },
-                native: {}
+                native: {
+                    ocppKey: entry.key
+                }
             });
 
-            await this.setStateAsync(`${iobDeviceName}.configuration.${entry.key}`, value, true);
+            await this.setStateAsync(`${iobDeviceName}.configuration.${safeKey}`, value, true);
         }
     }
 
@@ -722,6 +861,7 @@ class Ocpp extends utils.Adapter {
      */
     private async createConnectorObjects(device: string, connectorId: number): Promise<void> {
         const iobDevice = this.getDeviceId(device);
+        const supportedProfiles = this.knownClients.get(device)?.supportedProfiles;
 
         await this.extendObjectAsync(
             `${iobDevice}.${connectorId}`,
@@ -738,6 +878,22 @@ class Ocpp extends utils.Adapter {
         const connectorObjects = getConnectorObjects(connectorId);
 
         for (const obj of connectorObjects) {
+            // If SupportedFeatureProfiles is already known, skip creating states for unsupported profiles
+            if (supportedProfiles && supportedProfiles.length > 0) {
+                if (
+                    SMART_CHARGING_STATE_IDS.includes(obj._id) &&
+                    !this.hasProfile(supportedProfiles, 'SmartCharging')
+                ) {
+                    continue;
+                }
+                if (
+                    LOCAL_AUTH_LIST_STATE_IDS.includes(obj._id) &&
+                    !this.hasProfile(supportedProfiles, 'LocalAuthListManagement')
+                ) {
+                    continue;
+                }
+            }
+
             const fullId = `${iobDevice}.${connectorId}.${obj._id}`;
             await this.extendObjectAsync(fullId, { ...obj, _id: fullId }, { preserve: { common: ['name'] } });
         }
@@ -747,6 +903,7 @@ class Ocpp extends utils.Adapter {
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      */
     private async onUnload(callback: () => void): Promise<void> {
+        this.isUnloading = true;
         try {
             if (this.server) {
                 await this.server.close();
@@ -755,10 +912,11 @@ class Ocpp extends utils.Adapter {
 
             // clear all timeouts using Map iteration (fixes Object.entries bug on Map)
             for (const [device, timeout] of this.clientTimeouts.entries()) {
-                await this.setStateAsync(`${this.getDeviceId(device)}.connected`, false, true);
                 this.clearTimeout(timeout);
+                await this.setStateAsync(`${this.getDeviceId(device)}.connected`, false, true);
             }
             this.clientTimeouts.clear();
+            this.knownClients.clear();
 
             await this.setStateAsync('info.connection', '', true);
             callback();
@@ -779,10 +937,10 @@ class Ocpp extends utils.Adapter {
         messageId: string | undefined,
         data: string | undefined
     ): Promise<void> {
-        messageId = (messageId || 'unknown').replace(/\./g, '_');
+        const safeMessageId = this.sanitizeIdPart(messageId || 'unknown');
         data = data || '';
 
-        if (!this.knownDataTransfer.size) {
+        if (!this.knownDataTransferChannels.has(device)) {
             await this.extendObjectAsync(`${device}.dataTransfer`, {
                 type: 'channel',
                 common: {
@@ -790,13 +948,15 @@ class Ocpp extends utils.Adapter {
                 },
                 native: {}
             });
+            this.knownDataTransferChannels.add(device);
         }
 
-        if (!this.knownDataTransfer.has(`${device}.${messageId}`)) {
-            await this.extendObjectAsync(`${device}.dataTransfer.${messageId}`, {
+        const fullStateId = `${device}.dataTransfer.${safeMessageId}`;
+        if (!this.knownDataTransferStates.has(fullStateId)) {
+            await this.extendObjectAsync(fullStateId, {
                 type: 'state',
                 common: {
-                    name: `Data Transfers for message "${messageId}"`,
+                    name: `Data Transfers for message "${messageId || 'unknown'}"`,
                     type: 'string',
                     role: 'text',
                     read: true,
@@ -806,18 +966,18 @@ class Ocpp extends utils.Adapter {
                 native: {}
             });
 
-            this.knownDataTransfer.add(`${device}.${messageId}`);
+            this.knownDataTransferStates.add(fullStateId);
         }
 
-        await this.setStateAsync(`${device}.dataTransfer.${messageId}`, data, true);
+        await this.setStateAsync(fullStateId, data, true);
     }
 
     /**
      * Is called if a subscribed state changes
      */
     private async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
-        if (!state || state.ack) {
-            // if state deleted or already acknowledged
+        if (!state || state.ack || this.isUnloading) {
+            // if state deleted, already acknowledged, or adapter is shutting down
             return;
         }
 
@@ -1045,13 +1205,15 @@ class Ocpp extends utils.Adapter {
                 }
 
                 const value = state.val.toString();
+                const configObj = await this.getObjectAsync(`${deviceName}.configuration.${functionality}`);
+                const ocppKey = (configObj?.native?.ocppKey as string) || functionality;
 
-                this.log.info(`Changing configuration (device: ${deviceName}) of "${functionality}" to "${value}"`);
+                this.log.info(`Changing configuration (device: ${deviceName}) of "${ocppKey}" to "${value}"`);
 
                 try {
                     const res = await client.sendCommand<ChangeConfigurationRequest, ChangeConfigurationResponse>(
                         'ChangeConfiguration',
-                        { key: functionality, value }
+                        { key: ocppKey, value }
                     );
 
                     if (res.status === 'Accepted') {
@@ -1059,11 +1221,11 @@ class Ocpp extends utils.Adapter {
                     } else if (res.status === 'RebootRequired') {
                         await this.setStateAsync(`${deviceName}.configuration.${functionality}`, state.val, true);
                         this.log.info(
-                            `Reboot Required: Configuration changed (device: ${deviceName}) of "${functionality}" to "${state.val}"`
+                            `Reboot Required: Configuration changed (device: ${deviceName}) of "${ocppKey}" to "${state.val}"`
                         );
                     } else {
                         this.log.warn(
-                            `Cannot change configuration of ${deviceName} (key: ${functionality}, value: ${state.val}): ${res.status}`
+                            `Cannot change configuration of ${deviceName} (key: ${ocppKey}, value: ${state.val}): ${res.status}`
                         );
                     }
                 } catch (e: any) {
@@ -1112,22 +1274,27 @@ class Ocpp extends utils.Adapter {
         connectorId: number,
         meterValues: MeterValuesRequest
     ): Promise<void> {
-        if (!meterValues.meterValue?.length) {
+        if (!meterValues.meterValue?.length || this.isUnloading) {
             return;
         }
 
         for (const meterEntry of meterValues.meterValue) {
             for (const value of meterEntry.sampledValue || []) {
+                if (this.isUnloading) {
+                    return;
+                }
+
                 let stateKey = '';
                 let name = '';
 
                 if (value.measurand) {
-                    stateKey += value.measurand.replace(/\./g, '_');
+                    stateKey += this.sanitizeIdPart(value.measurand);
                     name = value.measurand;
                 }
 
                 if (value.phase) {
-                    stateKey += value.measurand ? `_${value.phase}` : value.phase.replace(/\./g, '_');
+                    const cleanPhase = this.sanitizeIdPart(value.phase);
+                    stateKey += value.measurand ? `_${cleanPhase}` : cleanPhase;
                     name += value.measurand ? ` ${value.phase}` : value.phase;
                 }
 
@@ -1137,6 +1304,10 @@ class Ocpp extends utils.Adapter {
                 }
 
                 const id = `${devName}.${connectorId}.meterValues.${stateKey}`;
+                const numericVal = parseFloat(value.value);
+                if (Number.isNaN(numericVal)) {
+                    continue;
+                }
 
                 await this.extendObjectAsync(id, {
                     type: 'state',
@@ -1151,7 +1322,7 @@ class Ocpp extends utils.Adapter {
                     },
                     native: value as unknown as Record<string, any>
                 });
-                await this.setStateAsync(id, parseFloat(value.value), true);
+                await this.setStateAsync(id, numericVal, true);
             }
         }
     }
@@ -1162,8 +1333,14 @@ class Ocpp extends utils.Adapter {
      * @param ms milliseconds to wait
      */
     private async _wait(ms: number): Promise<void> {
+        if (this.isUnloading) {
+            return;
+        }
         return new Promise(resolve => {
-            this.setTimeout(() => resolve(), ms);
+            const handle = this.setTimeout(() => resolve(), ms);
+            if (!handle) {
+                resolve();
+            }
         });
     }
 
@@ -1255,9 +1432,6 @@ class Ocpp extends utils.Adapter {
      */
     private async removeUnsupportedStates(deviceName: string, supportedProfiles: string[]): Promise<void> {
         const iobDeviceName = this.getDeviceId(deviceName);
-
-        const SMART_CHARGING_STATE_IDS = ['numberPhases', 'chargeLimitType', 'chargeLimit'] as const;
-        const LOCAL_AUTH_LIST_STATE_IDS = ['authList'];
 
         const connectorIds = this.knownClients.get(deviceName)?.connectorIds;
 

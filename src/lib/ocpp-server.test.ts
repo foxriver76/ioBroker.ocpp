@@ -217,4 +217,45 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
         });
         ws.close();
     });
+
+    it('serializes concurrent sendCommand calls so only 1 CALL is in-flight at a time (OCPP-J section 4.1)', async () => {
+        const ws = new WebSocket(`ws://127.0.0.1:${port}/QueueBox`, ['ocpp1.6']);
+        await new Promise<void>(resolve => ws.once('open', () => resolve()));
+
+        const receivedOrder: string[] = [];
+        let inFlight = 0;
+        let maxInFlight = 0;
+
+        ws.on('message', data => {
+            const frame = JSON.parse(data.toString()) as [number, string, string, Record<string, unknown>];
+            inFlight++;
+            if (inFlight > maxInFlight) {
+                maxInFlight = inFlight;
+            }
+            receivedOrder.push(frame[2]);
+
+            setTimeout(() => {
+                inFlight--;
+                ws.send(JSON.stringify([OCPP_MESSAGE_TYPE.CALLRESULT, frame[1], { status: 'Accepted' }]));
+            }, 25);
+        });
+
+        const client = server.getClient('/QueueBox')!;
+        const [r1, r2, r3] = await Promise.all([
+            client.sendCommand('SetChargingProfile', { connectorId: 1 }),
+            client.sendCommand('ChangeAvailability', { connectorId: 1, type: 'Operative' }),
+            client.sendCommand('Reset', { type: 'Soft' })
+        ]);
+
+        expect(maxInFlight).to.equal(1);
+        expect(receivedOrder).to.deep.equal(['SetChargingProfile', 'ChangeAvailability', 'Reset']);
+        expect(r1).to.deep.equal({ status: 'Accepted' });
+        expect(r2).to.deep.equal({ status: 'Accepted' });
+        expect(r3).to.deep.equal({ status: 'Accepted' });
+
+        ws.on('error', () => {
+            // ignore
+        });
+        ws.close();
+    });
 });
