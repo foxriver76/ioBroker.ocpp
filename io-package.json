@@ -121,7 +121,8 @@
       "zh-cn": "OCPP 1.6 适配器"
     },
     "authors": [
-      "foxriver76 <moritz.heusinger@gmail.com>"
+      "foxriver76 <moritz.heusinger@gmail.com>",
+      "iobroker-community-adapters <iobroker-community-adapters@gmx.de>"
     ],
     "keywords": [
       "wallbox",
@@ -186,12 +187,12 @@
     "materialize": true,
     "dependencies": [
       {
-        "js-controller": ">=3.3.15"
+        "js-controller": ">=6.0.11"
       }
     ],
     "globalDependencies": [
       {
-        "admin": ">=5.1.0"
+        "admin": ">=7.7.22"
       }
     ]
   },
