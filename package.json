@@ -24,7 +24,7 @@
     "babel-runtime": "^6.26.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^3.5.9",
+    "@alcalzone/release-script": "^5.2.1",
     "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
     "@iobroker/testing": "^6.3.1",
     "@types/chai": "^4.3.3",
