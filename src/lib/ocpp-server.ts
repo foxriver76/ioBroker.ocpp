@@ -309,7 +309,9 @@ export class OcppClientConnection {
             return;
         }
         const frame: OcppCallResultFrame = [OCPP_MESSAGE_TYPE.CALLRESULT, messageId, this.stripUndefined(payload)];
-        this.ws.send(JSON.stringify(frame));
+        this.ws.send(JSON.stringify(frame), () => {
+            // ignore send errors on abruptly closed sockets
+        });
     }
 
     private sendCallError(
@@ -328,7 +330,9 @@ export class OcppClientConnection {
             errorDescription,
             errorDetails
         ];
-        this.ws.send(JSON.stringify(frame));
+        this.ws.send(JSON.stringify(frame), () => {
+            // ignore send errors on abruptly closed sockets
+        });
     }
 }
 

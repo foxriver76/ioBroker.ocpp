@@ -92,6 +92,7 @@ interface ParsedConfigurationAttribute {
 class Ocpp extends utils.Adapter {
     private readonly clientTimeouts: Map<string, ioBroker.Timeout> = new Map();
     private readonly knownClients: Map<string, KnownClient> = new Map();
+    private readonly activeTransactions: Map<string, Map<number, number>> = new Map();
     private server: OcppServer | undefined;
     private readonly knownDataTransferChannels = new Set<string>();
     private readonly knownDataTransferStates = new Set<string>();
@@ -259,18 +260,7 @@ class Ocpp extends utils.Adapter {
 
                 // sometimes a reconnect happens without time out - ensure to handle as new client (request states etc)
                 if (this.knownClients.has(url)) {
-                    const prevClient = this.knownClients.get(url);
                     this.knownClients.delete(url);
-                    // Preserve activeTransactions across brief TCP reconnects so StopTransaction can still resolve connectorId
-                    if (prevClient?.activeTransactions.size) {
-                        this.knownClients.set(url, {
-                            connectorIds: [0],
-                            connectorInitPromises: new Map(),
-                            activeTransactions: new Map(prevClient.activeTransactions)
-                        });
-                        // Delete again so onRequest triggers full initialization while keeping transactions via closure if needed
-                        this.knownClients.delete(url);
-                    }
                 }
 
                 return Promise.resolve([true, 200, 'OK']);
@@ -319,10 +309,11 @@ class Ocpp extends utils.Adapter {
                 let knownClient = this.knownClients.get(url);
                 if (!knownClient) {
                     this.log.info(`New device connected: "${url}"`);
+                    const existingTx = this.activeTransactions.get(url);
                     knownClient = {
                         connectorIds: [0],
                         connectorInitPromises: new Map(),
-                        activeTransactions: new Map()
+                        activeTransactions: existingTx ? new Map(existingTx) : new Map()
                     };
                     this.knownClients.set(url, knownClient);
 
@@ -410,6 +401,12 @@ class Ocpp extends utils.Adapter {
 
                         const transactionId = this.nextTransactionId++;
                         knownClient.activeTransactions.set(connectorId, transactionId);
+                        let devTx = this.activeTransactions.get(url);
+                        if (!devTx) {
+                            devTx = new Map();
+                            this.activeTransactions.set(url, devTx);
+                        }
+                        devTx.set(connectorId, transactionId);
 
                         this.log.info(
                             `Received Start transaction from "${url}.${connectorId}" (transactionId: ${transactionId})`
@@ -436,11 +433,25 @@ class Ocpp extends utils.Adapter {
 
                         // Resolve connectorId from tracked activeTransactions, falling back to transactionId if matching a known connector
                         let connectorId: number | undefined;
-                        for (const [connId, txId] of knownClient.activeTransactions.entries()) {
-                            if (txId === stopCommand.transactionId) {
-                                connectorId = connId;
-                                knownClient.activeTransactions.delete(connId);
-                                break;
+                        const devTx = this.activeTransactions.get(url);
+                        if (devTx) {
+                            for (const [connId, txId] of devTx.entries()) {
+                                if (txId === stopCommand.transactionId) {
+                                    connectorId = connId;
+                                    devTx.delete(connId);
+                                    knownClient.activeTransactions.delete(connId);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (connectorId === undefined) {
+                            for (const [connId, txId] of knownClient.activeTransactions.entries()) {
+                                if (txId === stopCommand.transactionId) {
+                                    connectorId = connId;
+                                    knownClient.activeTransactions.delete(connId);
+                                    break;
+                                }
                             }
                         }
 
@@ -642,37 +653,46 @@ class Ocpp extends utils.Adapter {
         }
 
         // we want to request boot notification and status and meter values to have everything up to date again
-        try {
-            if (initialAction !== 'BootNotification' && this.isClientStillActive(connection)) {
+        if (initialAction !== 'BootNotification' && this.isClientStillActive(connection)) {
+            try {
                 this.log.info(`Requesting BootNotification from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
                     requestedMessage: 'BootNotification'
                 });
-
-                await this._wait(1_000);
+            } catch (e: any) {
+                if (this.isClientStillActive(connection)) {
+                    this.log.debug(`Could not trigger BootNotification from "${connection.url}": ${e.message}`);
+                }
             }
+            await this._wait(1_000);
+        }
 
-            if (initialAction !== 'StatusNotification' && this.isClientStillActive(connection)) {
+        if (initialAction !== 'StatusNotification' && this.isClientStillActive(connection)) {
+            try {
                 this.log.info(`Requesting StatusNotification from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
                     requestedMessage: 'StatusNotification'
                 });
-
-                await this._wait(1_000);
+            } catch (e: any) {
+                if (this.isClientStillActive(connection)) {
+                    this.log.debug(`Could not trigger StatusNotification from "${connection.url}": ${e.message}`);
+                }
             }
+            await this._wait(1_000);
+        }
 
-            if (initialAction !== 'MeterValues' && this.isClientStillActive(connection)) {
+        if (initialAction !== 'MeterValues' && this.isClientStillActive(connection)) {
+            try {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
                     requestedMessage: 'MeterValues'
                 });
-
-                await this._wait(1_000);
+            } catch (e: any) {
+                if (this.isClientStillActive(connection)) {
+                    this.log.debug(`Could not trigger MeterValues from "${connection.url}": ${e.message}`);
+                }
             }
-        } catch (e: any) {
-            if (this.isClientStillActive(connection)) {
-                this.log.warn(`Could not request states of "${connection.url}": ${e.message}`);
-            }
+            await this._wait(1_000);
         }
 
         if (!this.isClientStillActive(connection)) {
@@ -922,6 +942,7 @@ class Ocpp extends utils.Adapter {
             }
             this.clientTimeouts.clear();
             this.knownClients.clear();
+            this.activeTransactions.clear();
 
             await this.setStateAsync('info.connection', '', true);
             callback();
