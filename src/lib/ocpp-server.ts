@@ -1,15 +1,16 @@
-import * as http from 'http';
-import * as https from 'https';
-import { randomUUID } from 'crypto';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import type { Socket } from 'node:net';
+import { randomUUID } from 'node:crypto';
 import WebSocket from 'ws';
-import {
-    OCPP_MESSAGE_TYPE,
+import type {
     OcppCallErrorFrame,
     OcppCallFrame,
     OcppCallResultFrame,
     OcppErrorCode,
     OcppProtocolVersion
 } from './ocpp-types';
+import { OCPP_MESSAGE_TYPE } from './ocpp-types';
 
 export interface BasicAuthCredentials {
     name: string;
@@ -194,6 +195,8 @@ export class OcppClientConnection {
 
     /**
      * Recursively removes keys with `undefined` values so Charge Points do not fail JSON schema validation
+     *
+     * @param obj
      */
     private stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
         return JSON.parse(JSON.stringify(obj)) as Record<string, unknown>;
@@ -403,7 +406,7 @@ export class OcppServer {
         });
 
         this.httpServer.on('upgrade', (req, socket, head) => {
-            void this.handleUpgrade(req, socket as import('net').Socket, head);
+            void this.handleUpgrade(req, socket as Socket, head);
         });
 
         return new Promise((resolve, reject) => {
@@ -459,7 +462,7 @@ export class OcppServer {
         }
     }
 
-    private async handleUpgrade(req: http.IncomingMessage, socket: import('net').Socket, head: Buffer): Promise<void> {
+    private async handleUpgrade(req: http.IncomingMessage, socket: Socket, head: Buffer): Promise<void> {
         socket.on('error', () => {
             // ignore low-level socket reset errors during upgrade/close
         });
