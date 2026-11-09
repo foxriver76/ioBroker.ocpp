@@ -14,6 +14,9 @@ import type {
     ChangeAvailabilityResponse,
     ChangeConfigurationRequest,
     ChangeConfigurationResponse,
+    ChargingProfile,
+    ClearChargingProfileRequest,
+    ClearChargingProfileResponse,
     DataTransferRequest,
     DataTransferResponse,
     DiagnosticsStatusNotificationRequest,
@@ -1054,6 +1057,17 @@ class Ocpp extends utils.Adapter {
 
                         const numberPhases = await this._getNumberOfPhases(deviceName, connectorId);
 
+                        if (limitType === 'W') {
+                            const effectivePhases =
+                                typeof numberPhases === 'number' && numberPhases > 0 ? numberPhases : 3;
+                            const estimatedCurrent = limitState.val / (effectivePhases * 230);
+                            if (estimatedCurrent < 6) {
+                                this.log.warn(
+                                    `[chargeLimit] ${limitState.val} W across ${effectivePhases} phase(s) results in ~${estimatedCurrent.toFixed(1)} A, which is below the IEC 61851 minimum of 6 A. The charge point may reject this profile or stop charging.`,
+                                );
+                            }
+                        }
+
                         const period: { startPeriod: number; limit: number; numberPhases?: number } = {
                             startPeriod: 0,
                             limit: limitState.val,
@@ -1062,16 +1076,15 @@ class Ocpp extends utils.Adapter {
                             period.numberPhases = numberPhases;
                         }
 
-                        // Issue #65 & #24: OCPP 1.6 specification requires chargingProfilePurpose = 'TxProfile' for RemoteStartTransaction
+                        // Issue #65 & #24: OCPP 1.6 specification requires chargingProfilePurpose = 'TxProfile' for RemoteStartTransaction.
+                        // A TxProfile must be 'Relative' (never 'Recurring') with no startSchedule or recurrencyKind.
                         cmdObj.chargingProfile = {
                             chargingProfileId: 1,
                             stackLevel: 0,
                             chargingProfilePurpose: 'TxProfile',
-                            chargingProfileKind: 'Recurring',
-                            recurrencyKind: 'Daily',
+                            chargingProfileKind: 'Relative',
                             chargingSchedule: {
                                 duration: 86_400,
-                                startSchedule: '2013-01-01T00:00:00.000Z',
                                 chargingRateUnit: limitType,
                                 chargingSchedulePeriod: [period],
                             },
@@ -1145,6 +1158,29 @@ class Ocpp extends utils.Adapter {
                     );
                 }
             } else if (functionality === 'chargeLimit') {
+                if (state.val === null || state.val === 0) {
+                    try {
+                        this.log.debug(`Clearing charging profile for ${deviceName}.${connectorId}`);
+                        const res = await client.sendCommand<ClearChargingProfileRequest, ClearChargingProfileResponse>(
+                            'ClearChargingProfile',
+                            {
+                                connectorId,
+                            },
+                        );
+
+                        if (res.status === 'Accepted' || res.status === 'Unknown') {
+                            await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimit`, null, true);
+                        } else {
+                            this.log.warn(
+                                `Charge point responded with "${String(res.status)}" on clearing charging profile for "${deviceName}.${connectorId}"`,
+                            );
+                        }
+                    } catch (e: any) {
+                        this.log.error(`Cannot clear chargeLimit for "${deviceName}.${connectorId}": ${e.message}`);
+                    }
+                    return;
+                }
+
                 if (typeof state.val !== 'number') {
                     return;
                 }
@@ -1169,7 +1205,7 @@ class Ocpp extends utils.Adapter {
                     );
                 }
             } else if (functionality === 'numberPhases') {
-                if (typeof state.val !== 'number') {
+                if (typeof state.val !== 'number' && state.val !== null) {
                     return;
                 }
 
@@ -1192,7 +1228,7 @@ class Ocpp extends utils.Adapter {
                         limit,
                         deviceName,
                         connectorId,
-                        numberPhases: state.val,
+                        numberPhases: typeof state.val === 'number' ? state.val : undefined,
                     });
                 } catch (e: any) {
                     this.log.error(
@@ -1389,6 +1425,16 @@ class Ocpp extends utils.Adapter {
         const { connection, connectorId, deviceName, limitType, limit, numberPhases } = options;
         this.log.debug(`Sending SetChargingProfile for ${deviceName}.${connectorId}`);
 
+        if (limitType === 'W') {
+            const effectivePhases = typeof numberPhases === 'number' && numberPhases > 0 ? numberPhases : 3;
+            const estimatedCurrent = limit / (effectivePhases * 230);
+            if (estimatedCurrent < 6) {
+                this.log.warn(
+                    `[chargeLimit] ${limit} W across ${effectivePhases} phase(s) results in ~${estimatedCurrent.toFixed(1)} A, which is below the IEC 61851 minimum of 6 A. The charge point may reject this profile or stop charging.`,
+                );
+            }
+        }
+
         const period: { startPeriod: number; limit: number; numberPhases?: number } = {
             startPeriod: 0,
             limit,
@@ -1397,23 +1443,29 @@ class Ocpp extends utils.Adapter {
             period.numberPhases = numberPhases;
         }
 
+        const activeTxId = this.activeTransactions.get(connection.url)?.get(connectorId);
+
+        const chargingProfile: ChargingProfile = {
+            chargingProfileId: 1,
+            stackLevel: 0,
+            chargingProfilePurpose: activeTxId !== undefined ? 'TxProfile' : 'TxDefaultProfile',
+            chargingProfileKind: 'Relative',
+            chargingSchedule: {
+                duration: 86_400,
+                chargingRateUnit: limitType,
+                chargingSchedulePeriod: [period],
+            },
+        };
+
+        if (activeTxId !== undefined) {
+            chargingProfile.transactionId = activeTxId;
+        }
+
         const res = await connection.sendCommand<SetChargingProfileRequest, SetChargingProfileResponse>(
             'SetChargingProfile',
             {
                 connectorId,
-                csChargingProfiles: {
-                    chargingProfileId: 1,
-                    stackLevel: 0,
-                    chargingProfilePurpose: 'TxDefaultProfile',
-                    chargingProfileKind: 'Recurring',
-                    recurrencyKind: 'Daily',
-                    chargingSchedule: {
-                        duration: 86_400,
-                        startSchedule: '2013-01-01T00:00:00.000Z',
-                        chargingRateUnit: limitType,
-                        chargingSchedulePeriod: [period],
-                    },
-                },
+                csChargingProfiles: chargingProfile,
             },
         );
 
