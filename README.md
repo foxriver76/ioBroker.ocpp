@@ -35,6 +35,7 @@ This adapter would not have been possible without the great work of @foxriver76 
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (meistermopper) migrate to ESLint 9 and @iobroker/eslint-config (#33)
 * (meistermopper) replace legacy `@ampeco/ocpp-eliftech` with native TypeScript OCPP 1.6J server
 * (meistermopper) fix SmartCharging removal when `GetConfigurationMaxKeys` truncates response (#65)
 * (meistermopper) use `TxProfile` for `RemoteStartTransaction` and track `transactionId` (#24, #65)

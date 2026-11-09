@@ -24,6 +24,7 @@ export const deviceObjects: AdapterObjectDefinition[] = [
 /**
  * Returns the objects for a single connector, w.r.t. the connectorId
  * The main (id = 0) does not have all states
+ *
  * @param connectorId id of the connector
  */
 export function getConnectorObjects(connectorId: number): AdapterObjectDefinition[] {

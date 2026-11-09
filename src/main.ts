@@ -4,8 +4,9 @@
 
 import * as utils from '@iobroker/adapter-core';
 import { getConnectorObjects, deviceObjects } from './lib/states';
-import { OcppClientConnection, OcppServer } from './lib/ocpp-server';
-import {
+import type { OcppClientConnection } from './lib/ocpp-server';
+import { OcppServer } from './lib/ocpp-server';
+import type {
     AuthorizeRequest,
     AuthorizeResponse,
     BootNotificationResponse,
@@ -930,6 +931,8 @@ class Ocpp extends utils.Adapter {
 
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
+     *
+     * @param callback
      */
     private async onUnload(callback: () => void): Promise<void> {
         this.isUnloading = true;
@@ -1004,6 +1007,9 @@ class Ocpp extends utils.Adapter {
 
     /**
      * Is called if a subscribed state changes
+     *
+     * @param id
+     * @param state
      */
     private async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
         if (!state || state.ack || this.isUnloading) {

@@ -31,6 +31,7 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (meistermopper) Migration auf ESLint 9 und @iobroker/eslint-config (#33)
 * (meistermopper) Veraltetes `@ampeco/ocpp-eliftech` durch nativen TypeScript OCPP 1.6J Server ersetzt
 * (meistermopper) Fehler behoben, durch den SmartCharging bei `GetConfigurationMaxKeys` gelöscht wurde (#65)
 * (meistermopper) `TxProfile` für `RemoteStartTransaction` genutzt und `transactionId` verwaltet (#24, #65)
