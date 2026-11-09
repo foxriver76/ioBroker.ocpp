@@ -1,4 +1,7 @@
 # Older changes
+## 0.12.1 (2023-01-19)
+* (foxriver76) we now also detect feature profiles if clients add unallowed whitespaces
+
 ## 0.12.0 (2023-01-18)
 * (foxriver76) the `idTag` for remote transactions is now `ioBroker` persistent over all transactions
 * (foxriver76) implemented the management of authentication list
@@ -110,4 +113,3 @@ __The structure of the datapoints has changed to support wallboxes with multiple
 
 ## 0.0.3 (2021-10-27)
 * (foxriver76) initial release
-

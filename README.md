@@ -34,7 +34,7 @@ This adapter would not have been possible without the great work of @foxriver76 
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.0-alpha.4 (2026-11-09)
 * (meistermopper) migrate to ESLint 9 and @iobroker/eslint-config (#33)
 * (meistermopper) replace legacy `@ampeco/ocpp-eliftech` with native TypeScript OCPP 1.6J server
 * (meistermopper) fix SmartCharging removal when `GetConfigurationMaxKeys` truncates response (#65)
@@ -59,10 +59,8 @@ This adapter would not have been possible without the great work of @foxriver76 
 ### 0.12.2 (2023-01-19)
 * (foxriver76) ensure main connector is always created even if no status received there
 
-### 0.12.1 (2023-01-19)
-* (foxriver76) we now also detect feature profiles if clients add unallowed whitespaces
-
 [Older changelog entries can be found in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
+
 ## License
 MIT License
 

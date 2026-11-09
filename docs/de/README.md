@@ -30,7 +30,7 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.0-alpha.4 (2026-11-09)
 * (meistermopper) Migration auf ESLint 9 und @iobroker/eslint-config (#33)
 * (meistermopper) Veraltetes `@ampeco/ocpp-eliftech` durch nativen TypeScript OCPP 1.6J Server ersetzt
 * (meistermopper) Fehler behoben, durch den SmartCharging bei `GetConfigurationMaxKeys` gelöscht wurde (#65)
@@ -54,9 +54,6 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 
 ### 0.12.2 (2023-01-19)
 * (foxriver76) Sicherstellen, dass der Haupt-Connector (`0`) immer erstellt wird
-
-### 0.12.1 (2023-01-19)
-* (foxriver76) Erkennung von Feature-Profilen auch bei unerlaubten Leerzeichen
 
 [Ältere Einträge befinden sich in der CHANGELOG_OLD.md](../../CHANGELOG_OLD.md)
 
