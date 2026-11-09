@@ -32,6 +32,7 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 -->
 ### **WORK IN PROGRESS**
 * (meistermopper) Repochecker-Warnungen behoben: nogit, info.connection-Rolle und ungenutzte Deps (#117)
+* (meistermopper) Workflow-Concurrency und Timer-Wrapper an Repochecker angepasst (#121)
 
 ### 1.0.0-alpha.4 (2026-11-09)
 * (meistermopper) Migration auf ESLint 9 und @iobroker/eslint-config (#33)

@@ -36,6 +36,7 @@ This adapter would not have been possible without the great work of @foxriver76 
 -->
 ### **WORK IN PROGRESS**
 * (meistermopper) fix repochecker findings: nogit, info.connection role, and unused deps (#117)
+* (meistermopper) align workflow concurrency and timer wrappers with repochecker (#121)
 
 ### 1.0.0-alpha.4 (2026-11-09)
 * (meistermopper) migrate to ESLint 9 and @iobroker/eslint-config (#33)

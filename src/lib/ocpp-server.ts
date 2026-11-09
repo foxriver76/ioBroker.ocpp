@@ -345,7 +345,7 @@ export class OcppClientConnection {
      * @param ms delay in milliseconds
      */
     private setTimeout(callback: () => void, ms: number): NodeJS.Timeout {
-        return setTimeout(callback, ms);
+        return global.setTimeout(callback, ms);
     }
 
     /**
@@ -354,7 +354,7 @@ export class OcppClientConnection {
      * @param timeout timer reference
      */
     private clearTimeout(timeout: NodeJS.Timeout): void {
-        clearTimeout(timeout);
+        global.clearTimeout(timeout);
     }
 }
 
