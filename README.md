@@ -59,7 +59,7 @@ This adapter would not have been possible without the great work of @foxriver76 
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.0 (2026-11-09)
 * (meistermopper) fix repochecker findings: nogit, info.connection role, and unused deps (#117)
 * (meistermopper) align workflow concurrency and timer wrappers with repochecker (#121)
 * (meistermopper) fix TxProfile schedule kind and add ClearChargingProfile on null chargeLimit
@@ -85,9 +85,6 @@ This adapter would not have been possible without the great work of @foxriver76 
 
 ### 0.12.3 (2023-02-07)
 * (foxriver76) allow deactivating `numberPhases` by setting `null
-
-### 0.12.2 (2023-01-19)
-* (foxriver76) ensure main connector is always created even if no status received there
 
 [Older changelog entries can be found in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 

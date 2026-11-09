@@ -1,4 +1,7 @@
 # Older changes
+## 0.12.2 (2023-01-19)
+* (foxriver76) ensure main connector is always created even if no status received there
+
 ## 0.12.1 (2023-01-19)
 * (foxriver76) we now also detect feature profiles if clients add unallowed whitespaces
 

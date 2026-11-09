@@ -2,8 +2,21 @@
   "common": {
     "name": "ocpp",
     "nogit": true,
-    "version": "1.0.0-alpha.4",
+    "version": "1.0.0",
     "news": {
+      "1.0.0": {
+        "en": "fix repochecker findings: nogit, info.connection role, and unused deps (#117)\nalign workflow concurrency and timer wrappers with repochecker (#121)\nfix TxProfile schedule kind and add ClearChargingProfile on null chargeLimit",
+        "de": "Fix Repochecker: Nogit, Info.Connection Role und ungenutzte Deps (#117)\nWorkflow-Wrapper und Timer-Wrapper mit Repochecker abgleichen (#121)\nfix txProfile und füge ClearChargingProfile auf Null ChargeLimit hinzu",
+        "ru": "исправить результаты проверки репозиториев: nogit, роль info.connection и неиспользуемые файлы (#117)\nсовместите параллелизм рабочих процессов и оболочки таймеров с помощью repochecker (#121)\nисправьте вид расписания TxProfile и добавьте clearChargingProfile при нулевом ограничении заряда",
+        "pt": "corrija o repochecker: nogit, info.connection role e unused deps (#117)\nalinhe a simultaneidade e o timer do fluxo de trabalho com o repochecker (#121)\nfixe o tipo de agenda txProfile e adicione clearChargingProfile em null ChargeLimit",
+        "nl": "bevindingen van de repochecker corrigeren: nogit, rol info.connection en ongebruikte deps (#117)\ngelijktijdigheid van de workflow en timerwikkels op één lijn brengen met repochecker (#121)\nde schemasoort van TxProfile corrigeren en ClearChargingProfile toevoegen op null ChargeLimit",
+        "fr": "fix repochecker : nogit, rôle info.connection et deps non utilisés (#117)\nalignez la simultanéité des flux de travail et les timer avec Repochecker (#121)\ncorriger le type de planning TxProfile et ajouter ClearChargingProfile à null ChargeLimit",
+        "it": "corregge i dati di repochecker: nogit, ruolo info.connection e deps inusati (#117)\nallinea flussi di lavoro e timer con repochecker (#121)\ncorregge il tipo di orario TXProfile e aggiunge Null ChargingLimit",
+        "es": "corregir repochecker: nogit, info.connection role y deps sin usar (#117)\nalinear flujos de trabajo simultáneos y temporizadores con RepoChecker (#121)\nfijar el tipo de horario TXProfile y añadir clearChargingProfile en nulo ChargeLimit",
+        "pl": "naprawić wyniki repochecker: nogit, rolę info.connection i nieużywane pliki (#117)\ndostosuj współbieżność przepływu pracy i owijki czasowe za pomocą narzędzia repochecker (#121)\nnapraw rodzaj harmonogramu txProfile i dodaj ClearChargingProfile na null ChargeLimit",
+        "uk": "виправлено результати перевірки повторного перегляду: nogit, роль info.connection та невикористані депси (#117)\nвирівняти паралельність робочого процесу та обгортки таймерів за допомогою repochecker (#121)\nвиправлення типу розкладу txProfile та додавання ClearChargingProfile на нульовому ChargeLimit",
+        "zh-cn": "修复 repochecker 的发现：nogit、info.connection 角色和未使用的 deps (#117)\n将工作流程并发和计时器包装器与 repochecker 保持一致 (#121)\n修复 TxProfile 计划类型并在空的 ChargeLimit 上添加 clearChargingProfile"
+      },
       "1.0.0-alpha.4": {
         "en": "migrate to ESLint 9 and @iobroker/eslint-config (#33)\nreplace legacy `@ampeco/ocpp-eliftech` with native TypeScript OCPP 1.6J server\nfix SmartCharging removal when `GetConfigurationMaxKeys` truncates response (#65)\nuse `TxProfile` for `RemoteStartTransaction` and track `transactionId` (#24, #65)\nprevent zombie sockets on reconnect (#20) and serialize outgoing OCPP commands\nsupport `DiagnosticsStatusNotification` and `FirmwareStatusNotification` (#32)\nadd `stripLeadingSlash` option and responsive `jsonConfig` with i18n (#30, #60)",
         "de": "migrieren zu ESLint 9 und @iobroker /eslint-config (#33)\nErsetze `@ampeco /ocpp-eliftech` mit nativem TypeScript OCPP 1.6J Server\nFix SmartCharging, wenn `getConfigurationMaxKeys` Antwort kürzt (#65)\nVerwende `txProfile` für RemoteStartTransaction und tracke `TransactionID` (#24, #65)\nBeugt Zombie-Sockets bei Reconnect vor (#20) und serialisiert OCPP-Befehle\nunterstützt `DiagnosticsStatusmeldung` und `FirmwareStatusmeldung` (#32)\nfüge `StripLeadingSlash` und responsives `JSONConfig` mit i18n hinzu (#30, #60)",

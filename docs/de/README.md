@@ -63,7 +63,7 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 	### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 1.0.0 (2026-11-09)
 
 * (meistermopper) Repochecker-Warnungen behoben: nogit, info.connection-Rolle und ungenutzte Deps (#117)
 * (meistermopper) Workflow-Concurrency und Timer-Wrapper an Repochecker angepasst (#121)
@@ -94,10 +94,6 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 ### 0.12.3 (2023-02-07)
 
 - (foxriver76) Deaktivieren von `numberPhases` durch Setzen auf `null` ermöglicht
-
-### 0.12.2 (2023-01-19)
-
-- (foxriver76) Sicherstellen, dass der Haupt-Connector (`0`) immer erstellt wird
 
 [Ältere Einträge befinden sich in der CHANGELOG_OLD.md](../../CHANGELOG_OLD.md)
 
