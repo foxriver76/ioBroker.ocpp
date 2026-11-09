@@ -1,4 +1,11 @@
-export const deviceObjects: ioBroker.Object[] = [
+export interface AdapterObjectDefinition {
+    _id: string;
+    type: 'state' | 'channel';
+    common: ioBroker.StateCommon | ioBroker.ChannelCommon;
+    native: Record<string, any>;
+}
+
+export const deviceObjects: AdapterObjectDefinition[] = [
     {
         _id: 'connected',
         type: 'state',
@@ -7,7 +14,8 @@ export const deviceObjects: ioBroker.Object[] = [
             type: 'boolean',
             role: 'indicator.connected',
             write: false,
-            read: true
+            read: true,
+            def: false
         },
         native: {}
     }
@@ -18,8 +26,8 @@ export const deviceObjects: ioBroker.Object[] = [
  * The main (id = 0) does not have all states
  * @param connectorId id of the connector
  */
-export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
-    const objs: ioBroker.Object[] = [
+export function getConnectorObjects(connectorId: number): AdapterObjectDefinition[] {
+    const objs: AdapterObjectDefinition[] = [
         {
             _id: 'status',
             type: 'state',
@@ -29,6 +37,7 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 role: 'indicator.status',
                 write: false,
                 read: true,
+                def: 'Available',
                 states: [
                     'Available',
                     'Preparing',
@@ -45,7 +54,7 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
         },
         {
             _id: 'meterValues',
-            type: 'folder',
+            type: 'channel',
             common: {
                 name: 'Meter values'
             },
@@ -60,6 +69,7 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 role: 'switch.power',
                 write: true,
                 read: true,
+                def: true,
                 desc: 'On main, this changes availability of all connectors'
             },
             native: {}
@@ -76,7 +86,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'boolean',
                 role: 'button',
                 write: true,
-                read: false
+                read: false,
+                def: false
             },
             native: {}
         });
@@ -89,7 +100,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'boolean',
                 role: 'button',
                 write: true,
-                read: false
+                read: false,
+                def: false
             },
             native: {}
         });
@@ -102,7 +114,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'string',
                 role: 'text',
                 write: true,
-                read: true
+                read: true,
+                def: ''
             },
             native: {}
         });
@@ -118,7 +131,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'boolean',
                 role: 'switch.power',
                 write: true,
-                read: true
+                read: true,
+                def: false
             },
             native: {}
         });
@@ -129,10 +143,11 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
             common: {
                 name: 'Consumption by last transaction',
                 type: 'number',
-                role: 'value.power',
-                write: true,
-                read: false,
-                unit: 'W'
+                role: 'value.power.consumption',
+                write: false,
+                read: true,
+                unit: 'Wh',
+                def: 0
             },
             native: {}
         });
@@ -143,10 +158,11 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
             common: {
                 name: 'Meter at last transaction start',
                 type: 'number',
-                role: 'value.power',
-                write: true,
-                read: false,
-                unit: 'W'
+                role: 'value.power.consumption',
+                write: false,
+                read: true,
+                unit: 'Wh',
+                def: 0
             },
             native: {}
         });
@@ -157,10 +173,11 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
             common: {
                 name: 'Meter at last transaction end',
                 type: 'number',
-                role: 'value.power',
-                write: true,
-                read: false,
-                unit: 'W'
+                role: 'value.power.consumption',
+                write: false,
+                read: true,
+                unit: 'Wh',
+                def: 0
             },
             native: {}
         });
@@ -173,7 +190,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 type: 'string',
                 role: 'text',
                 write: false,
-                read: true
+                read: true,
+                def: ''
             },
             native: {}
         });
@@ -188,7 +206,8 @@ export function getConnectorObjects(connectorId: number): ioBroker.Object[] {
                 write: true,
                 read: true,
                 unit: 'A',
-                min: 0
+                min: 0,
+                def: 0
             },
             native: {}
         });

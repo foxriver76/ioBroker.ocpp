@@ -1,0 +1,9 @@
+{
+    "port": "Porta del server",
+    "authentication": "Autenticazione",
+    "username": "Nome utente",
+    "password": "Password",
+    "stripLeadingSlash": "Rimuovi la barra iniziale (/) dagli ID delle stazioni di ricarica",
+    "stripLeadingSlashHelp": "Abilita per nuove installazioni o compatibilità con Node-RED. Lascia disabilitato per mantenere gli ID oggetto esistenti."
+}
+

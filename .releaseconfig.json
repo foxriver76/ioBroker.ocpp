@@ -8,3 +8,4 @@
         "before_commit": "npm run build"
     }
 }
+

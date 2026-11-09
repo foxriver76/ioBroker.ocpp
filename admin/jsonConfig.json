@@ -1,75 +1,60 @@
 {
-  "type": "panel",
-  "i18n": {
-    "port": {
-      "en": "Server port",
-      "de": "Server Port",
-      "ru": "Порт сервера",
-      "pt": "Porta do servidor",
-      "nl": "Server poort",
-      "fr": "Port de serveur",
-      "it": "Porta del server",
-      "es": "Puerto de servicio",
-      "pl": "Port serwera",
-      "zh-cn": "服务器端口"
-    },
-    "authentication": {
-      "en": "Authentication",
-      "de": "Authentifizierung",
-      "ru": "Аутентификация",
-      "pt": "Autenticação",
-      "nl": "authenticatie",
-      "fr": "Authentification",
-      "it": "Autenticazione",
-      "es": "Autenticación",
-      "pl": "Uwierzytelnianie",
-      "zh-cn": "验证"
-    },
-    "username": {
-      "en": "Username",
-      "de": "Nutzername",
-      "ru": "Имя пользователя",
-      "pt": "Nome do usuário",
-      "nl": "gebruikersnaam",
-      "fr": "Nom d'utilisateur",
-      "it": "Nome utente",
-      "es": "Nombre de usuario",
-      "pl": "Nazwa użytkownika",
-      "zh-cn": "用户名"
-    },
-    "password": {
-      "en": "Password",
-      "de": "Passwort",
-      "ru": "Пароль",
-      "pt": "Senha",
-      "nl": "Wachtwoord",
-      "fr": "Mot de passe",
-      "it": "Parola d'ordine",
-      "es": "Clave",
-      "pl": "Hasło",
-      "zh-cn": "密码"
+    "type": "panel",
+    "i18n": true,
+    "items": {
+        "port": {
+            "type": "number",
+            "label": "port",
+            "min": 1,
+            "max": 65535,
+            "xs": 12,
+            "sm": 6,
+            "md": 4,
+            "lg": 3,
+            "xl": 3
+        },
+        "stripLeadingSlash": {
+            "newLine": true,
+            "type": "checkbox",
+            "label": "stripLeadingSlash",
+            "help": "stripLeadingSlashHelp",
+            "xs": 12,
+            "sm": 12,
+            "md": 8,
+            "lg": 6,
+            "xl": 6
+        },
+        "authentication": {
+            "newLine": true,
+            "type": "checkbox",
+            "label": "authentication",
+            "xs": 12,
+            "sm": 12,
+            "md": 4,
+            "lg": 3,
+            "xl": 3
+        },
+        "username": {
+            "newLine": true,
+            "type": "text",
+            "label": "username",
+            "hidden": "!data.authentication",
+            "xs": 12,
+            "sm": 6,
+            "md": 4,
+            "lg": 3,
+            "xl": 3
+        },
+        "password": {
+            "type": "password",
+            "label": "password",
+            "repeat": false,
+            "hidden": "!data.authentication",
+            "xs": 12,
+            "sm": 6,
+            "md": 4,
+            "lg": 3,
+            "xl": 3
+        }
     }
-  },
-  "items": {
-    "port": {
-      "type": "number",
-      "label": "port",
-      "min": 0
-    },
-    "authentication": {
-      "newLine": true,
-      "type": "checkbox",
-      "label": "authentication"
-    },
-    "username": {
-      "newLine": true,
-      "type": "text",
-      "label": "username"
-    },
-    "password": {
-      "type": "password",
-      "label": "password",
-      "repeat": false
-    }
-  }
 }

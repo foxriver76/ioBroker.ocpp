@@ -8,6 +8,7 @@ declare global {
             authentication: boolean;
             username: string;
             password: string;
+            stripLeadingSlash?: boolean;
         }
     }
 }

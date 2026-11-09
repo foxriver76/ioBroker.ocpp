@@ -1,0 +1,155 @@
+name: Bug report
+description: Report an issue or bug with ioBroker.ocpp
+title: "[Bug]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Thank you for reporting an issue for ioBroker.ocpp!**
+
+
+        Before submitting, please make sure the problem still occurs with the latest version of the adapter.
+        For general setup help or questions ("How do I configure my wallbox?"), please use the
+        [ioBroker forum at forum.iobroker.net](https://forum.iobroker.net/).
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what happened and what you expected to happen instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can the issue be reproduced?
+      placeholder: |
+        1. Connect wallbox to ws://...
+        2. Set state '...' to '...'
+        3. See error in log
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Wallbox & Hardware Environment
+
+  - type: input
+    id: wallbox-model
+    attributes:
+      label: Wallbox manufacturer & model
+      description: Which wallbox/charging station are you using?
+      placeholder: e.g. EVBox Elvi, Alfen Eve Single Pro, Heidelberg Energy Control, Easee, Keba KeContact P30
+    validations:
+      required: true
+
+  - type: input
+    id: wallbox-firmware
+    attributes:
+      label: Wallbox firmware version
+      description: Firmware version of your wallbox (if known)
+      placeholder: e.g. G4-v3.1.2 or unknown
+    validations:
+      required: false
+
+  - type: dropdown
+    id: connection-type
+    attributes:
+      label: Connection type
+      options:
+        - LAN (Ethernet cable)
+        - WLAN / Wi-Fi
+        - Cellular / LTE
+        - Other / Unknown
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Software Environment
+
+  - type: input
+    id: adapter-version
+    attributes:
+      label: Adapter version
+      description: Version of ioBroker.ocpp
+      placeholder: e.g. 0.12.5
+    validations:
+      required: true
+
+  - type: input
+    id: js-controller-version
+    attributes:
+      label: JS-Controller version
+      description: Can be found in ioBroker admin host section or via `iobroker -v`
+      placeholder: e.g. 6.0.11
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version
+      description: Check with `node -v` on console
+      placeholder: e.g. v22.13.0
+    validations:
+      required: true
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system
+      description: OS running ioBroker
+      placeholder: e.g. Debian 12 (Proxmox LXC), Raspberry Pi OS, Docker, Windows 11
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Logs and Diagnostics
+
+  - type: checkboxes
+    id: log-checklist
+    attributes:
+      label: Log check
+      options:
+        - label: I have enabled debug logging for the adapter instance and included the relevant logs below.
+          required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Adapter Log (Debug level)
+      description: |
+        Please paste the relevant log output here (surrounded by triple backticks ```).
+        Make sure to remove any private passwords or tokens if present!
+      placeholder: |
+        ```
+        2026-11-08 12:00:00.000 debug [ocpp.0] ...
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Any other context, screenshots, or configuration details (e.g. jsonConfig settings)
+    validations:
+      required: false
+

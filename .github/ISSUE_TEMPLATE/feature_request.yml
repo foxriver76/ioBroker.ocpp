@@ -1,0 +1,57 @@
+name: Feature request
+description: Suggest an idea or enhancement for ioBroker.ocpp
+title: "[Feature Request]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Thank you for suggesting a feature for ioBroker.ocpp!**
+
+
+        Please check before submitting if the feature already exists or is already requested in open issues.
+        For general questions or discussions, please use the
+        [ioBroker forum at forum.iobroker.net](https://forum.iobroker.net/).
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem or limitation is.
+      placeholder: "I'm having trouble with ..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what functionality or OCPP feature you want added.
+    validations:
+      required: true
+
+  - type: textarea
+    id: wallbox-relevance
+    attributes:
+      label: Relevant Wallbox hardware or OCPP profile
+      description: Does this feature relate to a specific Wallbox model or OCPP feature profile (e.g. SmartCharging, LocalAuthListManagement, Core)?
+      placeholder: e.g. OCPP 1.6-J SmartCharging, EVBox Elvi, Alfen Eve
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: Any alternative solutions or workarounds you have considered.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or OCPP spec references here.
+    validations:
+      required: false
+

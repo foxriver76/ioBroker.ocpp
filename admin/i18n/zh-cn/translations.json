@@ -1,0 +1,9 @@
+{
+    "port": "服务器端口",
+    "authentication": "验证",
+    "username": "用户名",
+    "password": "密码",
+    "stripLeadingSlash": "移除充电桩 ID 开头的斜杠 (/)",
+    "stripLeadingSlashHelp": "为新安装或 Node-RED 兼容性启用。保持禁用以保留现有的对象 ID。"
+}
+
