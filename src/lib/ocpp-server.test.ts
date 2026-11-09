@@ -123,6 +123,34 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
         ws.close();
     });
 
+    it('sends ClearChargingProfile command to clear charging profiles', async () => {
+        const ws = new WebSocket(`ws://127.0.0.1:${port}/ChargerClear`, ['ocpp1.6']);
+        await new Promise<void>((resolve, reject) => {
+            ws.once('open', () => resolve());
+            ws.once('error', reject);
+        });
+
+        ws.on('message', data => {
+            const frame = JSON.parse(data.toString()) as [number, string, string, Record<string, unknown>];
+            expect(frame[0]).to.equal(OCPP_MESSAGE_TYPE.CALL);
+            expect(frame[2]).to.equal('ClearChargingProfile');
+            expect(frame[3]).to.deep.equal({ connectorId: 1 });
+
+            ws.send(JSON.stringify([OCPP_MESSAGE_TYPE.CALLRESULT, frame[1], { status: 'Accepted' }]));
+        });
+
+        const client = server.getClient('/ChargerClear');
+        expect(client).to.not.be.undefined;
+
+        const res = await client!.sendCommand('ClearChargingProfile', { connectorId: 1 });
+        expect(res).to.deep.equal({ status: 'Accepted' });
+
+        ws.on('error', () => {
+            // ignore ECONNRESET on close
+        });
+        ws.close();
+    });
+
     it('replaces zombie connections when the same Charge Point reconnects (#20)', async () => {
         const ws1 = new WebSocket(`ws://127.0.0.1:${port}/ABL-101`, ['ocpp1.6']);
         await new Promise<void>(resolve => ws1.once('open', () => resolve()));
