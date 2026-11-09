@@ -1,9 +1,0 @@
-{
-    "port": "Server poort",
-    "authentication": "Authenticatie",
-    "username": "Gebruikersnaam",
-    "password": "Wachtwoord",
-    "stripLeadingSlash": "Verwijder voorloop-slash (/) uit laadpunt-ID's",
-    "stripLeadingSlashHelp": "Inschakelen voor nieuwe installaties of Node-RED-compatibiliteit. Uitgeschakeld laten om bestaande object-ID's te behouden."
-}
-

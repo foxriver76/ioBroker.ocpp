@@ -1,6 +1,7 @@
 {
   "common": {
     "name": "ocpp",
+    "nogit": true,
     "version": "1.0.0-alpha.4",
     "news": {
       "1.0.0-alpha.4": {
@@ -208,7 +209,7 @@
       "_id": "info.connection",
       "type": "state",
       "common": {
-        "role": "indicator.connected",
+        "role": "text",
         "name": "List of connected devices",
         "type": "string",
         "read": true,

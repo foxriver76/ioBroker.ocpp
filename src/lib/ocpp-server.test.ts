@@ -11,7 +11,7 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
         // Pick an ephemeral port using random range 45000-55000
         port = 45000 + Math.floor(Math.random() * 10000);
         server = new OcppServer({
-            callTimeoutMs: 2000
+            callTimeoutMs: 2000,
         });
         await server.listen(port, '127.0.0.1');
     });
@@ -29,7 +29,7 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
             return {
                 status: 'Accepted',
                 currentTime: '2026-11-07T17:00:00.000Z',
-                interval: 55
+                interval: 55,
             };
         };
 
@@ -51,8 +51,8 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
                 OCPP_MESSAGE_TYPE.CALL,
                 'msg-001',
                 'BootNotification',
-                { chargePointVendor: 'EVBox', chargePointModel: 'Elvi' }
-            ])
+                { chargePointVendor: 'EVBox', chargePointModel: 'Elvi' },
+            ]),
         );
 
         const frame = await responsePromise;
@@ -61,7 +61,7 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
         expect(frame[2]).to.deep.equal({
             status: 'Accepted',
             currentTime: '2026-11-07T17:00:00.000Z',
-            interval: 55
+            interval: 55,
         });
 
         ws.on('error', () => {
@@ -84,7 +84,7 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
             expect(frame[2]).to.equal('SetChargingProfile');
             // Verify undefined fields are stripped so strict charge points do not fail schema validation
             expect('numberPhases' in frame[3].csChargingProfiles.chargingSchedule.chargingSchedulePeriod[0]).to.equal(
-                false
+                false,
             );
 
             ws.send(JSON.stringify([OCPP_MESSAGE_TYPE.CALLRESULT, frame[1], { status: 'Accepted' }]));
@@ -109,11 +109,11 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
                         {
                             startPeriod: 0,
                             limit: 16,
-                            numberPhases: undefined
-                        }
-                    ]
-                }
-            }
+                            numberPhases: undefined,
+                        },
+                    ],
+                },
+            },
         });
 
         expect(res).to.deep.equal({ status: 'Accepted' });
@@ -164,7 +164,7 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
             validateConnection: async (_url, creds) => {
                 const valid = creds?.name === 'admin' && creds?.pass === 'secret';
                 return [valid, valid ? 200 : 401, valid ? 'OK' : 'Unauthorized'];
-            }
+            },
         });
         await server.listen(port, '127.0.0.1');
 
@@ -244,7 +244,7 @@ describe('OcppServer (OCPP 1.6-J RPC & Connection Management)', () => {
         const [r1, r2, r3] = await Promise.all([
             client.sendCommand('SetChargingProfile', { connectorId: 1 }),
             client.sendCommand('ChangeAvailability', { connectorId: 1, type: 'Operative' }),
-            client.sendCommand('Reset', { type: 'Soft' })
+            client.sendCommand('Reset', { type: 'Soft' }),
         ]);
 
         expect(maxInFlight).to.equal(1);

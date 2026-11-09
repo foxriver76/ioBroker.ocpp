@@ -15,10 +15,10 @@ export const deviceObjects: AdapterObjectDefinition[] = [
             role: 'indicator.connected',
             write: false,
             read: true,
-            def: false
+            def: false,
         },
-        native: {}
-    }
+        native: {},
+    },
 ];
 
 /**
@@ -48,18 +48,18 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                     'Finishing',
                     'Reserved',
                     'Unavailable',
-                    'Faulted'
-                ]
+                    'Faulted',
+                ],
             },
-            native: {}
+            native: {},
         },
         {
             _id: 'meterValues',
             type: 'channel',
             common: {
-                name: 'Meter values'
+                name: 'Meter values',
             },
-            native: {}
+            native: {},
         },
         {
             _id: 'availability',
@@ -71,10 +71,10 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 write: true,
                 read: true,
                 def: true,
-                desc: 'On main, this changes availability of all connectors'
+                desc: 'On main, this changes availability of all connectors',
             },
-            native: {}
-        }
+            native: {},
+        },
     ];
 
     // states only available for main
@@ -88,9 +88,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 role: 'button',
                 write: true,
                 read: false,
-                def: false
+                def: false,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -102,9 +102,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 role: 'button',
                 write: true,
                 read: false,
-                def: false
+                def: false,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -116,9 +116,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 role: 'text',
                 write: true,
                 read: true,
-                def: ''
+                def: '',
             },
-            native: {}
+            native: {},
         });
     }
 
@@ -133,9 +133,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 role: 'switch.power',
                 write: true,
                 read: true,
-                def: false
+                def: false,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -148,9 +148,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 write: false,
                 read: true,
                 unit: 'Wh',
-                def: 0
+                def: 0,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -163,9 +163,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 write: false,
                 read: true,
                 unit: 'Wh',
-                def: 0
+                def: 0,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -178,9 +178,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 write: false,
                 read: true,
                 unit: 'Wh',
-                def: 0
+                def: 0,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -192,9 +192,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 role: 'text',
                 write: false,
                 read: true,
-                def: ''
+                def: '',
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -208,9 +208,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 read: true,
                 unit: 'A',
                 min: 0,
-                def: 0
+                def: 0,
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -223,9 +223,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 write: true,
                 read: true,
                 states: ['A', 'W'],
-                def: 'A'
+                def: 'A',
             },
-            native: {}
+            native: {},
         });
 
         objs.push({
@@ -239,9 +239,9 @@ export function getConnectorObjects(connectorId: number): AdapterObjectDefinitio
                 read: true,
                 def: 3,
                 min: 0,
-                max: 3
+                max: 3,
             },
-            native: {}
+            native: {},
         });
     }
 

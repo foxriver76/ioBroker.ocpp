@@ -1,0 +1,8 @@
+{
+    "authentication": "Authentifizierung",
+    "password": "Passwort",
+    "port": "Server-Port",
+    "stripLeadingSlash": "Führenden Schrägstrich (/) aus Wallbox-IDs entfernen",
+    "stripLeadingSlashHelp": "Für Neuinstallationen oder Node-RED-Kompatibilität aktivieren. Deaktiviert lassen, um bestehende Objekt-IDs (z. B. /Wallbox) beizubehalten.",
+    "username": "Nutzername"
+}

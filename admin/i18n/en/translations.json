@@ -1,9 +1,0 @@
-{
-    "port": "Server port",
-    "authentication": "Authentication",
-    "username": "Username",
-    "password": "Password",
-    "stripLeadingSlash": "Remove leading slash (/) from Charge Point IDs",
-    "stripLeadingSlashHelp": "Enable for new installations or Node-RED compatibility. Leave disabled to keep existing object IDs (e.g. /Wallbox)."
-}
-

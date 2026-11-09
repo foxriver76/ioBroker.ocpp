@@ -30,6 +30,9 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (meistermopper) Repochecker-Warnungen behoben: nogit, info.connection-Rolle und ungenutzte Deps (#117)
+
 ### 1.0.0-alpha.4 (2026-11-09)
 * (meistermopper) Migration auf ESLint 9 und @iobroker/eslint-config (#33)
 * (meistermopper) Veraltetes `@ampeco/ocpp-eliftech` durch nativen TypeScript OCPP 1.6J Server ersetzt
