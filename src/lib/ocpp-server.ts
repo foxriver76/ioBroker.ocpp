@@ -8,7 +8,7 @@ import type {
     OcppCallFrame,
     OcppCallResultFrame,
     OcppErrorCode,
-    OcppProtocolVersion
+    OcppProtocolVersion,
 } from './ocpp-types';
 import { OCPP_MESSAGE_TYPE } from './ocpp-types';
 
@@ -21,7 +21,7 @@ export type ValidateConnectionCallback = (
     url: string,
     credentials: BasicAuthCredentials | undefined,
     protocol: 'http' | 'https',
-    ocppProtocolVersion?: string
+    ocppProtocolVersion?: string,
 ) => Promise<[boolean, number?, string?]>;
 
 export interface OcppServerOptions {
@@ -106,23 +106,23 @@ export class OcppClientConnection {
      */
     public sendCommand<TReq extends object, TRes = Record<string, unknown>>(
         action: string,
-        payload: TReq
+        payload: TReq,
     ): Promise<TRes> {
         const nextTask = this.sendQueue.then(
             () => this.executeCommand<TReq, TRes>(action, payload),
-            () => this.executeCommand<TReq, TRes>(action, payload)
+            () => this.executeCommand<TReq, TRes>(action, payload),
         );
         // Keep queue chain alive without unhandled rejection on the internal tail
         this.sendQueue = nextTask.then(
             () => undefined,
-            () => undefined
+            () => undefined,
         );
         return nextTask;
     }
 
     private executeCommand<TReq extends object, TRes = Record<string, unknown>>(
         action: string,
-        payload: TReq
+        payload: TReq,
     ): Promise<TRes> {
         if (!this.isOpen()) {
             return Promise.reject(new Error(`WebSocket connection to "${this.url}" is not open`));
@@ -133,7 +133,7 @@ export class OcppClientConnection {
         const frame: OcppCallFrame = [OCPP_MESSAGE_TYPE.CALL, messageId, action, cleanPayload];
 
         return new Promise<TRes>((resolve, reject) => {
-            const timeout = setTimeout(() => {
+            const timeout = this.setTimeout(() => {
                 this.pendingCalls.delete(messageId);
                 reject(new Error(`Timeout waiting for response to "${action}" (messageId: ${messageId})`));
             }, this.callTimeoutMs);
@@ -142,12 +142,12 @@ export class OcppClientConnection {
                 action,
                 resolve: res => resolve(res as TRes),
                 reject,
-                timeout
+                timeout,
             });
 
             this.ws.send(JSON.stringify(frame), err => {
                 if (err) {
-                    clearTimeout(timeout);
+                    this.clearTimeout(timeout);
                     this.pendingCalls.delete(messageId);
                     reject(err);
                 }
@@ -187,7 +187,7 @@ export class OcppClientConnection {
 
     private rejectAllPending(error: Error): void {
         for (const [messageId, pending] of this.pendingCalls.entries()) {
-            clearTimeout(pending.timeout);
+            this.clearTimeout(pending.timeout);
             pending.reject(error);
             this.pendingCalls.delete(messageId);
         }
@@ -248,7 +248,7 @@ export class OcppClientConnection {
         } else {
             this.onError?.(
                 undefined,
-                new Error(`Unknown OCPP messageTypeId "${String(messageTypeId)}" from "${this.url}"`)
+                new Error(`Unknown OCPP messageTypeId "${String(messageTypeId)}" from "${this.url}"`),
             );
         }
     }
@@ -256,7 +256,7 @@ export class OcppClientConnection {
     private async handleIncomingCall(
         messageId: string,
         action: string,
-        payload: Record<string, unknown>
+        payload: Record<string, unknown>,
     ): Promise<void> {
         if (!this.onRequest) {
             this.sendCallError(messageId, 'NotImplemented', `No request handler registered for "${action}"`);
@@ -281,7 +281,7 @@ export class OcppClientConnection {
         if (!pending) {
             return;
         }
-        clearTimeout(pending.timeout);
+        this.clearTimeout(pending.timeout);
         this.pendingCalls.delete(messageId);
         pending.resolve(payload);
     }
@@ -290,19 +290,19 @@ export class OcppClientConnection {
         messageId: string,
         errorCode: OcppErrorCode,
         errorDescription: string,
-        errorDetails: Record<string, unknown>
+        errorDetails: Record<string, unknown>,
     ): void {
         const pending = this.pendingCalls.get(messageId);
         const error = new OcppError(
             errorCode,
             `${errorCode}${errorDescription ? `: ${errorDescription}` : ''}`,
-            errorDetails
+            errorDetails,
         );
         if (!pending) {
             this.onError?.(undefined, error);
             return;
         }
-        clearTimeout(pending.timeout);
+        this.clearTimeout(pending.timeout);
         this.pendingCalls.delete(messageId);
         pending.reject(error);
     }
@@ -321,7 +321,7 @@ export class OcppClientConnection {
         messageId: string,
         errorCode: OcppErrorCode,
         errorDescription: string,
-        errorDetails: Record<string, unknown> = {}
+        errorDetails: Record<string, unknown> = {},
     ): void {
         if (!this.isOpen()) {
             return;
@@ -331,11 +331,30 @@ export class OcppClientConnection {
             messageId,
             errorCode,
             errorDescription,
-            errorDetails
+            errorDetails,
         ];
         this.ws.send(JSON.stringify(frame), () => {
             // ignore send errors on abruptly closed sockets
         });
+    }
+
+    /**
+     * Timer helper matching ioBroker repochecker pattern
+     *
+     * @param callback timer callback function
+     * @param ms delay in milliseconds
+     */
+    private setTimeout(callback: () => void, ms: number): NodeJS.Timeout {
+        return setTimeout(callback, ms);
+    }
+
+    /**
+     * Clears an active timer
+     *
+     * @param timeout timer reference
+     */
+    private clearTimeout(timeout: NodeJS.Timeout): void {
+        clearTimeout(timeout);
     }
 }
 
@@ -351,7 +370,7 @@ export class OcppServer {
     public onRequest?: (
         client: OcppClientConnection,
         action: string,
-        payload: Record<string, unknown>
+        payload: Record<string, unknown>,
     ) => Promise<Record<string, unknown>>;
     public onClientError?: (client: OcppClientConnection, action: string | undefined, error: Error) => void;
     public onClientConnect?: (client: OcppClientConnection) => void;
@@ -402,7 +421,7 @@ export class OcppServer {
                     return 'ocpp1.6';
                 }
                 return false;
-            }
+            },
         });
 
         this.httpServer.on('upgrade', (req, socket, head) => {
@@ -455,7 +474,7 @@ export class OcppServer {
             }
             return {
                 name: decoded.slice(0, colonIdx),
-                pass: decoded.slice(colonIdx + 1)
+                pass: decoded.slice(colonIdx + 1),
             };
         } catch {
             return undefined;
@@ -478,7 +497,7 @@ export class OcppServer {
                     url,
                     credentials,
                     protocol,
-                    requestedProtocol
+                    requestedProtocol,
                 );
 
                 if (!isValid || socket.destroyed) {
@@ -488,7 +507,7 @@ export class OcppServer {
                         socket.write(
                             `HTTP/1.1 ${code} ${msg}\r\n` +
                                 'WWW-Authenticate: Basic realm="OCPP"\r\n' +
-                                'Connection: close\r\n\r\n'
+                                'Connection: close\r\n\r\n',
                         );
                         socket.destroy();
                     }

@@ -8,7 +8,7 @@ export type OcppProtocolVersion = 'ocpp1.6' | 'ocpp2.0.1';
 export const OCPP_MESSAGE_TYPE = {
     CALL: 2,
     CALLRESULT: 3,
-    CALLERROR: 4
+    CALLERROR: 4,
 } as const;
 
 export type OcppErrorCode =
@@ -30,7 +30,7 @@ export type OcppCallErrorFrame = [
     string,
     OcppErrorCode,
     string,
-    Record<string, unknown>
+    Record<string, unknown>,
 ];
 
 export type OcppFrame = OcppCallFrame | OcppCallResultFrame | OcppCallErrorFrame;

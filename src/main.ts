@@ -46,7 +46,7 @@ import type {
     StopTransactionRequest,
     StopTransactionResponse,
     TriggerMessageRequest,
-    TriggerMessageResponse
+    TriggerMessageResponse,
 } from './lib/ocpp-types';
 
 /** limit can be in ampere or watts */
@@ -103,7 +103,7 @@ class Ocpp extends utils.Adapter {
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
             ...options,
-            name: 'ocpp'
+            name: 'ocpp',
         });
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
@@ -235,12 +235,12 @@ class Ocpp extends utils.Adapter {
                 url: string,
                 credentials: { name: string; pass: string } | undefined,
                 protocol: 'http' | 'https',
-                ocppProtocolVersion?: string
+                ocppProtocolVersion?: string,
             ): Promise<[boolean, number, string]> => {
                 this.log.debug(
                     `Connection from "${url}" (auth: ${credentials ? 'provided' : 'none'}), protocol: "${protocol}"${
                         ocppProtocolVersion ? `, OCPP: ${ocppProtocolVersion}` : ''
-                    }`
+                    }`,
                 );
 
                 if (this.config.authentication) {
@@ -256,7 +256,7 @@ class Ocpp extends utils.Adapter {
                 this.log.info(
                     `New valid connection from "${url}" (${protocol}${
                         ocppProtocolVersion ? `/${ocppProtocolVersion}` : ''
-                    })`
+                    })`,
                 );
 
                 // sometimes a reconnect happens without time out - ensure to handle as new client (request states etc)
@@ -269,7 +269,7 @@ class Ocpp extends utils.Adapter {
 
             this.server = new OcppServer({
                 validateConnection,
-                supportedProtocols: ['ocpp1.6']
+                supportedProtocols: ['ocpp1.6'],
             });
 
             const port = await this.getPortAsync(this.config.port);
@@ -280,7 +280,7 @@ class Ocpp extends utils.Adapter {
 
             this.server.onClientError = (client, action, error): void => {
                 this.log.error(
-                    `Received error from "${client.url}"${action ? ` (command "${action}")` : ''}: ${error.message}`
+                    `Received error from "${client.url}"${action ? ` (command "${action}")` : ''}: ${error.message}`,
                 );
             };
 
@@ -289,7 +289,7 @@ class Ocpp extends utils.Adapter {
                     return;
                 }
                 this.log.info(
-                    `Client "${client.url}" disconnected (code: ${code}${reason ? `, reason: ${reason}` : ''})`
+                    `Client "${client.url}" disconnected (code: ${code}${reason ? `, reason: ${reason}` : ''})`,
                 );
                 void this.handleClientOffline(client.url);
             };
@@ -297,7 +297,7 @@ class Ocpp extends utils.Adapter {
             this.server.onRequest = async (
                 client: OcppClientConnection,
                 action: string,
-                payload: Record<string, unknown>
+                payload: Record<string, unknown>,
             ): Promise<Record<string, unknown>> => {
                 if (this.isUnloading) {
                     return {};
@@ -314,7 +314,7 @@ class Ocpp extends utils.Adapter {
                     knownClient = {
                         connectorIds: [0],
                         connectorInitPromises: new Map(),
-                        activeTransactions: existingTx ? new Map(existingTx) : new Map()
+                        activeTransactions: existingTx ? new Map(existingTx) : new Map(),
                     };
                     this.knownClients.set(url, knownClient);
 
@@ -358,14 +358,14 @@ class Ocpp extends utils.Adapter {
 
                         // device booted, extend native to object
                         await this.extendObjectAsync(devName, {
-                            native: payload
+                            native: payload,
                         });
 
                         // we are requesting heartbeat every 55 seconds
                         const response: BootNotificationResponse = {
                             status: 'Accepted',
                             currentTime: new Date().toISOString(),
-                            interval: 55
+                            interval: 55,
                         };
                         return response as unknown as Record<string, unknown>;
                     }
@@ -389,8 +389,8 @@ class Ocpp extends utils.Adapter {
 
                         const response: AuthorizeResponse = {
                             idTagInfo: {
-                                status
-                            }
+                                status,
+                            },
                         };
                         return response as unknown as Record<string, unknown>;
                     }
@@ -410,22 +410,22 @@ class Ocpp extends utils.Adapter {
                         devTx.set(connectorId, transactionId);
 
                         this.log.info(
-                            `Received Start transaction from "${url}.${connectorId}" (transactionId: ${transactionId})`
+                            `Received Start transaction from "${url}.${connectorId}" (transactionId: ${transactionId})`,
                         );
 
                         await this.setStateAsync(`${devName}.${connectorId}.idTag`, startCommand.idTag, true);
                         await this.setStateAsync(
                             `${devName}.${connectorId}.transactionStartMeter`,
                             startCommand.meterStart,
-                            true
+                            true,
                         );
                         await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, true, true);
 
                         const response: StartTransactionResponse = {
                             transactionId,
                             idTagInfo: {
-                                status: 'Accepted'
-                            }
+                                status: 'Accepted',
+                            },
                         };
                         return response as unknown as Record<string, unknown>;
                     }
@@ -476,7 +476,7 @@ class Ocpp extends utils.Adapter {
                         }
 
                         const startMeterState = await this.getStateAsync(
-                            `${devName}.${connectorId}.transactionStartMeter`
+                            `${devName}.${connectorId}.transactionStartMeter`,
                         );
 
                         this.log.info(`Received stop transaction from "${url}.${connectorId}"`);
@@ -486,21 +486,21 @@ class Ocpp extends utils.Adapter {
                             await this.setStateAsync(
                                 `${devName}.${connectorId}.lastTransactionConsumption`,
                                 consumption,
-                                true
+                                true,
                             );
                         }
 
                         await this.setStateAsync(
                             `${devName}.${connectorId}.transactionEndMeter`,
                             stopCommand.meterStop,
-                            true
+                            true,
                         );
                         await this.setStateAsync(`${devName}.${connectorId}.transactionActive`, false, true);
 
                         const response: StopTransactionResponse = {
                             idTagInfo: {
-                                status: 'Accepted'
-                            }
+                                status: 'Accepted',
+                            },
                         };
                         return response as unknown as Record<string, unknown>;
                     }
@@ -508,7 +508,7 @@ class Ocpp extends utils.Adapter {
                         this.log.debug(`Received heartbeat from "${url}"`);
 
                         const response: HeartbeatResponse = {
-                            currentTime: new Date().toISOString()
+                            currentTime: new Date().toISOString(),
                         };
                         return response as unknown as Record<string, unknown>;
                     }
@@ -517,12 +517,12 @@ class Ocpp extends utils.Adapter {
                         const connectorId = statusCommand.connectorId;
 
                         this.log.info(
-                            `Received Status Notification from "${url}.${connectorId}": ${statusCommand.status}`
+                            `Received Status Notification from "${url}.${connectorId}": ${statusCommand.status}`,
                         );
 
                         if (statusCommand.errorCode && statusCommand.errorCode !== 'NoError') {
                             this.log.warn(
-                                `Status from "${url}.${connectorId}" contains an error: ${statusCommand.errorCode}`
+                                `Status from "${url}.${connectorId}" contains an error: ${statusCommand.errorCode}`,
                             );
                         }
 
@@ -548,13 +548,13 @@ class Ocpp extends utils.Adapter {
                     case 'DataTransfer': {
                         const dataTransferCommand = payload as unknown as DataTransferRequest;
                         this.log.info(
-                            `Received DataTransfer from "${url}" with id "${dataTransferCommand.messageId}": ${dataTransferCommand.data}`
+                            `Received DataTransfer from "${url}" with id "${dataTransferCommand.messageId}": ${dataTransferCommand.data}`,
                         );
                         try {
                             await this.synchronizeDataTransfer(
                                 devName,
                                 dataTransferCommand.messageId,
-                                dataTransferCommand.data
+                                dataTransferCommand.data,
                             );
                         } catch (e: any) {
                             this.log.warn(`Could not synchronize transfer data: ${e.message}`);
@@ -580,7 +580,7 @@ class Ocpp extends utils.Adapter {
                         this.log.info(
                             `Received SecurityEventNotification from "${url}": ${secCmd.type}${
                                 secCmd.techInfo ? ` (${secCmd.techInfo})` : ''
-                            }`
+                            }`,
                         );
                         const response: SecurityEventNotificationResponse = {};
                         return response;
@@ -608,7 +608,7 @@ class Ocpp extends utils.Adapter {
         this.log.info(`Sending GetConfiguration to "${connection.url}"`);
         const res = await connection.sendCommand<GetConfigurationRequest, GetConfigurationResponse>(
             'GetConfiguration',
-            {}
+            {},
         );
 
         if (!this.isClientStillActive(connection)) {
@@ -620,21 +620,21 @@ class Ocpp extends utils.Adapter {
 
         // Issue #65: If charge point truncated response due to GetConfigurationMaxKeys, query SupportedFeatureProfiles explicitly
         const hasSupportedProfilesKey = (res.configurationKey || []).some(
-            entry => entry.key === 'SupportedFeatureProfiles'
+            entry => entry.key === 'SupportedFeatureProfiles',
         );
         if (!hasSupportedProfilesKey && this.isClientStillActive(connection)) {
             try {
                 this.log.debug(`Explicitly requesting SupportedFeatureProfiles from "${connection.url}"`);
                 const profileRes = await connection.sendCommand<GetConfigurationRequest, GetConfigurationResponse>(
                     'GetConfiguration',
-                    { key: ['SupportedFeatureProfiles'] }
+                    { key: ['SupportedFeatureProfiles'] },
                 );
                 if (this.isClientStillActive(connection)) {
                     await this.createConfigurationObjects(connection.url, profileRes);
                 }
             } catch (e: any) {
                 this.log.debug(
-                    `Could not explicitly query SupportedFeatureProfiles from "${connection.url}": ${e.message}`
+                    `Could not explicitly query SupportedFeatureProfiles from "${connection.url}": ${e.message}`,
                 );
             }
         }
@@ -658,7 +658,7 @@ class Ocpp extends utils.Adapter {
             try {
                 this.log.info(`Requesting BootNotification from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
-                    requestedMessage: 'BootNotification'
+                    requestedMessage: 'BootNotification',
                 });
             } catch (e: any) {
                 if (this.isClientStillActive(connection)) {
@@ -672,7 +672,7 @@ class Ocpp extends utils.Adapter {
             try {
                 this.log.info(`Requesting StatusNotification from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
-                    requestedMessage: 'StatusNotification'
+                    requestedMessage: 'StatusNotification',
                 });
             } catch (e: any) {
                 if (this.isClientStillActive(connection)) {
@@ -686,7 +686,7 @@ class Ocpp extends utils.Adapter {
             try {
                 this.log.info(`Requesting MeterValues from "${connection.url}"`);
                 await connection.sendCommand<TriggerMessageRequest, TriggerMessageResponse>('TriggerMessage', {
-                    requestedMessage: 'MeterValues'
+                    requestedMessage: 'MeterValues',
                 });
             } catch (e: any) {
                 if (this.isClientStillActive(connection)) {
@@ -774,17 +774,17 @@ class Ocpp extends utils.Adapter {
             {
                 type: 'device',
                 common: {
-                    name: device
+                    name: device,
                 },
-                native: {}
+                native: {},
             },
-            { preserve: { common: ['name'] } }
+            { preserve: { common: ['name'] } },
         );
 
         for (const obj of deviceObjects) {
             const fullId = `${devId}.${obj._id}`;
             await this.extendObjectAsync(fullId, { ...obj, _id: fullId } as ioBroker.PartialObject, {
-                preserve: { common: ['name'] }
+                preserve: { common: ['name'] },
             });
         }
     }
@@ -805,9 +805,9 @@ class Ocpp extends utils.Adapter {
         await this.extendObjectAsync(`${iobDeviceName}.configuration`, {
             type: 'channel',
             common: {
-                name: 'Configuration'
+                name: 'Configuration',
             },
-            native: {}
+            native: {},
         });
 
         for (const entry of config.configurationKey) {
@@ -835,11 +835,11 @@ class Ocpp extends utils.Adapter {
                     role: role,
                     write: !entry.readonly,
                     read: true,
-                    def: type === 'number' ? 0 : type === 'boolean' ? false : ''
+                    def: type === 'number' ? 0 : type === 'boolean' ? false : '',
                 },
                 native: {
-                    ocppKey: entry.key
-                }
+                    ocppKey: entry.key,
+                },
             });
 
             await this.setStateAsync(`${iobDeviceName}.configuration.${safeKey}`, value, true);
@@ -896,11 +896,11 @@ class Ocpp extends utils.Adapter {
             {
                 type: 'channel',
                 common: {
-                    name: connectorId ? `Connector ${connectorId}` : 'Main'
+                    name: connectorId ? `Connector ${connectorId}` : 'Main',
                 },
-                native: {}
+                native: {},
             },
-            { preserve: { common: ['name'] } }
+            { preserve: { common: ['name'] } },
         );
 
         const connectorObjects = getConnectorObjects(connectorId);
@@ -924,7 +924,7 @@ class Ocpp extends utils.Adapter {
 
             const fullId = `${iobDevice}.${connectorId}.${obj._id}`;
             await this.extendObjectAsync(fullId, { ...obj, _id: fullId } as ioBroker.PartialObject, {
-                preserve: { common: ['name'] }
+                preserve: { common: ['name'] },
             });
         }
     }
@@ -968,7 +968,7 @@ class Ocpp extends utils.Adapter {
     private async synchronizeDataTransfer(
         device: string,
         messageId: string | undefined,
-        data: string | undefined
+        data: string | undefined,
     ): Promise<void> {
         const safeMessageId = this.sanitizeIdPart(messageId || 'unknown');
         data = data || '';
@@ -977,9 +977,9 @@ class Ocpp extends utils.Adapter {
             await this.extendObjectAsync(`${device}.dataTransfer`, {
                 type: 'channel',
                 common: {
-                    name: `Data Transfers of ${device}`
+                    name: `Data Transfers of ${device}`,
                 },
-                native: {}
+                native: {},
             });
             this.knownDataTransferChannels.add(device);
         }
@@ -994,9 +994,9 @@ class Ocpp extends utils.Adapter {
                     role: 'text',
                     read: true,
                     write: false,
-                    def: ''
+                    def: '',
                 },
-                native: {}
+                native: {},
             });
 
             this.knownDataTransferStates.add(fullStateId);
@@ -1043,7 +1043,7 @@ class Ocpp extends utils.Adapter {
                 if (state.val) {
                     const cmdObj: RemoteStartTransactionRequest = {
                         connectorId,
-                        idTag: 'ioBroker'
+                        idTag: 'ioBroker',
                     };
 
                     const limitState = await this.getStateAsync(`${deviceName}.${connectorId}.chargeLimit`);
@@ -1056,7 +1056,7 @@ class Ocpp extends utils.Adapter {
 
                         const period: { startPeriod: number; limit: number; numberPhases?: number } = {
                             startPeriod: 0,
-                            limit: limitState.val
+                            limit: limitState.val,
                         };
                         if (typeof numberPhases === 'number' && numberPhases > 0) {
                             period.numberPhases = numberPhases;
@@ -1073,13 +1073,13 @@ class Ocpp extends utils.Adapter {
                                 duration: 86_400,
                                 startSchedule: '2013-01-01T00:00:00.000Z',
                                 chargingRateUnit: limitType,
-                                chargingSchedulePeriod: [period]
-                            }
+                                chargingSchedulePeriod: [period],
+                            },
                         };
                     }
 
                     this.log.debug(
-                        `Sending RemoteStartTransaction for ${deviceName}.${connectorId}: ${JSON.stringify(cmdObj)}`
+                        `Sending RemoteStartTransaction for ${deviceName}.${connectorId}: ${JSON.stringify(cmdObj)}`,
                     );
                     try {
                         const res = await client.sendCommand<
@@ -1092,7 +1092,7 @@ class Ocpp extends utils.Adapter {
                         }
                     } catch (e: any) {
                         this.log.error(
-                            `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                            `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                         );
                     }
                 } else {
@@ -1101,7 +1101,7 @@ class Ocpp extends utils.Adapter {
                     const transactionId = knownClient?.activeTransactions.get(connectorId) ?? connectorId;
 
                     this.log.debug(
-                        `Sending RemoteStopTransaction for ${deviceName}.${connectorId} (transactionId: ${transactionId})`
+                        `Sending RemoteStopTransaction for ${deviceName}.${connectorId} (transactionId: ${transactionId})`,
                     );
 
                     try {
@@ -1109,7 +1109,7 @@ class Ocpp extends utils.Adapter {
                             RemoteStopTransactionRequest,
                             RemoteStopTransactionResponse
                         >('RemoteStopTransaction', {
-                            transactionId
+                            transactionId,
                         });
 
                         if (res.status === 'Rejected') {
@@ -1117,7 +1117,7 @@ class Ocpp extends utils.Adapter {
                         }
                     } catch (e: any) {
                         this.log.error(
-                            `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                            `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                         );
                     }
                 }
@@ -1126,14 +1126,14 @@ class Ocpp extends utils.Adapter {
                     this.log.debug(
                         `Sending ChangeAvailability for ${deviceName}.${connectorId}: ${
                             state.val ? 'Operative' : 'Inoperative'
-                        }`
+                        }`,
                     );
                     const res = await client.sendCommand<ChangeAvailabilityRequest, ChangeAvailabilityResponse>(
                         'ChangeAvailability',
                         {
                             connectorId,
-                            type: state.val ? 'Operative' : 'Inoperative'
-                        }
+                            type: state.val ? 'Operative' : 'Inoperative',
+                        },
                     );
 
                     if (res.status !== 'Rejected') {
@@ -1141,7 +1141,7 @@ class Ocpp extends utils.Adapter {
                     }
                 } catch (e: any) {
                     this.log.error(
-                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                     );
                 }
             } else if (functionality === 'chargeLimit') {
@@ -1161,11 +1161,11 @@ class Ocpp extends utils.Adapter {
                         limit: state.val,
                         deviceName,
                         connectorId,
-                        numberPhases
+                        numberPhases,
                     });
                 } catch (e: any) {
                     this.log.error(
-                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                     );
                 }
             } else if (functionality === 'numberPhases') {
@@ -1181,7 +1181,7 @@ class Ocpp extends utils.Adapter {
 
                     if (typeof limit !== 'number') {
                         this.log.error(
-                            `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": No chargeLimit set`
+                            `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": No chargeLimit set`,
                         );
                         return;
                     }
@@ -1192,11 +1192,11 @@ class Ocpp extends utils.Adapter {
                         limit,
                         deviceName,
                         connectorId,
-                        numberPhases: state.val
+                        numberPhases: state.val,
                     });
                 } catch (e: any) {
                     this.log.error(
-                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                     );
                 }
             } else if (functionality === 'chargeLimitType') {
@@ -1204,13 +1204,13 @@ class Ocpp extends utils.Adapter {
                     return;
                 }
                 await this.extendObjectAsync(`${deviceName}.${connectorId}.chargeLimit`, {
-                    common: { unit: state.val }
+                    common: { unit: state.val },
                 });
                 await this.setStateAsync(`${deviceName}.${connectorId}.chargeLimitType`, state.val, true);
             } else if (functionality === 'hardReset' || functionality === 'softReset') {
                 try {
                     const res = await client.sendCommand<ResetRequest, ResetResponse>('Reset', {
-                        type: functionality === 'softReset' ? 'Soft' : 'Hard'
+                        type: functionality === 'softReset' ? 'Soft' : 'Hard',
                     });
 
                     if (res.status === 'Rejected') {
@@ -1220,7 +1220,7 @@ class Ocpp extends utils.Adapter {
                     }
                 } catch (e: any) {
                     this.log.error(
-                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                     );
                 }
             } else if (functionality === 'authList') {
@@ -1249,7 +1249,7 @@ class Ocpp extends utils.Adapter {
                 try {
                     const res = await client.sendCommand<ChangeConfigurationRequest, ChangeConfigurationResponse>(
                         'ChangeConfiguration',
-                        { key: ocppKey, value }
+                        { key: ocppKey, value },
                     );
 
                     if (res.status === 'Accepted') {
@@ -1257,16 +1257,16 @@ class Ocpp extends utils.Adapter {
                     } else if (res.status === 'RebootRequired') {
                         await this.setStateAsync(`${deviceName}.configuration.${functionality}`, state.val, true);
                         this.log.info(
-                            `Reboot Required: Configuration changed (device: ${deviceName}) of "${ocppKey}" to "${state.val}"`
+                            `Reboot Required: Configuration changed (device: ${deviceName}) of "${ocppKey}" to "${state.val}"`,
                         );
                     } else {
                         this.log.warn(
-                            `Cannot change configuration of ${deviceName} (key: ${ocppKey}, value: ${state.val}): ${res.status}`
+                            `Cannot change configuration of ${deviceName} (key: ${ocppKey}, value: ${state.val}): ${res.status}`,
                         );
                     }
                 } catch (e: any) {
                     this.log.error(
-                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`
+                        `Cannot execute command "${functionality}" for "${deviceName}.${connectorId}": ${e.message}`,
                     );
                 }
             } else {
@@ -1308,7 +1308,7 @@ class Ocpp extends utils.Adapter {
     private async _setMeterValues(
         devName: string,
         connectorId: number,
-        meterValues: MeterValuesRequest
+        meterValues: MeterValuesRequest,
     ): Promise<void> {
         if (!meterValues.meterValue?.length || this.isUnloading) {
             return;
@@ -1354,9 +1354,9 @@ class Ocpp extends utils.Adapter {
                         read: true,
                         write: false,
                         unit: value.unit,
-                        def: 0
+                        def: 0,
                     },
-                    native: value as unknown as Record<string, any>
+                    native: value as unknown as Record<string, any>,
                 });
                 await this.setStateAsync(id, numericVal, true);
             }
@@ -1391,7 +1391,7 @@ class Ocpp extends utils.Adapter {
 
         const period: { startPeriod: number; limit: number; numberPhases?: number } = {
             startPeriod: 0,
-            limit
+            limit,
         };
         if (typeof numberPhases === 'number' && numberPhases > 0) {
             period.numberPhases = numberPhases;
@@ -1411,10 +1411,10 @@ class Ocpp extends utils.Adapter {
                         duration: 86_400,
                         startSchedule: '2013-01-01T00:00:00.000Z',
                         chargingRateUnit: limitType,
-                        chargingSchedulePeriod: [period]
-                    }
-                }
-            }
+                        chargingSchedulePeriod: [period],
+                    },
+                },
+            },
         );
 
         if (res.status === 'Accepted') {
@@ -1435,7 +1435,7 @@ class Ocpp extends utils.Adapter {
     private async syncAuthList(connection: OcppClientConnection, authList: string): Promise<void> {
         const { listVersion } = await connection.sendCommand<GetLocalListVersionRequest, GetLocalListVersionResponse>(
             'GetLocalListVersion',
-            {}
+            {},
         );
 
         authList = authList.replace(/\s/g, '');
@@ -1450,7 +1450,7 @@ class Ocpp extends utils.Adapter {
         const res = await connection.sendCommand<SendLocalListRequest, SendLocalListResponse>('SendLocalList', {
             listVersion: listVersion + 1,
             updateType: 'Full',
-            localAuthorizationList
+            localAuthorizationList,
         });
 
         if (res.status === 'Accepted') {
