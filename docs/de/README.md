@@ -6,6 +6,7 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
 ![Number of Installations](https://iobroker.live/badges/ocpp-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/ocpp-stable.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/ocpp/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
 
 [![NPM](https://nodei.co/npm/iobroker.ocpp.png?downloads=true)](https://nodei.co/npm/iobroker.ocpp/)
 
@@ -62,6 +63,10 @@ Adapter zur lokalen Einbindung und Steuerung von OCPP 1.6-J kompatiblen Wallboxe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+
+* (meistermopper) Weblate-Übersetzungs-Badge ergänzt
 
 ### 1.0.0 (2026-11-09)
 

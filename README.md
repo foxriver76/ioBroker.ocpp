@@ -5,6 +5,7 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.ocpp.svg)](https://www.npmjs.com/package/iobroker.ocpp)
 ![Number of Installations](https://iobroker.live/badges/ocpp-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/ocpp-stable.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/ocpp/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
 
 [![NPM](https://nodei.co/npm/iobroker.ocpp.png?downloads=true)](https://nodei.co/npm/iobroker.ocpp/)
 
@@ -59,6 +60,9 @@ This adapter would not have been possible without the great work of @foxriver76 
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (meistermopper) add Weblate translation status badge
+
 ### 1.0.0 (2026-11-09)
 * (meistermopper) fix repochecker findings: nogit, info.connection role, and unused deps (#117)
 * (meistermopper) align workflow concurrency and timer wrappers with repochecker (#121)
